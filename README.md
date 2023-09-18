@@ -64,8 +64,7 @@ void trajectory();
 
 When referencing object properties and methods, *always* explicitly use the `this->` pointer:
 ```cpp
-void StateLogic::state()
-{
+void StateLogic::state() {
     return this->_state;
 }
 ```
