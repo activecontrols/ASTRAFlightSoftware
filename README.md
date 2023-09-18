@@ -32,7 +32,7 @@ Java-style braces. Methods should also have a descriptive multi-line comment des
 Constants should be uppercase where possible.
 Example:
 ```c
-String SOMETHING = "Did something!";
+char * SOMETHING = "Did something!";
 
 /* This function prints out the
 String "Did something!" */
