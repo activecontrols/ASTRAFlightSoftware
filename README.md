@@ -3,6 +3,13 @@ Main ASTRA flight software.
 
 ## Setup
 
+Clone this repository:
+```sh
+git clone --recursive https://github.com/activecontrols/ASTRAFlightSoftware.git # Or use the SSH repo link
+```
+
+The `recursive` flag is required to pull in external drivers.
+
 Download [platformio](https://platformio.org/). We recommend getting both the IDE and
 the core CLI. Instructions will generally use the CLI to be IDE-agnostic.
 
@@ -10,10 +17,13 @@ the core CLI. Instructions will generally use the CLI to be IDE-agnostic.
 
 ### Structure
 
-- Source files are located in ./src.
-- Header files are located in ./include.
-- External libraries are located in ./lib.
-- Test files are located in ./test.
+- Source files are located in `./src`.
+- Header files are located in `./include`.
+- External libraries are located in `./lib`.
+- Test files are located in `./test`.
+
+- Lower-level drivers are in `./drivers`. This is the property of the Avionics team,
+so ask before making changes in here.
 
 ### Standards
 
