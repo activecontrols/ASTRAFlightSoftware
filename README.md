@@ -28,13 +28,16 @@ so ask before making changes in here.
 ### Standards
 
 Code should be written in camelCase where possible, with 4-space indentation and
-C-style braces. Methods should also have a 1 or 2 line comment describing their function. Example:
+Java-style braces. Methods should also have a descriptive multi-line comment describing their function.
+Constants should be uppercase where possible.
+Example:
 ```c
-/* This function
- * does a thing. */
-void doSomething()
-{
-    Serial.println("Did something!");
+String SOMETHING = "Did something!";
+
+/* This function prints out the
+String "Did something!" */
+void doSomething() {
+    Serial.println(SOMETHING);
 }
 ```
 
@@ -68,8 +71,12 @@ void StateLogic::state()
 ```
 This helps make it easier to track where variables are defined.
 
+After dynamically deallocating a pointer, the pointer should be set back to NULL.
+
 For anything else not covered, write "good code" where possible - use your best judgement. Some rules of thumb:
 1. If you have a function that is very long (200+ lines), consider splitting it.
 2. If you have very deeply nested code (e.g. a chain of 20 if statements nested within each other), consider flattening or splitting into sub-functions.
+3. Use descriptive and meaningful names for variables and functions. For example, a variable named t vs trajectory/traj
+4. Closing brace should be on the same indentation level as the function/loop.
 
 These rules are not hard requirements, but they are intended to make code easier to read.
