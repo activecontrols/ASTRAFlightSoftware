@@ -41,6 +41,14 @@ person):
 ```
 (For source-header file pairs, both require a comment block, but one can just reference the other.)
 
+For header files, always add include guards:
+```cpp
+#ifndef TRAJECTORY_H
+#define TRAJECTORY_H
+void trajectory();
+#endif // TRAJECTORY_H
+```
+
 When referencing object properties and methods, *always* explicitly use the `this->` pointer:
 ```cpp
 void StateLogic::state()

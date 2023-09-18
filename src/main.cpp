@@ -1,4 +1,9 @@
 #include <Arduino.h>
+#include "Actuators.h"
+#include "Controller.h"
+#include "Sensors.h"
+#include "StateEstimator.h"
+#include "Trajectory.h"
 
 // put function declarations here:
 int myFunction(int, int);
