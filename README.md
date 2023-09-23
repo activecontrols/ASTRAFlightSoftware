@@ -79,3 +79,5 @@ For anything else not covered, write "good code" where possible - use your best 
 4. Closing brace should be on the same indentation level as the function/loop.
 
 These rules are not hard requirements, but they are intended to make code easier to read.
+
+Authors: Teresa Wan, Vincent Wang
