@@ -1,3 +1,6 @@
 [submodule "drivers"]
 	path = drivers
 	url = https://github.com/activecontrols/Avionics.git
+[submodule "lib/fastmavlink"]
+	path = lib/fastmavlink
+	url = https://github.com/olliw42/fastmavlink
