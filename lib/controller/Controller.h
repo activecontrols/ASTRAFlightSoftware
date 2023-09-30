@@ -28,18 +28,18 @@ float k[K_ARRAY_LENGTH];
 int setup();
 
 //control law function that:
-    //takes in estimatedState_x (from Estimator.h)
+    //takes in estimatedStateX (from Estimator.h)
     //takes in k
     //takes in mode
-    //modifies controllerInput_u
+    //modifies controllerInputU
     //returns error code
-int controlLaw_u();
+int controlLawU();
 
 //calculates mode
-    //takes in estimatedState_x
+    //takes in estimatedStateX
     //modifies mode
     //returns error code
-int controlMode_mode();
+int controlMode();
 
 
 

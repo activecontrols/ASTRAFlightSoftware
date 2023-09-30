@@ -10,7 +10,7 @@ Last updated: 9/18/2023
 #define MEASUREMENT_INPUT_LENGTH 9 
 #define ESTIMATOR_ARRAY_LENGTH 12
 
-//12 sensors and their positions in the array returned from getMeasurements_y()
+//12 sensors and their positions in the array accessed from the class handling sensors
 //(replace SENSOR{Number} with name of sensor)
 #define SENSOR1_MEASUREMENT_ARRAY_POSITION = 0
 #define SENSOR2_MEASUREMENT_ARRAY_POSITION = 1
@@ -25,7 +25,7 @@ Last updated: 9/18/2023
 #define SENSOR11_MEASUREMENT_ARRAY_POSITION = 10
 #define SENSOR12_MEASUREMENT_ARRAY_POSITION = 11
 
-//the amount of variables equates to ESTIMATORVARIABLELENGTH
+//the amount of variables equates to ESTIMATOR_VARIABLE_LENGTH
 //replace VARIABLE with the variable name
 #define ESTIMATOR_VARIABLE1_ARRAY_POSITION = 0
 #define ESTIMATOR_VARIABLE2_ARRAY_POSITION = 1
@@ -44,10 +44,6 @@ Last updated: 9/18/2023
 #define GENERAL_ERROR_CODE = -1
 #define MEMORY_ALLOCATION_ERROR_CODE = -2
 
-//research malloc
-//research integrators
-
-
 //malloc's global variables in this header file
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
 int setup(); 
@@ -55,14 +51,14 @@ int setup();
 //global variable
     //will be accessible to controller.h file
     //variables in the array correspond to ESTIMATOR_VARIABLE_ARRAY_POSITION values
-float estimatedState_x[ESTIMATOR_ARRAY_LENGTH]; 
+float estimatedStateX[ESTIMATOR_ARRAY_LENGTH]; 
 
-//calculates estimatedState_x
-    //updates estimatedState_x
+//calculates estimatedStateX
+    //updates estimatedStateX
     //accesses measurement data (y) in buffer class
     //accesses controller inputs (u) in Controller.h
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE)
-int calculateEstimatedState_x(); 
+int calculateEstimatedStateX(); 
 
 float kalmanFilter();
 
