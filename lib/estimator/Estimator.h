@@ -8,7 +8,7 @@ Last updated: 9/18/2023
 */
 
 #define MEASUREMENTINPUTLENGTH 9 
-#define ESTIMATORVARIABLELENGTH 12
+#define ESTIMATORARRAYLENGTH 12
 
 //12 sensors and their positions in the array returned from getMeasurements_y()
 //(replace SENSOR{Number} with name of sensor)
@@ -41,7 +41,7 @@ Last updated: 9/18/2023
 #define ESTIMATORVARIABLE12ARRAYPOSITION = 11
 
 
-int* (estimatedState_x)[ESTIMATORVARIABLELENGTH]; //variables in the array correspond to ESTIMATORVARIABLEARRAYPOSITION values
+int* (estimatedState_x)[ESTIMATORARRAYLENGTH]; //variables in the array correspond to ESTIMATORVARIABLEARRAYPOSITION values
 //will be accessible to controller.h file
 
 int* getMeasurements_y(); // will return a pointer to int[] of size MEASUREMENTINPUTLENGTH where each place in the array corrsponds to MEASUREMENTARRAYPOSITION variables            
