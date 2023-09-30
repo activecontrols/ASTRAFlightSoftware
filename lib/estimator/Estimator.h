@@ -7,51 +7,64 @@ Created: 9/18/2023
 Last updated: 9/18/2023
 */
 
-#define MEASUREMENTINPUTLENGTH 9 
-#define ESTIMATORARRAYLENGTH 12
+#define MEASUREMENT_INPUT_LENGTH 9 
+#define ESTIMATOR_ARRAY_LENGTH 12
 
 //12 sensors and their positions in the array returned from getMeasurements_y()
 //(replace SENSOR{Number} with name of sensor)
-#define SENSOR1MEASUREMENTARRAYPOSITION = 0
-#define SENSOR2MEASUREMENTARRAYPOSITION = 1
-#define SENSOR3MEASUREMENTARRAYPOSITION = 2
-#define SENSOR4MEASUREMENTARRAYPOSITION = 3
-#define SENSOR5MEASUREMENTARRAYPOSITION = 4
-#define SENSOR6MEASUREMENTARRAYPOSITION = 5
-#define SENSOR7MEASUREMENTARRAYPOSITION = 6
-#define SENSOR8MEASUREMENTARRAYPOSITION = 7
-#define SENSOR9MEASUREMENTARRAYPOSITION = 8
-#define SENSOR10MEASUREMENTARRAYPOSITION = 9
-#define SENSOR11MEASUREMENTARRAYPOSITION = 10
-#define SENSOR12MEASUREMENTARRAYPOSITION = 11
+#define SENSOR1_MEASUREMENT_ARRAY_POSITION = 0
+#define SENSOR2_MEASUREMENT_ARRAY_POSITION = 1
+#define SENSOR3_MEASUREMENT_ARRAY_POSITION = 2
+#define SENSOR4_MEASUREMENT_ARRAY_POSITION = 3
+#define SENSOR5_MEASUREMENT_ARRAY_POSITION = 4
+#define SENSOR6_MEASUREMENT_ARRAY_POSITION = 5
+#define SENSOR7_MEASUREMENT_ARRAY_POSITION = 6
+#define SENSOR8_MEASUREMENT_ARRAY_POSITION = 7
+#define SENSOR9_MEASUREMENT_ARRAY_POSITION = 8
+#define SENSOR10_MEASUREMENT_ARRAY_POSITION = 9
+#define SENSOR11_MEASUREMENT_ARRAY_POSITION = 10
+#define SENSOR12_MEASUREMENT_ARRAY_POSITION = 11
 
 //the amount of variables equates to ESTIMATORVARIABLELENGTH
 //replace VARIABLE with the variable name
-#define ESTIMATORVARIABLE1ARRAYPOSITION = 0
-#define ESTIMATORVARIABLE2ARRAYPOSITION = 1
-#define ESTIMATORVARIABLE3ARRAYPOSITION = 2
-#define ESTIMATORVARIABLE4ARRAYPOSITION = 3
-#define ESTIMATORVARIABLE5ARRAYPOSITION = 4
-#define ESTIMATORVARIABLE6ARRAYPOSITION = 5
-#define ESTIMATORVARIABLE7ARRAYPOSITION = 6
-#define ESTIMATORVARIABLE8ARRAYPOSITION = 7
-#define ESTIMATORVARIABLE9ARRAYPOSITION = 8
-#define ESTIMATORVARIABLE10ARRAYPOSITION = 9
-#define ESTIMATORVARIABLE11ARRAYPOSITION = 10
-#define ESTIMATORVARIABLE12ARRAYPOSITION = 11
+#define ESTIMATOR_VARIABLE1_ARRAY_POSITION = 0
+#define ESTIMATOR_VARIABLE2_ARRAY_POSITION = 1
+#define ESTIMATOR_VARIABLE3_ARRAY_POSITION = 2
+#define ESTIMATOR_VARIABLE4_ARRAY_POSITION = 3
+#define ESTIMATOR_VARIABLE5_ARRAY_POSITION = 4
+#define ESTIMATOR_VARIABLE6_ARRAY_POSITION = 5
+#define ESTIMATOR_VARIABLE7_ARRAY_POSITION = 6
+#define ESTIMATOR_VARIABLE8_ARRAY_POSITION = 7
+#define ESTIMATOR_VARIABLE9_ARRAY_POSITION = 8
+#define ESTIMATOR_VARIABLE10_ARRAY_POSITION = 9
+#define ESTIMATOR_VARIABLE11_ARRAY_POSITION = 10
+#define ESTIMATOR_VARIABLE12_ARRAY_POSITION = 11
+
+#define NO_ERROR_CODE = 0
+#define GENERAL_ERROR_CODE = -1
+#define MEMORY_ALLOCATION_ERROR_CODE = -2
+
+//research malloc
+//research integrators
 
 
-int* (estimatedState_x)[ESTIMATORARRAYLENGTH]; //variables in the array correspond to ESTIMATORVARIABLEARRAYPOSITION values
-//will be accessible to controller.h file
+//malloc's global variables in this header file
+    //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
+int setup(); 
 
-int* getMeasurements_y(); // will return a pointer to int[] of size MEASUREMENTINPUTLENGTH where each place in the array corrsponds to MEASUREMENTARRAYPOSITION variables            
-//should access buffer memory locations of all sensors, most likely will be done by accessing buffer pointers in another header file
+//global variable
+    //will be accessible to controller.h file
+    //variables in the array correspond to ESTIMATOR_VARIABLE_ARRAY_POSITION values
+float estimatedState_x[ESTIMATOR_ARRAY_LENGTH]; 
 
-int* getControllerInputs_u(); //will access pointer to int[] in Controller.h file 
+//calculates estimatedState_x
+    //updates estimatedState_x
+    //accesses measurement data (y) in buffer class
+    //accesses controller inputs (u) in Controller.h
+    //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE)
+int calculateEstimatedState_x(); 
 
-void calculateEstimatedState_x(); //returns nothing, updates estimatedState_x 
-
-int kalmanFilter();
+float kalmanFilter();
 
 
 
