@@ -6,8 +6,8 @@ Created: 9/13/2023
 Last updated: 9/13/2023
 */
 
-
-#include "../estimator/Estimator.h";
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
 
 
 #define U_ARRAY_LENGTH 12
@@ -41,7 +41,7 @@ int controlLawU();
     //returns error code
 int controlMode();
 
-
+#endif
 
 
 

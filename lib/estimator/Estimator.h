@@ -7,6 +7,9 @@ Created: 9/18/2023
 Last updated: 9/18/2023
 */
 
+#ifndef ESTIMATOR_H
+#define ESTIMATOR_H
+
 #define MEASUREMENT_INPUT_LENGTH 9 
 #define ESTIMATOR_ARRAY_LENGTH 12
 
@@ -62,9 +65,4 @@ int calculateEstimatedStateX();
 
 float kalmanFilter();
 
-
-
-
-
-
-
+#endif
