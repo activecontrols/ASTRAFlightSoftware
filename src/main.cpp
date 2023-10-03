@@ -1,4 +1,7 @@
 #include <Arduino.h>
+#include "../lib/estimator/Estimator.h"
+#include "../lib/controller/Controller.h"
+
 
 // put function declarations here:
 int myFunction(int, int);

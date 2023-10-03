@@ -1,5 +1,4 @@
-//watch the videos
-/*
+/* 
 Estimator.h - Estimator Header file
 Description: Header file to Estimator.cpp
 Author: Vincent Palmerio
@@ -9,6 +8,7 @@ Last updated: 9/18/2023
 
 #ifndef ESTIMATOR_H
 #define ESTIMATOR_H
+
 
 #define MEASUREMENT_INPUT_LENGTH 9 
 #define ESTIMATOR_ARRAY_LENGTH 12
@@ -43,18 +43,15 @@ Last updated: 9/18/2023
 #define ESTIMATOR_VARIABLE11_ARRAY_POSITION = 10
 #define ESTIMATOR_VARIABLE12_ARRAY_POSITION = 11
 
-#define NO_ERROR_CODE = 0
-#define GENERAL_ERROR_CODE = -1
-#define MEMORY_ALLOCATION_ERROR_CODE = -2
 
 //malloc's global variables in this header file
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
-int setup(); 
+int estimatorSetup(); 
 
 //global variable
     //will be accessible to controller.h file
     //variables in the array correspond to ESTIMATOR_VARIABLE_ARRAY_POSITION values
-float estimatedStateX[ESTIMATOR_ARRAY_LENGTH]; 
+float* estimatedStateX;
 
 //calculates estimatedStateX
     //updates estimatedStateX
