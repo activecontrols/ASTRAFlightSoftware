@@ -16,13 +16,13 @@ Last updated: 9/13/2023
 
 
 //Global variables
-float *controllerInput_u;
-float *mode;
-float *k;
+extern float *controllerInput_u;
+extern float *mode;
+extern float *k;
 
 //malloc's global variables in this header file, 
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
-int controllerSetup();
+extern int controllerSetup();
 
 //control law function that:
     //takes in estimatedStateX (from Estimator.h)

@@ -46,12 +46,12 @@ Last updated: 9/18/2023
 
 //malloc's global variables in this header file
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
-int estimatorSetup(); 
+extern int estimatorSetup(); 
 
 //global variable
     //will be accessible to controller.h file
     //variables in the array correspond to ESTIMATOR_VARIABLE_ARRAY_POSITION values
-float* estimatedStateX;
+extern float* estimatedStateX;
 
 //calculates estimatedStateX
     //updates estimatedStateX
