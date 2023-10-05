@@ -71,6 +71,15 @@ void StateLogic::state() {
 This helps make it easier to track where variables are defined.
 
 After dynamically deallocating a pointer, the pointer should be set back to NULL.
+```cpp
+int * xlocation = malloc(sizeof(int));
+free(xlocation);
+xlocation = NULL;
+
+int * ylocation = new int;
+delete(ylocation);
+ylocation = NULL;
+```
 
 For anything else not covered, write "good code" where possible - use your best judgement. Some rules of thumb:
 1. If you have a function that is very long (200+ lines), consider splitting it.
