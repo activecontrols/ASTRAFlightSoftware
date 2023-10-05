@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<mavlink>
+  <include>minimal.xml</include>
+  <version>1</version>
+  <dialect>69</dialect>
+  <enums>
+  </enums>
+  <messages>
+  </messages>
+</mavlink>
