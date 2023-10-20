@@ -2,6 +2,7 @@
 #include "../lib/estimator/Estimator.h"
 #include "../lib/controller/Controller.h"
 #include "../lib/math/Integrator.h"
+#include "../lib/math/Derivative.h"
 //#include <ArduinoEigenDense.h>
 
 Eigen::MatrixXd m(3, 3);
