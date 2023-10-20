@@ -11,10 +11,10 @@ Last updated: 10/20/2023
 
 #include <ArduinoEigenDense.h>
 
-
-Eigen::VectorXd* newestData;
-
-Eigen::VectorXd previousData;
+//TODO: I get a redefinition error if the two static variables below are uncommented
+    //I have not figured out why - Vincent
+//static Eigen::VectorXd* newestData;
+//static Eigen::VectorXd previousData;
 
 extern Eigen::VectorXd derivative;
 
