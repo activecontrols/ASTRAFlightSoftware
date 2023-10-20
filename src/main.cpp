@@ -8,6 +8,8 @@
 Eigen::MatrixXd m(3, 3);
 Eigen::VectorXd v(3);
 
+Eigen::VectorXd integrateAndDerive(3);
+
 elapsedMillis ledTime;
 
 bool ledOn = false;
@@ -18,8 +20,18 @@ void setup() {
 
   Serial.print("Estimator error code:");
   Serial.print(estimatorSetup());
-  // put your setup code here, to run once:
+
+  integrateAndDerive << 1, 2, 3;
+
+  Serial.print("Integrator error code:");
+  Serial.print(integratorSetup(&integrateAndDerive));
+
+  Serial.print("Derivative error code:");
+  Serial.print(derivativeSetup(&integrateAndDerive));
+  
+  //Sets up led
   pinMode(LED_BUILTIN, OUTPUT);
+
 
   for (unsigned int i = 0; i<U_ARRAY_LENGTH; i++) {
     Serial.print(controllerInputU(i));
@@ -57,29 +69,7 @@ void setup() {
   v(2) = 0;
    
   
-}
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  //Serial.print("ITS WORKING!!!");
-  
-  Eigen::VectorXd vo = m * v;
-  v = vo;
-
-  Serial.println("New Vector: ");
-  Serial.print(v(0));
-  Serial.println();
-  Serial.print(v(1));
-  Serial.println();
-  Serial.print(v(2));
-  Serial.println();
-
-  //turns led on and off
-  led();
-  
-
-  // wait for a second
-  delay(1000);
 }
 
 //turns the LED on and off every 3 seconds 
@@ -100,3 +90,40 @@ void led() {
     ledTime -= 3000;
   }
 }
+
+void loop() {
+  
+  
+  Eigen::VectorXd vo = m * v;
+  v = vo;
+
+  integrateAndDerive *= 2;
+
+  integratorUpdate();
+  Serial.println("Integration");
+  for (int i = 0; i < integratedData.size(); i++) {
+    Serial.println(integratedData(i));
+  }
+
+  derivativeUpdate();
+  Serial.println("Derivative");
+  for (int i = 0; i < derivative.size(); i++) {
+    Serial.println(derivative(i));
+  }
+
+  Serial.println("New Vector: ");
+  Serial.print(v(0));
+  Serial.println();
+  Serial.print(v(1));
+  Serial.println();
+  Serial.print(v(2));
+  Serial.println();
+
+  //turns led on and off
+  led();
+  
+
+  // wait for a second
+  delay(1000);
+}
+
