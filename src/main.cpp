@@ -8,6 +8,10 @@
 Eigen::MatrixXd m(3, 3);
 Eigen::VectorXd v(3);
 
+elapsedMillis ledTime;
+
+bool ledOn = false;
+
 void setup() {
   Serial.print("Controller error code:");
   Serial.print(controllerSetup());
@@ -70,13 +74,29 @@ void loop() {
   Serial.print(v(2));
   Serial.println();
 
-  // turn the LED on (HIGH is the voltage level)
-  digitalWrite(LED_BUILTIN, HIGH);
+  //turns led on and off
+  led();
+  
+
   // wait for a second
-  delay(3000);
-  //elapsedMillis
-  // turn the LED off by making the voltage LOW
-  digitalWrite(LED_BUILTIN, LOW);
-   // wait for a second
   delay(1000);
+}
+
+//turns the LED on and off every 3 seconds 
+void led() {
+  
+  if (ledTime == 3000) {
+
+    //(HIGH and LOW are the voltage levels)
+    if (ledOn == true) {
+      digitalWrite(LED_BUILTIN, LOW);
+      ledOn = false;
+    } else if (ledOn == false) {
+      digitalWrite(LED_BUILTIN, HIGH);
+      ledOn = true;
+    }
+    
+
+    ledTime -= 3000;
+  }
 }
