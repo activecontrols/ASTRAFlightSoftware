@@ -3,12 +3,13 @@ Controller.h - Controller Header file
 Description: Header file to Controller.cpp
 Author: Ani Gokhale, Vincent Palmerio
 Created: 9/13/2023
-Last updated: 9/13/2023
+Last updated: 10/16/2023
 */
 
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include <ArduinoEigenDense.h>
 
 #define U_ARRAY_LENGTH 12
 #define MODE_ARRAY_LENGTH 12
@@ -16,7 +17,7 @@ Last updated: 9/13/2023
 
 
 //Global variables
-extern float *controllerInput_u;
+extern Eigen::VectorXd controllerInputU;
 extern float *mode;
 extern float *k;
 
