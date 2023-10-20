@@ -39,7 +39,14 @@ void setup() {
   m(2, 1) = sin(theta);
   m(2, 2) = cos(theta);
 
-  
+  //Undefined Vector Test
+  Serial.println("Vector w/o initialized values: ");
+  Serial.print(v(0));
+  Serial.println();
+  Serial.print(v(1));
+  Serial.println();
+  Serial.print(v(2));
+  Serial.println();
 
   v(0) = 0;
   v(1) = 1;
