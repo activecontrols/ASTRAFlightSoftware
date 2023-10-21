@@ -4,7 +4,7 @@
 
 Eigen::VectorXd derivative(0);
 
-int derivativeSetup(Eigen::VectorXd* pointerToData)
+int derivativeSetup(Eigen::VectorXd* pointerToData, Eigen::VectorXd startingData)
 {
     newestData = pointerToData;
 
@@ -13,6 +13,10 @@ int derivativeSetup(Eigen::VectorXd* pointerToData)
     }
 
     int vectorSize = newestData->size();
+
+    if (startingData.size() != vectorSize) {
+        return VECTOR_SIZE_MISMATCH;
+    }
 
     Eigen::VectorXd v(vectorSize);
 

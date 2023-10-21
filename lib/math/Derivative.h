@@ -11,8 +11,7 @@ Last updated: 10/20/2023
 
 #include <ArduinoEigenDense.h>
 
-//TODO: I get a redefinition error if the two static variables below are uncommented
-    //I have not figured out why - Vincent
+
 static Eigen::VectorXd* newestData(0);
 static Eigen::VectorXd previousData(0);
 static elapsedMicros timeBetweenIntegration;
