@@ -1,7 +1,6 @@
 #include "Integrator.h"
 #include "../error/Error.h"
 
-static Eigen::VectorXd* dataToIntegrate = nullptr;
 Eigen::VectorXd integratedData(0);
 
 

@@ -17,9 +17,8 @@ Last updated: 10/20/2023
 //TODO: decide if this variable should be a constant or an assigned variable upon the calling of integratorSetup
 #define MAX_ALLOWED_TIME_BETWEEN_INTEGRATION 10
 
-//TODO: I get a redefinition error if the two static variables below are uncommented
-    //I have not figured out why - Vincent
-//static Eigen::VectorXd* dataToIntegrate;
+
+static Eigen::VectorXd* dataToIntegrate = nullptr;
 
 static elapsedMicros timeBetweenIntegration;
 
