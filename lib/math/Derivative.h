@@ -13,8 +13,8 @@ Last updated: 10/20/2023
 
 //TODO: I get a redefinition error if the two static variables below are uncommented
     //I have not figured out why - Vincent
-static Eigen::VectorXd* newestData;
-static Eigen::VectorXd previousData;
+static Eigen::VectorXd* newestData(0);
+static Eigen::VectorXd previousData(0);
 static elapsedMicros timeBetweenIntegration;
 
 extern Eigen::VectorXd derivative;
