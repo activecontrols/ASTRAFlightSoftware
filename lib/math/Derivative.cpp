@@ -1,8 +1,7 @@
 #include "Derivative.h"
 #include "../error/Error.h"
 
-static Eigen::VectorXd* newestData = nullptr;
-static Eigen::VectorXd previousData(0);
+
 Eigen::VectorXd derivative(0);
 
 int derivativeSetup(Eigen::VectorXd* pointerToData)
@@ -31,7 +30,9 @@ int derivativeSetup(Eigen::VectorXd* pointerToData)
 int derivativeUpdate()
 {
 
-    derivative = (*newestData) - previousData;
+    derivative = ((*newestData) - previousData)/timeBetweenIntegration;
+
+    timeBetweenIntegration = 0;
 
     previousData = (*newestData);
 
