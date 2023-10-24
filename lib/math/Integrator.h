@@ -18,7 +18,7 @@ Last updated: 10/20/2023
 #define MAX_ALLOWED_TIME_BETWEEN_INTEGRATION 10
 
 
-static Eigen::VectorXd* dataToIntegrate = nullptr;
+static Eigen::VectorXd* dataToIntegrate;
 
 static elapsedMicros timeBetweenIntegration;
 
