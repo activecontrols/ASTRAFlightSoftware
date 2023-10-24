@@ -12,15 +12,15 @@ Last updated: 10/20/2023
 #include <ArduinoEigenDense.h>
 
 
-static Eigen::VectorXd* newestData(0);
-static Eigen::VectorXd previousData(0);
-static elapsedMicros timeBetweenIntegration;
+static Eigen::VectorXd* newestData;
+static Eigen::VectorXd previousData;
+static elapsedMicros timeStepDerivative;
 
 extern Eigen::VectorXd derivative;
 
-//assings pointer to newestData, initializes previousData and derivative
+//assings pointer to newestData, initializes previousData to specified vector, initializes derivative
 //returns error code
-extern int derivativeSetup(Eigen::VectorXd*);
+extern int derivativeSetup(Eigen::VectorXd*, Eigen::VectorXd);
 
 //updates the derivative variable with the derivative of between newestData and previousData
 extern int derivativeUpdate(); 
