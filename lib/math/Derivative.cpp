@@ -18,9 +18,14 @@ int derivativeSetup(Eigen::VectorXd* pointerToData, Eigen::VectorXd startingData
         return VECTOR_SIZE_MISMATCH;
     }
 
+    previousData = startingData;
+
     Eigen::VectorXd v(vectorSize);
 
-    previousData = v;
+    //initialize vector to all 0 values
+    for (int i = 0; i < vectorSize; i++) {
+        v(i) = 0;
+    }
 
     derivative = v;
 
@@ -33,12 +38,28 @@ int derivativeSetup(Eigen::VectorXd* pointerToData, Eigen::VectorXd startingData
 
 int derivativeUpdate()
 {
+    Serial.println("Time Step Derivative (microseconds)");
+    Serial.println(timeStepDerivative);
 
-    derivative = ((*newestData) - previousData)/timeBetweenIntegration;
 
-    timeBetweenIntegration = 0;
+    Eigen::VectorXd newData = (*newestData);
+
+    Serial.println("Newest Data Vector");
+    for (int i = 0; i < newData.size(); i++) {
+        Serial.println(newData(i));
+    }
+
+    Serial.println("Previous Data Vector");
+    for (int i = 0; i < previousData.size(); i++) {
+        Serial.println(previousData(i));
+    }
+
+    derivative = ((*newestData) - previousData)/timeStepDerivative;
+
+    timeStepDerivative = 0;
 
     previousData = (*newestData);
 
     return NO_ERROR_CODE;
 }
+
