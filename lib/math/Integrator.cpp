@@ -17,7 +17,12 @@ int integratorSetup(Eigen::VectorXd* pointerToData)
 
     Eigen::VectorXd v(vectorSize);
 
+    for (int i = 0; i < vectorSize; i++) {
+        v(i) = 0;
+    }
+
     integratedData = v;
+
 
     if (integratedData.size() == 0) {
         return VECTOR_INIT_ZERO_SIZE_ERROR;
@@ -29,14 +34,20 @@ int integratorSetup(Eigen::VectorXd* pointerToData)
 
 int integratorUpdate()
 {
-    int changeInTime = timeBetweenIntegration;
+    double changeInTime = timeBetweenIntegration;
+
+    changeInTime = changeInTime / 1000000; //convert to seconds
+    
+    Serial.println("Time between integration seconds: ");
+    Serial.println(changeInTime, 60);
+
+    integratedData += (*dataToIntegrate) * changeInTime;
+
     timeBetweenIntegration = 0;
 
     if (changeInTime > MAX_ALLOWED_TIME_BETWEEN_INTEGRATION) {
         return MAX_ALLOWED_TIME_BETWEEN_INTEGRATION_EXCEEDED;
     }
-
-    integratedData += (*dataToIntegrate) * changeInTime;
 
     return NO_ERROR_CODE;
 }
