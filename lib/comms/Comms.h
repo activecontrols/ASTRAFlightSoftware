@@ -8,6 +8,7 @@ Created: 2023-10-27
 #ifndef COMMS_H 
 #define COMMS_H 
 
+#include "../libmavskipper/include/mavskipper/process_mavlink.h"
 #include "../message_lib/pscom/pscom.h"
 #include <ArduinoEigenDense.h>
 

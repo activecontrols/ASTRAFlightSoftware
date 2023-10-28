@@ -261,5 +261,48 @@
       <field type="uint16_t" name="total_segments">Total segments stored.</field>
       <field type="uint16_t" name="total_points">Total trajectory points being followed.</field>
     </message>
+
+    <!-- Trajectory upload protocol -->
+    <message id="51809" name="TRAJ_LOAD_SD_CARD">
+      <description>Load trajectory file from SD card.</description>
+      <field type="char[63]" name="filename">Name of file</field>
+    </message>
+    <message id="51810" name="TRAJ_INFO">
+      <description>Start a trajectory upload.</description>
+      <field type="uint16_t" name="k"># Gain matrices</field>
+      <field type="uint32_t" name="n"># Trajectory points</field>
+      <field type="uint16_t" name="k_dim1">Gain matrix dim1</field>
+      <field type="uint16_t" name="k_dim2">Gain matrix dim2</field>
+    </message>
+    <message id="51811" name="TRAJ_REQ_K1">
+      <description>Request the first half of a gain matrix.</description>
+      <field type="uint16_t" name="k">Index of gain matrix</field>
+    </message>
+    <message id="51812" name="TRAJ_K1">
+      <description>Send first half of a gain matrix</description>
+      <field type="uint16_t" name="k">Index of gain matrix</field>
+      <field type="float[60]" name="K1">First half of gain matrix</field>
+    </message>
+    <message id="51813" name="TRAJ_REQ_K2">
+      <description>Request the second half of a gain matrix.</description>
+      <field type="uint16_t" name="k">Index of gain matrix</field>
+    </message>
+    <message id="51814" name="TRAJ_K2">
+      <description>Send second half of a gain matrix</description>
+      <field type="uint16_t" name="k">Index of gain matrix</field>
+      <field type="float[60]" name="K2">Second half of gain matrix</field>
+    </message>
+    <message id="51815" name="TRAJ_REQ_PT">
+      <description>Request a trajectory point.</description>
+      <field type="uint32_t" name="k">Index of trajectory point</field>
+      <field type="float[12]" name="x">State trajectory vector</field>
+      <field type="float[4]" name="uref">Reference input vector</field>
+      <field type="float" name="time">Time</field>
+    </message>
+    <message id="51820" name="TRAJ_ACK">
+      <description>Send a response regarding whether the trajectory load was successful.</description>
+      <field type="uint32_t" name="points_loaded">Number of points successfully loaded (-1 if error).</field>
+      <field type="uint8_t" name="result" enum="MAV_RESULT">Result of load.</field>
+    </message>
   </messages>
 </mavlink>

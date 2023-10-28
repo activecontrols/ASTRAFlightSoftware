@@ -8,6 +8,246 @@
   <p>The current MAVLink version is 2.1. The minor version numbers (after the dot) range from 1-255.</p>
   <p>This file has protocol dialect: 69.</p>
   <h2 id="enums">MAVLink Type Enumerations</h2>
+  <h3 id="MAV_SYS_STATUS_SENSOR">MAV_SYS_STATUS_SENSOR</h3>
+  <p>
+   <a href="#enums">
+    [Enum]
+   </a>These encode the sensors whose status is sent as part of the <a href="#SYS_STATUS">SYS_STATUS</a> message.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Value</th>
+     <th>Field Name</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_GYRO">
+     <td>1</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_GYRO">MAV_SYS_STATUS_SENSOR_3D_GYRO</a>
+     </td>
+     <td>0x01 3D gyro</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_ACCEL">
+     <td>2</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_ACCEL">MAV_SYS_STATUS_SENSOR_3D_ACCEL</a>
+     </td>
+     <td>0x02 3D accelerometer</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_MAG">
+     <td>4</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_MAG">MAV_SYS_STATUS_SENSOR_3D_MAG</a>
+     </td>
+     <td>0x04 3D magnetometer</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE">
+     <td>8</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE">MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE</a>
+     </td>
+     <td>0x08 absolute pressure</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_DIFFERENTIAL_PRESSURE">
+     <td>16</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_DIFFERENTIAL_PRESSURE">MAV_SYS_STATUS_SENSOR_DIFFERENTIAL_PRESSURE</a>
+     </td>
+     <td>0x10 differential pressure</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_GPS">
+     <td>32</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_GPS">MAV_SYS_STATUS_SENSOR_GPS</a>
+     </td>
+     <td>0x20 GPS</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW">
+     <td>64</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW">MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW</a>
+     </td>
+     <td>0x40 optical flow</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_VISION_POSITION">
+     <td>128</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_VISION_POSITION">MAV_SYS_STATUS_SENSOR_VISION_POSITION</a>
+     </td>
+     <td>0x80 computer vision position</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_LASER_POSITION">
+     <td>256</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_LASER_POSITION">MAV_SYS_STATUS_SENSOR_LASER_POSITION</a>
+     </td>
+     <td>0x100 laser based position</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_EXTERNAL_GROUND_TRUTH">
+     <td>512</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_EXTERNAL_GROUND_TRUTH">MAV_SYS_STATUS_SENSOR_EXTERNAL_GROUND_TRUTH</a>
+     </td>
+     <td>0x200 external ground truth (Vicon or Leica)</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL">
+     <td>1024</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL">MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL</a>
+     </td>
+     <td>0x400 3D angular rate control</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION">
+     <td>2048</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION">MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION</a>
+     </td>
+     <td>0x800 attitude stabilization</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_YAW_POSITION">
+     <td>4096</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_YAW_POSITION">MAV_SYS_STATUS_SENSOR_YAW_POSITION</a>
+     </td>
+     <td>0x1000 yaw position</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL">
+     <td>8192</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL">MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL</a>
+     </td>
+     <td>0x2000 z/altitude control</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL">
+     <td>16384</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL">MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL</a>
+     </td>
+     <td>0x4000 x/y position control</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS">
+     <td>32768</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS">MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS</a>
+     </td>
+     <td>0x8000 motor outputs / control</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_RC_RECEIVER">
+     <td>65536</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_RC_RECEIVER">MAV_SYS_STATUS_SENSOR_RC_RECEIVER</a>
+     </td>
+     <td>0x10000 RC receiver</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_GYRO2">
+     <td>131072</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_GYRO2">MAV_SYS_STATUS_SENSOR_3D_GYRO2</a>
+     </td>
+     <td>0x20000 2nd 3D gyro</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_ACCEL2">
+     <td>262144</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_ACCEL2">MAV_SYS_STATUS_SENSOR_3D_ACCEL2</a>
+     </td>
+     <td>0x40000 2nd 3D accelerometer</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_MAG2">
+     <td>524288</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_MAG2">MAV_SYS_STATUS_SENSOR_3D_MAG2</a>
+     </td>
+     <td>0x80000 2nd 3D magnetometer</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_GEOFENCE">
+     <td>1048576</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_GEOFENCE">MAV_SYS_STATUS_GEOFENCE</a>
+     </td>
+     <td>0x100000 geofence</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_AHRS">
+     <td>2097152</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_AHRS">MAV_SYS_STATUS_AHRS</a>
+     </td>
+     <td>0x200000 AHRS subsystem health</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_TERRAIN">
+     <td>4194304</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_TERRAIN">MAV_SYS_STATUS_TERRAIN</a>
+     </td>
+     <td>0x400000 Terrain subsystem health</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_REVERSE_MOTOR">
+     <td>8388608</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_REVERSE_MOTOR">MAV_SYS_STATUS_REVERSE_MOTOR</a>
+     </td>
+     <td>0x800000 Motors are reversed</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_LOGGING">
+     <td>16777216</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_LOGGING">MAV_SYS_STATUS_LOGGING</a>
+     </td>
+     <td>0x1000000 Logging</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_BATTERY">
+     <td>33554432</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_BATTERY">MAV_SYS_STATUS_SENSOR_BATTERY</a>
+     </td>
+     <td>0x2000000 Battery</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_PROXIMITY">
+     <td>67108864</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_PROXIMITY">MAV_SYS_STATUS_SENSOR_PROXIMITY</a>
+     </td>
+     <td>0x4000000 Proximity</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_SATCOM">
+     <td>134217728</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_SATCOM">MAV_SYS_STATUS_SENSOR_SATCOM</a>
+     </td>
+     <td>0x8000000 Satellite Communication</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_PREARM_CHECK">
+     <td>268435456</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_PREARM_CHECK">MAV_SYS_STATUS_PREARM_CHECK</a>
+     </td>
+     <td>0x10000000 pre-arm check status. Always healthy when armed</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_OBSTACLE_AVOIDANCE">
+     <td>536870912</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_OBSTACLE_AVOIDANCE">MAV_SYS_STATUS_OBSTACLE_AVOIDANCE</a>
+     </td>
+     <td>0x20000000 Avoidance/collision prevention</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_PROPULSION">
+     <td>1073741824</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_PROPULSION">MAV_SYS_STATUS_SENSOR_PROPULSION</a>
+     </td>
+     <td>0x40000000 propulsion (actuator, esc, motor or propellor)</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_EXTENSION_USED">
+     <td>2147483648</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_EXTENSION_USED">MAV_SYS_STATUS_EXTENSION_USED</a>
+     </td>
+     <td>0x80000000 Extended bit-field are used for further sensor status bits (needs to be set in onboard_control_sensors_present only)</td>
+    </tr>
+   </tbody>
+  </table>
   <a id="MAV_CMD">
   </a>
   <h2 id="mav_commands">MAVLink Commands (<a href="#mav_commands">MAV_CMD</a>)</h2>
@@ -389,45 +629,6 @@
      <td>
      </td>
      <td>Autopilot-specific errors</td>
-    </tr>
-    <tr>
-     <td style="color:blue;">onboard_control_sensors_present_extended<a href="#mav2_extension_field" title="MAVLink2 extension field">
-       **
-      </a>
-     </td>
-     <td>uint32_t</td>
-     <td>
-     </td>
-     <td>
-      <a href="#MAV_SYS_STATUS_SENSOR_EXTENDED">MAV_SYS_STATUS_SENSOR_EXTENDED</a>
-     </td>
-     <td>Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.</td>
-    </tr>
-    <tr>
-     <td style="color:blue;">onboard_control_sensors_enabled_extended<a href="#mav2_extension_field" title="MAVLink2 extension field">
-       **
-      </a>
-     </td>
-     <td>uint32_t</td>
-     <td>
-     </td>
-     <td>
-      <a href="#MAV_SYS_STATUS_SENSOR_EXTENDED">MAV_SYS_STATUS_SENSOR_EXTENDED</a>
-     </td>
-     <td>Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</td>
-    </tr>
-    <tr>
-     <td style="color:blue;">onboard_control_sensors_health_extended<a href="#mav2_extension_field" title="MAVLink2 extension field">
-       **
-      </a>
-     </td>
-     <td>uint32_t</td>
-     <td>
-     </td>
-     <td>
-      <a href="#MAV_SYS_STATUS_SENSOR_EXTENDED">MAV_SYS_STATUS_SENSOR_EXTENDED</a>
-     </td>
-     <td>Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</td>
     </tr>
    </tbody>
   </table>
@@ -973,6 +1174,285 @@
      <td>total_points</td>
      <td>uint16_t</td>
      <td>Total trajectory points being followed.</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_LOAD_SD_CARD">TRAJ_LOAD_SD_CARD (<a href="#TRAJ_LOAD_SD_CARD">
+    #51809
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Load trajectory file from SD card.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>filename</td>
+     <td>char[63]</td>
+     <td>Name of file</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_INFO">TRAJ_INFO (<a href="#TRAJ_INFO">
+    #51810
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Start a trajectory upload.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint16_t</td>
+     <td>
+      # Gain matrices
+     </td>
+    </tr>
+    <tr>
+     <td>n</td>
+     <td>uint32_t</td>
+     <td>
+      # Trajectory points
+     </td>
+    </tr>
+    <tr>
+     <td>k_dim1</td>
+     <td>uint16_t</td>
+     <td>Gain matrix dim1</td>
+    </tr>
+    <tr>
+     <td>k_dim2</td>
+     <td>uint16_t</td>
+     <td>Gain matrix dim2</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_REQ_K1">TRAJ_REQ_K1 (<a href="#TRAJ_REQ_K1">
+    #51811
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Request the first half of a gain matrix.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint16_t</td>
+     <td>Index of gain matrix</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_K1">TRAJ_K1 (<a href="#TRAJ_K1">
+    #51812
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Send first half of a gain matrix</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint16_t</td>
+     <td>Index of gain matrix</td>
+    </tr>
+    <tr>
+     <td>K1</td>
+     <td>float[60]</td>
+     <td>First half of gain matrix</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_REQ_K2">TRAJ_REQ_K2 (<a href="#TRAJ_REQ_K2">
+    #51813
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Request the second half of a gain matrix.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint16_t</td>
+     <td>Index of gain matrix</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_K2">TRAJ_K2 (<a href="#TRAJ_K2">
+    #51814
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Send second half of a gain matrix</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint16_t</td>
+     <td>Index of gain matrix</td>
+    </tr>
+    <tr>
+     <td>K2</td>
+     <td>float[60]</td>
+     <td>Second half of gain matrix</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_REQ_PT">TRAJ_REQ_PT (<a href="#TRAJ_REQ_PT">
+    #51815
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Request a trajectory point.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint32_t</td>
+     <td>Index of trajectory point</td>
+    </tr>
+    <tr>
+     <td>x</td>
+     <td>float[12]</td>
+     <td>State trajectory vector</td>
+    </tr>
+    <tr>
+     <td>uref</td>
+     <td>float[4]</td>
+     <td>Reference input vector</td>
+    </tr>
+    <tr>
+     <td>time</td>
+     <td>float</td>
+     <td>Time</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_ACK">TRAJ_ACK (<a href="#TRAJ_ACK">
+    #51820
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Send a response regarding whether the trajectory load was successful.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Values</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>points_loaded</td>
+     <td>uint32_t</td>
+     <td>
+     </td>
+     <td>Number of points successfully loaded (-1 if error).</td>
+    </tr>
+    <tr>
+     <td>result</td>
+     <td>uint8_t</td>
+     <td>
+      <a href="#MAV_RESULT">MAV_RESULT</a>
+     </td>
+     <td>Result of load.</td>
     </tr>
    </tbody>
   </table>
