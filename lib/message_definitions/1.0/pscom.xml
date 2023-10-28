@@ -103,6 +103,33 @@
         <description>0x80000000 Extended bit-field are used for further sensor status bits (needs to be set in onboard_control_sensors_present only)</description>
       </entry>
     </enum>
+    <enum name="MAV_SEVERITY">
+      <description>Indicates the severity level, generally used for status messages to indicate their relative urgency. Based on RFC-5424 using expanded definitions at: http://www.kiwisyslog.com/kb/info:-syslog-message-levels/.</description>
+      <entry value="0" name="MAV_SEVERITY_EMERGENCY">
+        <description>System is unusable. This is a "panic" condition.</description>
+      </entry>
+      <entry value="1" name="MAV_SEVERITY_ALERT">
+        <description>Action should be taken immediately. Indicates error in non-critical systems.</description>
+      </entry>
+      <entry value="2" name="MAV_SEVERITY_CRITICAL">
+        <description>Action must be taken immediately. Indicates failure in a primary system.</description>
+      </entry>
+      <entry value="3" name="MAV_SEVERITY_ERROR">
+        <description>Indicates an error in secondary/redundant systems.</description>
+      </entry>
+      <entry value="4" name="MAV_SEVERITY_WARNING">
+        <description>Indicates about a possible future error if this is not resolved within a given timeframe. Example would be a low battery warning.</description>
+      </entry>
+      <entry value="5" name="MAV_SEVERITY_NOTICE">
+        <description>An unusual event has occurred, though not an error condition. This should be investigated for the root cause.</description>
+      </entry>
+      <entry value="6" name="MAV_SEVERITY_INFO">
+        <description>Normal operational messages. Useful for logging. No action is required for these messages.</description>
+      </entry>
+      <entry value="7" name="MAV_SEVERITY_DEBUG">
+        <description>Useful non-operational messages that can assist in debugging. These should not occur during normal operation.</description>
+      </entry>
+    </enum>
 
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries. NOTE: not all common commands are supported, and sometimes only subsets of e.g. mission protocol are implemented. Not all messages behave the same as in common.</description>
@@ -252,6 +279,16 @@
       <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
     </message>
 
+    <!-- Used in conjunction with COMMAND_ACK and TRAJ_ACK to give more detailed errors -->
+    <message id="253" name="STATUSTEXT">
+      <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
+      <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
+      <field type="char[50]" name="text">Status text message, without null termination character</field>
+      <extensions/>
+      <field type="uint16_t" name="id">Unique (opaque) identifier for this statustext message.  May be used to reassemble a logical long-statustext message from a sequence of chunks.  A value of zero indicates this is the only chunk in the sequence and the message can be emitted immediately.</field>
+      <field type="uint8_t" name="chunk_seq">This chunk's sequence number; indexing is from zero.  Any null character in the text field is taken to mean this was the last chunk.</field>
+    </message>
+
     <!-- All non-standard messages prefixed with 518 to separate them from standard MAVLink messages -->
     <!-- Broadcast every time the controller switches points. -->
     <message id="51801" name="CONTROLLER_STATUS">
@@ -268,18 +305,18 @@
       <field type="char[63]" name="filename">Name of file</field>
     </message>
     <message id="51810" name="TRAJ_INFO">
-      <description>Start a trajectory upload.</description>
+      <description>Start a trajectory upload. NOTE: GAIN MATRIX K[0] SHOULD ALWAYS BE THE HOVER MATRIX.</description>
       <field type="uint16_t" name="k"># Gain matrices</field>
       <field type="uint32_t" name="n"># Trajectory points</field>
       <field type="uint16_t" name="k_dim1">Gain matrix dim1</field>
       <field type="uint16_t" name="k_dim2">Gain matrix dim2</field>
     </message>
     <message id="51811" name="TRAJ_REQ_K1">
-      <description>Request the first half of a gain matrix.</description>
+      <description>Request the first half of a gain matrix. K[0] is always the hover matrix.</description>
       <field type="uint16_t" name="k">Index of gain matrix</field>
     </message>
     <message id="51812" name="TRAJ_K1">
-      <description>Send first half of a gain matrix</description>
+      <description>Send first half of a gain matrix. K[0] is always the hover matrix.</description>
       <field type="uint16_t" name="k">Index of gain matrix</field>
       <field type="float[60]" name="K1">First half of gain matrix</field>
     </message>
