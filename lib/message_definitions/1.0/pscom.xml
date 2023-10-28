@@ -4,8 +4,262 @@
   <version>1</version>
   <dialect>69</dialect>
   <enums>
+    <enum name="MAV_SYS_STATUS_SENSOR" bitmask="true">
+      <description>These encode the sensors whose status is sent as part of the SYS_STATUS message.</description>
+      <entry value="1" name="MAV_SYS_STATUS_SENSOR_3D_GYRO">
+        <description>0x01 3D gyro</description>
+      </entry>
+      <entry value="2" name="MAV_SYS_STATUS_SENSOR_3D_ACCEL">
+        <description>0x02 3D accelerometer</description>
+      </entry>
+      <entry value="4" name="MAV_SYS_STATUS_SENSOR_3D_MAG">
+        <description>0x04 3D magnetometer</description>
+      </entry>
+      <entry value="8" name="MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE">
+        <description>0x08 absolute pressure</description>
+      </entry>
+      <entry value="16" name="MAV_SYS_STATUS_SENSOR_DIFFERENTIAL_PRESSURE">
+        <description>0x10 differential pressure</description>
+      </entry>
+      <entry value="32" name="MAV_SYS_STATUS_SENSOR_GPS">
+        <description>0x20 GPS</description>
+      </entry>
+      <entry value="64" name="MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW">
+        <description>0x40 optical flow</description>
+      </entry>
+      <entry value="128" name="MAV_SYS_STATUS_SENSOR_VISION_POSITION">
+        <description>0x80 computer vision position</description>
+      </entry>
+      <entry value="256" name="MAV_SYS_STATUS_SENSOR_LASER_POSITION">
+        <description>0x100 laser based position</description>
+      </entry>
+      <entry value="512" name="MAV_SYS_STATUS_SENSOR_EXTERNAL_GROUND_TRUTH">
+        <description>0x200 external ground truth (Vicon or Leica)</description>
+      </entry>
+      <entry value="1024" name="MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL">
+        <description>0x400 3D angular rate control</description>
+      </entry>
+      <entry value="2048" name="MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION">
+        <description>0x800 attitude stabilization</description>
+      </entry>
+      <entry value="4096" name="MAV_SYS_STATUS_SENSOR_YAW_POSITION">
+        <description>0x1000 yaw position</description>
+      </entry>
+      <entry value="8192" name="MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL">
+        <description>0x2000 z/altitude control</description>
+      </entry>
+      <entry value="16384" name="MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL">
+        <description>0x4000 x/y position control</description>
+      </entry>
+      <entry value="32768" name="MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS">
+        <description>0x8000 motor outputs / control</description>
+      </entry>
+      <entry value="65536" name="MAV_SYS_STATUS_SENSOR_RC_RECEIVER">
+        <description>0x10000 RC receiver</description>
+      </entry>
+      <entry value="131072" name="MAV_SYS_STATUS_SENSOR_3D_GYRO2">
+        <description>0x20000 2nd 3D gyro</description>
+      </entry>
+      <entry value="262144" name="MAV_SYS_STATUS_SENSOR_3D_ACCEL2">
+        <description>0x40000 2nd 3D accelerometer</description>
+      </entry>
+      <entry value="524288" name="MAV_SYS_STATUS_SENSOR_3D_MAG2">
+        <description>0x80000 2nd 3D magnetometer</description>
+      </entry>
+      <entry value="1048576" name="MAV_SYS_STATUS_GEOFENCE">
+        <description>0x100000 geofence</description>
+      </entry>
+      <entry value="2097152" name="MAV_SYS_STATUS_AHRS">
+        <description>0x200000 AHRS subsystem health</description>
+      </entry>
+      <entry value="4194304" name="MAV_SYS_STATUS_TERRAIN">
+        <description>0x400000 Terrain subsystem health</description>
+      </entry>
+      <entry value="8388608" name="MAV_SYS_STATUS_REVERSE_MOTOR">
+        <description>0x800000 Motors are reversed</description>
+      </entry>
+      <entry value="16777216" name="MAV_SYS_STATUS_LOGGING">
+        <description>0x1000000 Logging</description>
+      </entry>
+      <entry value="33554432" name="MAV_SYS_STATUS_SENSOR_BATTERY">
+        <description>0x2000000 Battery</description>
+      </entry>
+      <entry value="67108864" name="MAV_SYS_STATUS_SENSOR_PROXIMITY">
+        <description>0x4000000 Proximity</description>
+      </entry>
+      <entry value="134217728" name="MAV_SYS_STATUS_SENSOR_SATCOM">
+        <description>0x8000000 Satellite Communication </description>
+      </entry>
+      <entry value="268435456" name="MAV_SYS_STATUS_PREARM_CHECK">
+        <description>0x10000000 pre-arm check status. Always healthy when armed</description>
+      </entry>
+      <entry value="536870912" name="MAV_SYS_STATUS_OBSTACLE_AVOIDANCE">
+        <description>0x20000000 Avoidance/collision prevention</description>
+      </entry>
+      <entry value="1073741824" name="MAV_SYS_STATUS_SENSOR_PROPULSION">
+        <description>0x40000000 propulsion (actuator, esc, motor or propellor)</description>
+      </entry>
+      <entry value="2147483648" name="MAV_SYS_STATUS_EXTENSION_USED">
+        <description>0x80000000 Extended bit-field are used for further sensor status bits (needs to be set in onboard_control_sensors_present only)</description>
+      </entry>
+    </enum>
+
+    <enum name="MAV_CMD">
+      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries. NOTE: not all common commands are supported, and sometimes only subsets of e.g. mission protocol are implemented. Not all messages behave the same as in common.</description>
+      <!-- Standard commands are compatible with the common.xml MAVLink definition -->
+
+      <!-- Mission protocol. Note that this differs from the standard mission protocol in that we have implemented our own trajectory upload method -->
+      <entry value="224" name="MAV_CMD_DO_SET_MISSION_CURRENT" hasLocation="false" isDestination="false">
+        <description>
+          Start the trajectory segment specified by Number. Note that this should also be used for RTL, since ASTRA does not support RTL.
+        </description>
+        <param index="1" label="Number" minValue="-1" increment="1">Mission sequence value to set. -1 for the current mission item (use to reset mission without changing current mission item).</param>
+        <param index="2" label="Reset Mission" minValue="0" maxValue="1" increment="1">(CURRENTLY IGNORED) Resets mission. 1: true, 0: false. Resets jump counters to initial values and changes mission state "completed" to be "active" or "paused".</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+
+      <entry value="193" name="MAV_CMD_DO_PAUSE_CONTINUE" hasLocation="false" isDestination="false">
+        <description>Hold the current position or continue.</description>
+        <param index="1" label="Continue" minValue="0" maxValue="1" increment="1">0: Pause current mission or reposition command, hold current position. 1: Continue mission. On pause, enter hover mode.</param>
+        <param index="2">Reserved</param>
+        <param index="3">Reserved</param>
+        <param index="4">Reserved</param>
+        <param index="5">Reserved</param>
+        <param index="6">Reserved</param>
+        <param index="7">Reserved</param>
+      </entry>
+
+      <entry value="21" name="MAV_CMD_NAV_LAND" hasLocation="true" isDestination="true">
+        <description>Land at current location.</description>
+        <param index="1" label="Abort Alt" units="m">Minimum target altitude if landing is aborted (0 = undefined/use system default).</param>
+        <param index="2" label="Land Mode" enum="PRECISION_LAND_MODE">(IGNORED) Precision land mode.</param>
+        <param index="3">Empty.</param>
+        <param index="4" label="Yaw Angle" units="deg">Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</param>
+        <param index="5" label="Latitude">(IGNORED) Latitude.</param>
+        <param index="6" label="Longitude">(IGNORED) Longitude.</param>
+        <param index="7" label="Altitude" units="m">Landing altitude (ground level in current frame).</param>
+      </entry>
+
+      <entry value="300" name="MAV_CMD_MISSION_START" hasLocation="false" isDestination="false">
+        <description>start running a mission</description>
+        <param index="1" label="First Item" minValue="0" increment="1">first_item: the first mission item to run</param>
+        <param index="2" label="Last Item" minValue="0" increment="1">last_item:  the last mission item to run (after this item is run, the vehicle lands in place)</param>
+      </entry>
+
+
+      <!-- Non-standard commands are prefixed with 518 to indicate custom definitions -->
+    </enum>
   </enums>
   <messages>
-    <!-- -->
+    <!-- Some standard messages pasted in from common.xml -->
+    <message id="1" name="SYS_STATUS">
+      <description>General system state. Non-standard message.</description>
+      <field type="uint32_t" name="onboard_control_sensors_present" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.</field>
+      <field type="uint32_t" name="onboard_control_sensors_enabled" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</field>
+      <field type="uint32_t" name="onboard_control_sensors_health" enum="MAV_SYS_STATUS_SENSOR" display="bitmask" print_format="0x%04x">Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</field>
+      <field type="uint16_t" name="load" units="d%">Maximum usage in percent of the mainloop time. Values: [0-1000] - should always be below 1000</field>
+      <field type="uint16_t" name="voltage_battery" units="mV" invalid="UINT16_MAX">Battery voltage, UINT16_MAX: Voltage not sent by autopilot</field>
+      <field type="int16_t" name="current_battery" units="cA" invalid="-1">Battery current, -1: Current not sent by autopilot</field>
+      <field type="int8_t" name="battery_remaining" units="%" invalid="-1">Battery energy remaining, -1: Battery remaining energy not sent by autopilot</field>
+      <field type="uint16_t" name="drop_rate_comm" units="c%">Communication drop rate, (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)</field>
+      <field type="uint16_t" name="errors_comm">Communication errors (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)</field>
+      <field type="uint16_t" name="errors_count1">Autopilot-specific errors</field>
+      <field type="uint16_t" name="errors_count2">Autopilot-specific errors</field>
+      <field type="uint16_t" name="errors_count3">Autopilot-specific errors</field>
+      <field type="uint16_t" name="errors_count4">Autopilot-specific errors</field>
+    </message>
+
+    <message id="146" name="CONTROL_SYSTEM_STATE">
+      <description>The smoothed, monotonic system state used to feed the control loops of the system.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</field>
+      <field type="float" name="x_acc" units="m/s/s">X acceleration in body frame</field>
+      <field type="float" name="y_acc" units="m/s/s">Y acceleration in body frame</field>
+      <field type="float" name="z_acc" units="m/s/s">Z acceleration in body frame</field>
+      <field type="float" name="x_vel" units="m/s">X velocity in body frame</field>
+      <field type="float" name="y_vel" units="m/s">Y velocity in body frame</field>
+      <field type="float" name="z_vel" units="m/s">Z velocity in body frame</field>
+      <field type="float" name="x_pos" units="m">X position in local frame</field>
+      <field type="float" name="y_pos" units="m">Y position in local frame</field>
+      <field type="float" name="z_pos" units="m">Z position in local frame</field>
+      <field type="float" name="airspeed" units="m/s" invalid="-1">Airspeed, set to -1 if unknown</field>
+      <field type="float[3]" name="vel_variance">Variance of body velocity estimate</field>
+      <field type="float[3]" name="pos_variance">Variance in local position</field>
+      <field type="float[4]" name="q">The attitude, represented as Quaternion</field>
+      <field type="float" name="roll_rate" units="rad/s">Angular rate in roll axis</field>
+      <field type="float" name="pitch_rate" units="rad/s">Angular rate in pitch axis</field>
+      <field type="float" name="yaw_rate" units="rad/s">Angular rate in yaw axis</field>
+    </message>
+
+    <!-- Command Protocol -->
+    <message id="76" name="COMMAND_LONG">
+      <description>Send a command with up to seven parameters to the MAV. COMMAND_INT is generally preferred when sending MAV_CMD commands that include positional information; it offers higher precision and allows the MAV_FRAME to be specified (which may otherwise be ambiguous, particularly for altitude). The command microservice is documented at https://mavlink.io/en/services/command.html</description>
+      <field type="uint8_t" name="target_system">System which should execute the command</field>
+      <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">Command ID (of command to send).</field>
+      <field type="uint8_t" name="confirmation">0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)</field>
+      <field type="float" name="param1" invalid="NaN">Parameter 1 (for the specific command).</field>
+      <field type="float" name="param2" invalid="NaN">Parameter 2 (for the specific command).</field>
+      <field type="float" name="param3" invalid="NaN">Parameter 3 (for the specific command).</field>
+      <field type="float" name="param4" invalid="NaN">Parameter 4 (for the specific command).</field>
+      <field type="float" name="param5" invalid="NaN">Parameter 5 (for the specific command).</field>
+      <field type="float" name="param6" invalid="NaN">Parameter 6 (for the specific command).</field>
+      <field type="float" name="param7" invalid="NaN">Parameter 7 (for the specific command).</field>
+    </message>
+    <message id="77" name="COMMAND_ACK">
+      <description>Report status of a command. Includes feedback whether the command was executed. The command microservice is documented at https://mavlink.io/en/services/command.html</description>
+      <field type="uint16_t" name="command" enum="MAV_CMD">Command ID (of acknowledged command).</field>
+      <field type="uint8_t" name="result" enum="MAV_RESULT">Result of command.</field>
+      <extensions/>
+      <field type="uint8_t" name="progress" invalid="UINT8_MAX" units="%">The progress percentage when result is MAV_RESULT_IN_PROGRESS. Values: [0-100], or UINT8_MAX if the progress is unknown.</field>
+      <field type="int32_t" name="result_param2">Additional result information. Can be set with a command-specific enum containing command-specific error reasons for why the command might be denied. If used, the associated enum must be documented in the corresponding MAV_CMD (this enum should have a 0 value to indicate "unused" or "unknown").</field>
+      <field type="uint8_t" name="target_system">System ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
+      <field type="uint8_t" name="target_component">Component ID of the target recipient. This is the ID of the system that sent the command for which this COMMAND_ACK is an acknowledgement.</field>
+    </message>
+
+    <!-- Param Protocol -->
+    <message id="20" name="PARAM_REQUEST_READ">
+      <description>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -&gt; value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also https://mavlink.io/en/services/parameter.html for a full documentation of QGroundControl and IMU code.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="int16_t" name="param_index" invalid="-1">Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</field>
+    </message>
+    <message id="21" name="PARAM_REQUEST_LIST">
+      <description>Request all parameters of this component. After this request, all parameters are emitted. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+    </message>
+    <message id="22" name="PARAM_VALUE">
+      <description>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</description>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Onboard parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+      <field type="uint16_t" name="param_count">Total number of onboard parameters</field>
+      <field type="uint16_t" name="param_index">Index of this onboard parameter</field>
+    </message>
+    <message id="23" name="PARAM_SET">
+      <description>Set a parameter value (write new value to permanent storage).
+      The receiving component should acknowledge the new parameter value by broadcasting a PARAM_VALUE message (broadcasting ensures that multiple GCS all have an up-to-date list of all parameters). If the sending GCS did not receive a PARAM_VALUE within its timeout time, it should re-send the PARAM_SET message. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.
+        PARAM_SET may also be called within the context of a transaction (started with MAV_CMD_PARAM_TRANSACTION). Within a transaction the receiving component should respond with PARAM_ACK_TRANSACTION to the setter component (instead of broadcasting PARAM_VALUE), and PARAM_SET should be re-sent if this is ACK not received.</description>
+      <field type="uint8_t" name="target_system">System ID</field>
+      <field type="uint8_t" name="target_component">Component ID</field>
+      <field type="char[16]" name="param_id">Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</field>
+      <field type="float" name="param_value">Onboard parameter value</field>
+      <field type="uint8_t" name="param_type" enum="MAV_PARAM_TYPE">Onboard parameter type.</field>
+    </message>
+
+    <!-- All non-standard messages prefixed with 518 to separate them from standard MAVLink messages -->
+    <!-- Broadcast every time the controller switches points. -->
+    <message id="51801" name="CONTROLLER_STATUS">
+      <description>Controller system state.</description>
+      <field type="uint16_t" name="current_segment">Current trajectory segment being followed.</field>
+      <field type="uint16_t" name="current_point">Current point of trajectory segment being followed.</field>
+      <field type="uint16_t" name="total_segments">Total segments stored.</field>
+      <field type="uint16_t" name="total_points">Total trajectory points being followed.</field>
+    </message>
   </messages>
 </mavlink>
