@@ -1,21 +1,23 @@
-#include <Arduino.h>
-#include "../lib/estimator/Estimator.h"
-#include "../lib/controller/Controller.h"
+//#include <Arduino.h>
+//#include "../lib/estimator/Estimator.h"
+//#include "../lib/controller/Controller.h"
+#include "C:\Users\BizzM\OneDrive\Documents\GitHub\ASTRAFlightSoftware\lib\Buffer_development\buffer.cpp"
+#include <iostream>
 
-
+using namespace std;
 // put function declarations here:
 int myFunction(int, int);
 
 void setup() {
-  controllerSetup();
-  estimatorSetup();
+  //controllerSetup();
+  //estimatorSetup();
   // put your setup code here, to run once:
   int result = myFunction(2, 3);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  Serial.print("ITS WORKING!!!");
+  cout << ("ITS WORKING!!!");
 }
 
 // put function definitions here:
