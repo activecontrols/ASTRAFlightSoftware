@@ -9,10 +9,7 @@ Last updated: 10/24/2023
 #include "Integrator.h"
 #include "../error/Error.h"
 
-Eigen::VectorXd integratedData(0);
-
-
-int integratorSetup(Eigen::VectorXd* pointerToData)
+int Integrator::integratorSetup(Eigen::VectorXd* pointerToData)
 {
 
     dataToIntegrate = pointerToData;
@@ -40,7 +37,7 @@ int integratorSetup(Eigen::VectorXd* pointerToData)
     return NO_ERROR_CODE;
 }
 
-int integratorUpdate()
+int Integrator::integratorUpdate()
 {
     double changeInTime = timeBetweenIntegration;
 
