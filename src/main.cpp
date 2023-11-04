@@ -7,6 +7,13 @@
 #include <Servo.h>
 //#include <ArduinoEigenDense.h>
 
+/*
+main.cpp 
+Description: Currently used to run tests for the entire flight software
+Author: Vincent Palmerio
+Last updated: 11/4/2023
+*/
+
 Eigen::MatrixXd m(24, 24);
 Eigen::VectorXd v(24);
 
@@ -163,6 +170,8 @@ void loop() {
   sensors_event_t temp;
   sox.getEvent(&accel, &gyro, &temp);
 
+
+  Serial.print("Raw Data: ");
   Serial.print(millis(),7);
   Serial.print(",");
 
