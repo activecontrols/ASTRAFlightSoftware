@@ -12,7 +12,7 @@ Last updated: 10/24/2023
 
 Eigen::VectorXd derivative(0);
 
-int derivativeSetup(Eigen::VectorXd* pointerToData, Eigen::VectorXd startingData)
+int Derivative::derivativeSetup(Eigen::VectorXd* pointerToData, Eigen::VectorXd startingData)
 {
     newestData = pointerToData;
 
@@ -44,7 +44,7 @@ int derivativeSetup(Eigen::VectorXd* pointerToData, Eigen::VectorXd startingData
     return NO_ERROR_CODE;
 }
 
-int derivativeUpdate()
+int Derivative::derivativeUpdate()
 {
     Serial.println("Time Step Derivative (microseconds)");
     Serial.println(timeStepDerivative);
