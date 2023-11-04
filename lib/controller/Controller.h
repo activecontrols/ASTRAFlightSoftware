@@ -23,7 +23,7 @@ extern float *k;
 
 //malloc's global variables in this header file, 
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
-extern int controllerSetup();
+extern int initializeController();
 
 //control law function that:
     //takes in estimatedStateX (from Estimator.h)
@@ -31,13 +31,13 @@ extern int controllerSetup();
     //takes in mode
     //modifies controllerInputU
     //returns error code
-int controlLawU();
+int updateController();
 
 //calculates mode
     //takes in estimatedStateX
     //modifies mode
     //returns error code
-int controlMode();
+int getControlMode();
 
 #endif
 

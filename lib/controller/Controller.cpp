@@ -12,7 +12,7 @@ float* k = (float *)malloc(K_ARRAY_LENGTH * sizeof(float));
 
 
 
-int controllerSetup() {
+int initializeController() {
     
     //Check if memory allocation was successful
     if (mode == NULL || k == NULL) {
