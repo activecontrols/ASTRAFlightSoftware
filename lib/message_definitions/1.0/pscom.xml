@@ -332,6 +332,10 @@
     <message id="51815" name="TRAJ_REQ_PT">
       <description>Request a trajectory point.</description>
       <field type="uint32_t" name="k">Index of trajectory point</field>
+    </message>
+    <message id="51816" name="TRAJ_PT">
+      <description>Send a trajectory point.</description>
+      <field type="uint32_t" name="k">Index of trajectory point</field>
       <field type="float[12]" name="x">State trajectory vector</field>
       <field type="float[4]" name="uref">Reference input vector</field>
       <field type="float" name="time">Time</field>

@@ -90,6 +90,22 @@ typedef enum MAV_SYS_STATUS_SENSOR {
 #endif
 
 
+#ifndef FASTMAVLINK_HAS_ENUM_MAV_SEVERITY
+#define FASTMAVLINK_HAS_ENUM_MAV_SEVERITY
+typedef enum MAV_SEVERITY {
+    MAV_SEVERITY_EMERGENCY = 0,  // System is unusable. This is a "panic" condition. 
+    MAV_SEVERITY_ALERT = 1,  // Action should be taken immediately. Indicates error in non-critical systems. 
+    MAV_SEVERITY_CRITICAL = 2,  // Action must be taken immediately. Indicates failure in a primary system. 
+    MAV_SEVERITY_ERROR = 3,  // Indicates an error in secondary/redundant systems. 
+    MAV_SEVERITY_WARNING = 4,  // Indicates about a possible future error if this is not resolved within a given timeframe. Example would be a low battery warning. 
+    MAV_SEVERITY_NOTICE = 5,  // An unusual event has occurred, though not an error condition. This should be investigated for the root cause. 
+    MAV_SEVERITY_INFO = 6,  // Normal operational messages. Useful for logging. No action is required for these messages. 
+    MAV_SEVERITY_DEBUG = 7,  // Useful non-operational messages that can assist in debugging. These should not occur during normal operation. 
+    MAV_SEVERITY_ENUM_END = 8,  // end marker
+} MAV_SEVERITY;
+#endif
+
+
 #ifndef FASTMAVLINK_HAS_ENUM_MAV_CMD
 #define FASTMAVLINK_HAS_ENUM_MAV_CMD
 typedef enum MAV_CMD {
@@ -123,7 +139,17 @@ typedef enum MAV_CMD {
 #include "./mavlink_msg_param_request_list.h"
 #include "./mavlink_msg_param_value.h"
 #include "./mavlink_msg_param_set.h"
+#include "./mavlink_msg_statustext.h"
 #include "./mavlink_msg_controller_status.h"
+#include "./mavlink_msg_traj_load_sd_card.h"
+#include "./mavlink_msg_traj_info.h"
+#include "./mavlink_msg_traj_req_k1.h"
+#include "./mavlink_msg_traj_k1.h"
+#include "./mavlink_msg_traj_req_k2.h"
+#include "./mavlink_msg_traj_k2.h"
+#include "./mavlink_msg_traj_req_pt.h"
+#include "./mavlink_msg_traj_pt.h"
+#include "./mavlink_msg_traj_ack.h"
 
 #ifdef FASTMAVLINK_IGNORE_WADDRESSOFPACKEDMEMBER
   #if defined __GNUC__ && __GNUC__ >= 9

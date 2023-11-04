@@ -8,7 +8,6 @@ Created: 2023-10-27
 #ifndef COMMS_H 
 #define COMMS_H 
 
-#include "../libmavskipper/include/mavskipper/process_mavlink.h"
 #include "../message_lib/pscom/pscom.h"
 #include <ArduinoEigenDense.h>
 
@@ -27,13 +26,18 @@ public:
     void updateTelem(fmav_control_system_state_t data); // Send telemetry info e.g. position, rotation, thrust
     void updateTrajectoryProgress(fmav_controller_status_t fata); // Send telemetry info e.g. position, rotation, thrust
     void updateHealth(fmav_sys_status_t data); // Send telemetry health info e.g. battery
+    void sendStatusText(const char *text); // Send status text. ONLY USE SPARINGLY (high bandwidth usage).
 
     // Register callbacks for mission control events
     void registerMissionStartAction(void (*callback) (void));
     void registerMissionNextSegmentAction(void (*callback) (float* K, float* trajStart, uint16_t trajLen));
     void registerLandAction(void (*callback) (void));
 
-    // Manage
+    // Register callbacks for trajectory manager
+    void registerTrajSDLoadAction(void (*callback) (const char* filename));
+    void registerTrajK(void (*callback) (int k, int dim1, int dim2, float *K));
+    void registerTrajPt(void (*callback) (int k, fmav_traj_pt_t pt));
+    void sendTrajAck(fmav_traj_ack_t ack);
 private:
     // Highest-level: handle all incoming messages/commands
     void processMessage(fmav_message_t *msg);
@@ -42,18 +46,20 @@ private:
 
     // Mission Protocol
     void handleStartMission();
-    void handleStartMission();
-    void handleStartMission();
+    void handlePauseMission();
+    void handleLandMission();
 
     // Low-level individual message abstractions
     void sendHeartbeat();              // Send heartbeat message so we know the system is alive
     void sendTrajK1Req(int k);       // Send request for part 1 of a gain matrix K
     void sendTrajK2Req(int k);       // Send request for part 2 of a gain matrix K
-    void sendTrajPtReq(int k, int n);       // Send request for trajectory point
+    void sendTrajPtReq(int n);       // Send request for trajectory point
     void sendTrajAck();               // Send final message indicating end of mission upload
 
     // Data
     Stream *serial;
+
+    // Trajectory 
 };
 
 #endif
