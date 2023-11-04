@@ -248,6 +248,78 @@
     </tr>
    </tbody>
   </table>
+  <h3 id="MAV_SEVERITY">MAV_SEVERITY</h3>
+  <p>
+   <a href="#enums">
+    [Enum]
+   </a>Indicates the severity level, generally used for status messages to indicate their relative urgency. Based on RFC-5424 using expanded definitions at: http://www.kiwisyslog.com/kb/info:-syslog-message-levels/.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Value</th>
+     <th>Field Name</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr id="MAV_SEVERITY_EMERGENCY">
+     <td>0</td>
+     <td>
+      <a href="#MAV_SEVERITY_EMERGENCY">MAV_SEVERITY_EMERGENCY</a>
+     </td>
+     <td>System is unusable. This is a "panic" condition.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_ALERT">
+     <td>1</td>
+     <td>
+      <a href="#MAV_SEVERITY_ALERT">MAV_SEVERITY_ALERT</a>
+     </td>
+     <td>Action should be taken immediately. Indicates error in non-critical systems.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_CRITICAL">
+     <td>2</td>
+     <td>
+      <a href="#MAV_SEVERITY_CRITICAL">MAV_SEVERITY_CRITICAL</a>
+     </td>
+     <td>Action must be taken immediately. Indicates failure in a primary system.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_ERROR">
+     <td>3</td>
+     <td>
+      <a href="#MAV_SEVERITY_ERROR">MAV_SEVERITY_ERROR</a>
+     </td>
+     <td>Indicates an error in secondary/redundant systems.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_WARNING">
+     <td>4</td>
+     <td>
+      <a href="#MAV_SEVERITY_WARNING">MAV_SEVERITY_WARNING</a>
+     </td>
+     <td>Indicates about a possible future error if this is not resolved within a given timeframe. Example would be a low battery warning.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_NOTICE">
+     <td>5</td>
+     <td>
+      <a href="#MAV_SEVERITY_NOTICE">MAV_SEVERITY_NOTICE</a>
+     </td>
+     <td>An unusual event has occurred, though not an error condition. This should be investigated for the root cause.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_INFO">
+     <td>6</td>
+     <td>
+      <a href="#MAV_SEVERITY_INFO">MAV_SEVERITY_INFO</a>
+     </td>
+     <td>Normal operational messages. Useful for logging. No action is required for these messages.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_DEBUG">
+     <td>7</td>
+     <td>
+      <a href="#MAV_SEVERITY_DEBUG">MAV_SEVERITY_DEBUG</a>
+     </td>
+     <td>Useful non-operational messages that can assist in debugging. These should not occur during normal operation.</td>
+    </tr>
+   </tbody>
+  </table>
   <a id="MAV_CMD">
   </a>
   <h2 id="mav_commands">MAVLink Commands (<a href="#mav_commands">MAV_CMD</a>)</h2>
@@ -489,6 +561,30 @@
      <td>last_item:  the last mission item to run (after this item is run, the vehicle lands in place)</td>
      <td>
       <em>min:</em>0 <em>increment:</em>1</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="MAV_CMD_MISSION_LOAD_SD">MAV_CMD_MISSION_LOAD_SD (<a href="#MAV_CMD_MISSION_LOAD_SD">51801</a>
+   )
+  </h3>
+  <p>
+   <a href="#mav_commands">
+    [Command]
+   </a>Load a trajectory mission from the SD card (/missions/mission{number}.atf) into PSRAM.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Param (:Label)</th>
+     <th>Description</th>
+     <th>Values</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>1: Mission number</td>
+     <td>the mission number to load</td>
+     <td>
+      <em>min:</em>0 </td>
     </tr>
    </tbody>
   </table>
@@ -1134,6 +1230,62 @@
     </tr>
    </tbody>
   </table>
+  <h3 id="STATUSTEXT">STATUSTEXT (<a href="#STATUSTEXT">
+    #253
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Values</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>severity</td>
+     <td>uint8_t</td>
+     <td>
+      <a href="#MAV_SEVERITY">MAV_SEVERITY</a>
+     </td>
+     <td>Severity of status. Relies on the definitions within RFC-5424.</td>
+    </tr>
+    <tr>
+     <td>text</td>
+     <td>char[50]</td>
+     <td>
+     </td>
+     <td>Status text message, without null termination character</td>
+    </tr>
+    <tr>
+     <td style="color:blue;">id<a href="#mav2_extension_field" title="MAVLink2 extension field">
+       **
+      </a>
+     </td>
+     <td>uint16_t</td>
+     <td>
+     </td>
+     <td>Unique (opaque) identifier for this statustext message.  May be used to reassemble a logical long-statustext message from a sequence of chunks.  A value of zero indicates this is the only chunk in the sequence and the message can be emitted immediately.</td>
+    </tr>
+    <tr>
+     <td style="color:blue;">chunk_seq<a href="#mav2_extension_field" title="MAVLink2 extension field">
+       **
+      </a>
+     </td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>This chunk's sequence number; indexing is from zero.  Any null character in the text field is taken to mean this was the last chunk.</td>
+    </tr>
+   </tbody>
+  </table>
   <h3 id="CONTROLLER_STATUS">CONTROLLER_STATUS (<a href="#CONTROLLER_STATUS">
     #51801
    </a>
@@ -1216,7 +1368,7 @@
    </a>
    <strong>
     (MAVLink 2)
-   </strong>Start a trajectory upload.</p>
+   </strong>Start a trajectory upload. NOTE: GAIN MATRIX K[0] SHOULD ALWAYS BE THE HOVER MATRIX.</p>
   <table class="sortable">
    <thead>
     <tr>
@@ -1263,7 +1415,7 @@
    </a>
    <strong>
     (MAVLink 2)
-   </strong>Request the first half of a gain matrix.</p>
+   </strong>Request the first half of a gain matrix. K[0] is always the hover matrix.</p>
   <table class="sortable">
    <thead>
     <tr>
@@ -1291,7 +1443,7 @@
    </a>
    <strong>
     (MAVLink 2)
-   </strong>Send first half of a gain matrix</p>
+   </strong>Send first half of a gain matrix. K[0] is always the hover matrix.</p>
   <table class="sortable">
    <thead>
     <tr>
@@ -1386,6 +1538,34 @@
    <strong>
     (MAVLink 2)
    </strong>Request a trajectory point.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint32_t</td>
+     <td>Index of trajectory point</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_PT">TRAJ_PT (<a href="#TRAJ_PT">
+    #51816
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Send a trajectory point.</p>
   <table class="sortable">
    <thead>
     <tr>

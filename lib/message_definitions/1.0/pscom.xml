@@ -177,6 +177,10 @@
         <param index="2" label="Last Item" minValue="0" increment="1">last_item:  the last mission item to run (after this item is run, the vehicle lands in place)</param>
       </entry>
 
+      <entry value="51801" name="MAV_CMD_MISSION_LOAD_SD" hasLocation="false" isDestination="false">
+        <description>Load a trajectory mission from the SD card (/missions/mission{number}.atf) into PSRAM.</description>
+        <param index="1" label="Mission number" minValue="0">the mission number to load</param>
+      </entry>
 
       <!-- Non-standard commands are prefixed with 518 to indicate custom definitions -->
     </enum>

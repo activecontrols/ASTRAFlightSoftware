@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 #ifndef FASTMAVLINK_BUILD_DATE
-#define FASTMAVLINK_BUILD_DATE  "Sat Oct 28 2023"
+#define FASTMAVLINK_BUILD_DATE  "Sat Nov 04 2023"
 #endif
 
 #ifndef FASTMAVLINK_DIALECT_VERSION
@@ -113,7 +113,8 @@ typedef enum MAV_CMD {
     MAV_CMD_DO_PAUSE_CONTINUE = 193,  // Hold the current position or continue. | 0: Pause current mission or reposition command, hold current position. 1: Continue mission. On pause, enter hover mode. | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved
     MAV_CMD_DO_SET_MISSION_CURRENT = 224,  //           Start the trajectory segment specified by Number. Note that this should also be used for RTL, since ASTRA does not support RTL.         | Mission sequence value to set. -1 for the current mission item (use to reset mission without changing current mission item). | (CURRENTLY IGNORED) Resets mission. 1: true, 0: false. Resets jump counters to initial values and changes mission state "completed" to be "active" or "paused". | Empty | Empty | Empty | Empty | Empty
     MAV_CMD_MISSION_START = 300,  // start running a mission | first_item: the first mission item to run | last_item:  the last mission item to run (after this item is run, the vehicle lands in place) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0)
-    MAV_CMD_ENUM_END = 301,  // end marker
+    MAV_CMD_MISSION_LOAD_SD = 51801,  // Load a trajectory mission from the SD card (/missions/mission{number}.atf) into PSRAM. | the mission number to load | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0)
+    MAV_CMD_ENUM_END = 51802,  // end marker
 } MAV_CMD;
 #endif
 
