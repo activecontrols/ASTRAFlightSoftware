@@ -4,6 +4,7 @@
 #include "../lib/controller/Controller.h"
 #include "../lib/math/Integrator.h"
 #include "../lib/math/Derivative.h"
+#include "../lib/drivers/ASTRA/IMU/src/IMU.h"
 #include <Servo.h>
 //#include <ArduinoEigenDense.h>
 
@@ -58,6 +59,8 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   //sets LED to on indefinitely so we know teensy is on if setup() fails
   digitalWrite(LED_BUILTIN, HIGH); 
+
+  setupIMU();
 
   beta.attach(2);
   alpha.attach(3);
@@ -165,6 +168,8 @@ void led() {
 
 void loop() {
   
+  updateIMU();
+
   sensors_event_t accel;
   sensors_event_t gyro;
   sensors_event_t temp;
@@ -191,6 +196,14 @@ void loop() {
   Serial.print(",");
   Serial.print(gyro.gyro.z,7);
   Serial.println();
+
+  Serial.println("Sensor Fusion");
+  Serial.print("Roll: ");
+  Serial.print(roll);
+  Serial.print("Pitch: ");
+  Serial.print(pitch);
+  Serial.print(", Heading: ");
+  Serial.print(heading);
 
   float gx = gyro.gyro.x * SENSORS_RADS_TO_DPS;
   float gy = gyro.gyro.y * SENSORS_RADS_TO_DPS;
