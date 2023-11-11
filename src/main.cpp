@@ -41,17 +41,6 @@ Servo beta;
 
 Servo alpha;
 
-#define SENSORS_RADS_TO_DPS                                                    \
-  (57.29577793F)
-
-//TASKS:
-//ADD and setup Debug.h
-//fix IMU driver
-//DO tasks ANI gave
-//ADD Debug variables to everything
-//ADD test.h and test variables
-//IF error on setup, go into while loop printing errors
-  //in future, add logic to reset
 
 void setup() {
 
@@ -60,7 +49,7 @@ void setup() {
   //sets LED to on indefinitely so we know teensy is on if setup() fails
   digitalWrite(LED_BUILTIN, HIGH); 
 
-  setupIMU();
+  initalizeIMU();
 
   beta.attach(2);
   alpha.attach(3);
@@ -170,44 +159,44 @@ void loop() {
   
   updateIMU();
 
-  sensors_event_t accel;
-  sensors_event_t gyro;
-  sensors_event_t temp;
-  sox.getEvent(&accel, &gyro, &temp);
+  // sensors_event_t accel;
+  // sensors_event_t gyro;
+  // sensors_event_t temp;
+  // sox.getEvent(&accel, &gyro, &temp);
 
 
-  Serial.print("Raw Data: ");
-  Serial.print(millis(),7);
-  Serial.print(",");
+  // Serial.print("Raw Data: ");
+  // Serial.print(millis(),7);
+  // Serial.print(",");
 
-  Serial.print(temp.temperature,7);
-  Serial.print(",");
-    /* Display the results (acceleration is measured in m/s^2) */
-  Serial.print(accel.acceleration.x,7);
-  Serial.print(",");
-  Serial.print(accel.acceleration.y,7);
-  Serial.print(",");
-  Serial.print(accel.acceleration.z,7);
-  Serial.print(",");
-  /* Display the results (rotation is measured in rad/s) */
-  Serial.print(gyro.gyro.x,7);
-  Serial.print(",");
-  Serial.print(gyro.gyro.y,7);
-  Serial.print(",");
-  Serial.print(gyro.gyro.z,7);
-  Serial.println();
+  // Serial.print(temp.temperature,7);
+  // Serial.print(",");
+  //   /* Display the results (acceleration is measured in m/s^2) */
+  // Serial.print(accel.acceleration.x,7);
+  // Serial.print(",");
+  // Serial.print(accel.acceleration.y,7);
+  // Serial.print(",");
+  // Serial.print(accel.acceleration.z,7);
+  // Serial.print(",");
+  // /* Display the results (rotation is measured in rad/s) */
+  // Serial.print(gyro.gyro.x,7);
+  // Serial.print(",");
+  // Serial.print(gyro.gyro.y,7);
+  // Serial.print(",");
+  // Serial.print(gyro.gyro.z,7);
+  // Serial.println();
 
-  Serial.println("Sensor Fusion");
-  Serial.print("Roll: ");
-  Serial.print(roll);
-  Serial.print("Pitch: ");
-  Serial.print(pitch);
-  Serial.print(", Heading: ");
-  Serial.print(heading);
+  // Serial.println("Sensor Fusion");
+  // Serial.print("Roll: ");
+  // Serial.print(roll);
+  // Serial.print("Pitch: ");
+  // Serial.print(pitch);
+  // Serial.print(", Heading: ");
+  // Serial.print(heading);
 
-  float gx = gyro.gyro.x * SENSORS_RADS_TO_DPS;
-  float gy = gyro.gyro.y * SENSORS_RADS_TO_DPS;
-  float gz = gyro.gyro.z * SENSORS_RADS_TO_DPS;
+  // float gx = gyro.gyro.x * SENSORS_RADS_TO_DPS;
+  // float gy = gyro.gyro.y * SENSORS_RADS_TO_DPS;
+  // float gz = gyro.gyro.z * SENSORS_RADS_TO_DPS;
 
 
   gyroVector << gx, gy, gz;
