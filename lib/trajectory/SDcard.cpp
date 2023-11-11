@@ -29,12 +29,21 @@ int read (char *inFile) {
   int m = 0;
   int n = 0;
   int N = 0;
-  // update format string depending on imput format, may or may not change
-  int next = fscanf(filePointer,"%d,%d,%d,%d,%d,%d\n", &k, &p, &m, &n, &N);
+  // update format strings depending on imput format, may or may not change
+  int next = fscanf(filePointer,"%d,%d,%d,%d,%d\n", &k, &p, &m, &n, &N);
   if ((next == 0) || (next == EOF)) {
     fclose(filePointer);
     filePointer = NULL;
     return NO_DATA_POINTS;
+  }
+  // reading gain matrices
+  float gainM[p][m][n + N];
+  for (int i = 0; i < p; i++) {
+    for (int j = 0; j < m; j++) {
+      for (int k = 0; k < (n + N); k++) {
+        fscanf(filePointer, "%d,", gainM[i][j][k];
+      }
+    }
   }
 }
 
