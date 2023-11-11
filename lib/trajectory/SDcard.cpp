@@ -1,4 +1,44 @@
 /*
+ * SDcard.cpp
+ *
+ * The code below reads a file called inFile
+ * and writes to a binary SD card file called outFile
+ *
+ * Created: 11/11/2023 by Teresa Wan <teresawan04@gmail.com>
+ * Last updated: 11/11/2023 by Teresa Wan
+ *
+ */
+
+#include <SPI.h>
+#include <SD.h>
+
+int FILE_READ_ERR = -1;
+int NO_DATA_POINTS = -2;
+
+// reading from inFile, will return 0 if successful
+
+int read (char *inFile) {
+  FILE* filePointer = fopen(inFile, "r");
+  if (filePointer == NULL) {
+    return FILE_READ_ERR;
+  }
+  // what do all these vars mean?? refer to the PSRAM structure diagram
+  // reading header
+  int k = 0;
+  int p = 0;
+  int m = 0;
+  int n = 0;
+  int N = 0;
+  // update format string depending on imput format, may or may not change
+  int next = fscanf(filePointer,"%d,%d,%d,%d,%d,%d\n", &k, &p, &m, &n, &N);
+  if ((next == 0) || (next == EOF)) {
+    fclose(filePointer);
+    filePointer = NULL;
+    return NO_DATA_POINTS;
+  }
+}
+
+/*
   SD card read/write
 
   This example shows how to read and write data to and from an SD card file
@@ -17,9 +57,6 @@
   This example code is in the public domain.
 
 */
-
-#include <SPI.h>
-#include <SD.h>
 
 File myFile;
 
