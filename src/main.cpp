@@ -1,81 +1,143 @@
 #include <Arduino.h>
+#include <Adafruit_LSM6DSOX.h>
 #include "../lib/estimator/Estimator.h"
 #include "../lib/controller/Controller.h"
 #include "../lib/math/Integrator.h"
 #include "../lib/math/Derivative.h"
+#include "../lib/drivers/ASTRA/IMU/src/IMU.h"
+#include <Servo.h>
 //#include <ArduinoEigenDense.h>
 
-Eigen::MatrixXd m(3, 3);
-Eigen::VectorXd v(3);
+/*
+main.cpp 
+Description: Currently used to run tests for the entire flight software
+Author: Vincent Palmerio
+Last updated: 11/4/2023
+*/
 
-Eigen::VectorXd integrateAndDerive(3);
+Eigen::MatrixXd m(24, 24);
+Eigen::VectorXd v(24);
+
+Eigen::VectorXd integrateAndDeriveTest(3);
+
+Integrator gyroIntegrator;
+Eigen::VectorXd gyroVector(3);
 
 elapsedMillis ledTime;
 
+elapsedMillis timeToEnd;
+
 bool ledOn = false;
 
+int controllerErrorCode = -20;
+int estimatorErrorCode = -20;
+int integratorErrorCode = -20;
+int integratorGyroErrorCode = -20;
+int derivativeErrorCode = -20;
+
+Adafruit_LSM6DSOX sox;
+
+Servo beta;
+
+Servo alpha;
+
+
 void setup() {
-  Serial.print("Controller error code:");
-  Serial.print(controllerSetup());
 
-  Serial.print("Estimator error code:");
-  Serial.print(estimatorSetup());
-
-  integrateAndDerive << 1, 2, 3;
-
-  Serial.print("Integrator error code:");
-  Serial.print(integratorSetup(&integrateAndDerive));
-
-  Serial.print("Derivative error code:");
-  Serial.print(derivativeSetup(&integrateAndDerive));
-  
   //Sets up led
   pinMode(LED_BUILTIN, OUTPUT);
+  //sets LED to on indefinitely so we know teensy is on if setup() fails
+  digitalWrite(LED_BUILTIN, HIGH); 
 
+  initalizeIMU();
 
-  for (unsigned int i = 0; i<U_ARRAY_LENGTH; i++) {
-    Serial.print(controllerInputU(i));
+  beta.attach(2);
+  alpha.attach(3);
+
+  beta.write(90);
+  alpha.write(90);
+  
+  if (!sox.begin_I2C()) {
+    // if (!sox.begin_SPI(LSM_CS)) {
+    // if (!sox.begin_SPI(LSM_CS, LSM_SCK, LSM_MISO, LSM_MOSI)) {
+    // Serial.println("Failed to find LSM6DSOX chip");
+    // while (1) {
+    //   Serial.println("No IMU connection...");
+    //   delay(10);
+    // }
+    Serial.println("No IMU connection...");
   }
 
-  for (unsigned int i = 0; i<STATE_DIMENSION; i++) {
-    Serial.print(estimatedStateX[i]);
-  }
+  Serial.print("Integrator error code:");
+  
 
-  float theta = PI/2;
+  integratorGyroErrorCode = gyroIntegrator.integratorSetup(&gyroVector);
+  Serial.println(integratorGyroErrorCode);
 
+
+  // Serial.print("Derivative error code:");
+  // derivativeErrorCode = derivativeSetup(&integrateAndDeriveTest, integrateAndDeriveTest);
+  // Serial.println(derivativeErrorCode);
+
+  // Serial.print("Controller error code:");
+  // controllerErrorCode = controllerSetup();
+  // Serial.println(controllerErrorCode);
+
+  // Serial.print("Estimator error code:");
+  // estimatorErrorCode = estimatorSetup();
+  // Serial.println(estimatorErrorCode);
+
+  // integrateAndDeriveTest << 1, 2, 3;
+
+  // Serial.print("Integrator error code:");
+  // integratorErrorCode = integratorSetup(&integrateAndDeriveTest);
+  // Serial.println(integratorErrorCode);
+
+  // Serial.print("Derivative error code:");
+  // derivativeErrorCode = derivativeSetup(&integrateAndDeriveTest, integrateAndDeriveTest);
+  // Serial.println(derivativeErrorCode);
+  
+  
+
+
+  // for (unsigned int i = 0; i<U_ARRAY_LENGTH; i++) {
+  //   Serial.print(controllerInputU(i));
+  // }
+
+  // for (unsigned int i = 0; i<STATE_DIMENSION; i++) {
+  //   Serial.print(estimatedStateX[i]);
+  // }
+
+  // float theta = PI/2;
+
+
+  // //ALWAYS INITIALIZE EACH VALUE IN VECTORS AND MATRICES
+  // for (int i = 0; i < 24; i++) {
+  //   for (int j = 0; j < 24; j++) {
+  //     m(i, j) = 2;
+  //   }
+  // }
+
+  // for (int i = 0; i < 24; i++) {
+  //   v(i) = 2;
+  // }
 
   
-  m(0, 0) = 1;
-  m(1, 0) = 0;
-  m(2, 0) = 0;
-  m(0, 1) = 0;
-  m(0, 2) = 0;
-  m(1, 1) = cos(theta);
-  m(1, 2) = -sin(theta);
-  m(2, 1) = sin(theta);
-  m(2, 2) = cos(theta);
 
   //Undefined Vector Test
-  Serial.println("Vector w/o initialized values: ");
-  Serial.print(v(0));
-  Serial.println();
-  Serial.print(v(1));
-  Serial.println();
-  Serial.print(v(2));
-  Serial.println();
-
-  v(0) = 0;
-  v(1) = 1;
-  v(2) = 0;
-   
-  
-
+  // Serial.println("Vector w/o initialized values: ");
+  // Serial.print(v(0));
+  // Serial.println();
+  // Serial.print(v(1));
+  // Serial.println();
+  // Serial.print(v(2));
+  // Serial.println();
 }
 
 //turns the LED on and off every 3 seconds 
 void led() {
   
-  if (ledTime == 3000) {
+  if (ledTime >= 3000) {
 
     //(HIGH and LOW are the voltage levels)
     if (ledOn == true) {
@@ -86,44 +148,155 @@ void led() {
       ledOn = true;
     }
     
+    // Serial.println("LED Time");
+    // Serial.println(ledTime);
 
-    ledTime -= 3000;
+    ledTime = 0;
   }
 }
 
 void loop() {
   
-  
-  Eigen::VectorXd vo = m * v;
-  v = vo;
+  updateIMU();
 
-  integrateAndDerive *= 2;
+  // sensors_event_t accel;
+  // sensors_event_t gyro;
+  // sensors_event_t temp;
+  // sox.getEvent(&accel, &gyro, &temp);
 
-  integratorUpdate();
+
+  // Serial.print("Raw Data: ");
+  // Serial.print(millis(),7);
+  // Serial.print(",");
+
+  // Serial.print(temp.temperature,7);
+  // Serial.print(",");
+  //   /* Display the results (acceleration is measured in m/s^2) */
+  // Serial.print(accel.acceleration.x,7);
+  // Serial.print(",");
+  // Serial.print(accel.acceleration.y,7);
+  // Serial.print(",");
+  // Serial.print(accel.acceleration.z,7);
+  // Serial.print(",");
+  // /* Display the results (rotation is measured in rad/s) */
+  // Serial.print(gyro.gyro.x,7);
+  // Serial.print(",");
+  // Serial.print(gyro.gyro.y,7);
+  // Serial.print(",");
+  // Serial.print(gyro.gyro.z,7);
+  // Serial.println();
+
+  // Serial.println("Sensor Fusion");
+  // Serial.print("Roll: ");
+  // Serial.print(roll);
+  // Serial.print("Pitch: ");
+  // Serial.print(pitch);
+  // Serial.print(", Heading: ");
+  // Serial.print(heading);
+
+  // float gx = gyro.gyro.x * SENSORS_RADS_TO_DPS;
+  // float gy = gyro.gyro.y * SENSORS_RADS_TO_DPS;
+  // float gz = gyro.gyro.z * SENSORS_RADS_TO_DPS;
+
+
+  gyroVector << gx, gy, gz;
+  Serial.println("Integration data");
+  gyroIntegrator.integratorUpdate();
   Serial.println("Integration");
-  for (int i = 0; i < integratedData.size(); i++) {
-    Serial.println(integratedData(i));
+  for (int i = 0; i < gyroIntegrator.integratedData.size(); i++) {
+    Serial.println(gyroIntegrator.integratedData(i), 60);
+  }
+  
+  int x = gyroIntegrator.integratedData(0);
+  int y = gyroIntegrator.integratedData(1);
+
+  int limit = 15;
+
+  if (x > limit) {
+    x = limit;
+  } else if (x < -limit) {
+    x = -limit;
   }
 
-  derivativeUpdate();
-  Serial.println("Derivative");
-  for (int i = 0; i < derivative.size(); i++) {
-    Serial.println(derivative(i));
+  if (y > limit) {
+    y = limit;
+  } else if (y < -limit) {
+    y = -limit;
   }
 
-  Serial.println("New Vector: ");
-  Serial.print(v(0));
-  Serial.println();
-  Serial.print(v(1));
-  Serial.println();
-  Serial.print(v(2));
-  Serial.println();
+  x += 90;
+  y += 90;
+
+  beta.write(x);
+  alpha.write(y);
+
+  delayMicroseconds(100);
+
+  //int x_actual = beta.read();
+
+  //Matrix Multiplication test
+  // Eigen::VectorXd vo = m * v;
+  // v = vo;
+
+
+  // Serial.print("Controller error code:");
+  // Serial.println(controllerErrorCode);
+
+  // Serial.print("Estimator error code:");
+  // Serial.println(estimatorErrorCode);
+
+  // Serial.print("Integrator error code:");
+  // Serial.println(integratorErrorCode);
+
+  // Serial.print("Derivative error code:");
+  // Serial.println(derivativeErrorCode);
+
+  //integrateAndDeriveTest += 2;
+  //2, 4, 6
+
+  //Integrator and Derivative Test
+  // integrateAndDeriveTest(0) = integrateAndDeriveTest(0) + 2;
+  // integrateAndDeriveTest(1) = integrateAndDeriveTest(1) + 2;
+  // integrateAndDeriveTest(2) = integrateAndDeriveTest(2) + 2;
+
+  // Serial.println("Main.cpp Vector");
+  // for (int i = 0; i < integrateAndDeriveTest.size(); i++) {
+  //   Serial.println(integrateAndDeriveTest(i));
+  // }
+
+  // Serial.println("Integration data");
+  // integratorUpdate();
+  // Serial.println("Integration");
+  // for (int i = 0; i < integratedData.size(); i++) {
+  //   Serial.println(integratedData(i), 60);
+  // }
+
+  // Serial.println("Derivative data");
+  // derivativeUpdate();
+  // Serial.println("Derivative");
+  // for (int i = 0; i < derivative.size(); i++) {
+  //   Serial.println(derivative(i), 60);
+  // }
+
+  // Serial.println("New Vector: ");
+  // Serial.print(v(0));
+  // Serial.println();
+  // Serial.print(v(1));
+  // Serial.println();
+  // Serial.print(v(2));
+  // Serial.println();
 
   //turns led on and off
   led();
   
 
   // wait for a second
-  delay(1000);
+  //delay(1000);
+
+  //end program after 100 millis
+  // if (timeToEnd >= 100) {
+  //   digitalWrite(LED_BUILTIN, HIGH);
+  //   delay(20000000);
+  // }
 }
 

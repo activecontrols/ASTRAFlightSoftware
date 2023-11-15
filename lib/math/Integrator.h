@@ -17,22 +17,28 @@ Last updated: 10/20/2023
 //TODO: decide if this variable should be a constant or an assigned variable upon the calling of integratorSetup
 #define MAX_ALLOWED_TIME_BETWEEN_INTEGRATION 10
 
-//TODO: I get a redefinition error if the two static variables below are uncommented
-    //I have not figured out why - Vincent
-//static Eigen::VectorXd* dataToIntegrate;
+class Integrator {
 
-static elapsedMicros timeBetweenIntegration;
+public:
 
+    //result of integration
+    Eigen::VectorXd integratedData;
 
-//result of integration
-extern Eigen::VectorXd integratedData;
+    //assigns pointer to dataToIntegrate, initializes integratedData
+    //returns error code
+    //we aren't using a constructor because constructors can't return error codes
+    int integratorSetup(Eigen::VectorXd*); 
 
-//assigns pointer to dataToIntegrate, initializes integratedData
-//returns error code
-extern int integratorSetup(Eigen::VectorXd*); 
+    //updates integratedData with the integration of dataToIntegrate
+    //returns error code
+    int integratorUpdate(); 
 
-//updates integratedData with the integration of dataToIntegrate
-//returns error code
-extern int integratorUpdate(); 
+private: 
+    Eigen::VectorXd* dataToIntegrate; 
+    elapsedMicros timeBetweenIntegration;
+
+    
+
+};
 
 #endif
