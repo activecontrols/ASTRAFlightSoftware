@@ -5,7 +5,7 @@
  * and writes to a binary SD card file called outFile
  *
  * Created: 11/11/2023 by Teresa Wan <teresawan04@gmail.com>
- * Last updated: 11/11/2023 by Teresa Wan
+ * Last updated: 11/16/2023 by Ishan Goel
  *
  */
 
@@ -24,11 +24,8 @@ int read (char *inFile) {
   }
   // what do all these vars mean?? refer to the PSRAM structure diagram
   // reading header
-  int k = 0;
-  int p = 0;
-  int m = 0;
-  int n = 0;
-  int N = 0;
+  int k, p, m, n, N;
+  // k = p = m = n = N = 0;
   // update format strings depending on imput format, may or may not change
   int next = fscanf(filePointer,"%d,%d,%d,%d,%d\n", &k, &p, &m, &n, &N);
   if ((next == 0) || (next == EOF)) {
@@ -41,10 +38,40 @@ int read (char *inFile) {
   for (int i = 0; i < p; i++) {
     for (int j = 0; j < m; j++) {
       for (int k = 0; k < (n + N); k++) {
-        fscanf(filePointer, "%d,", gainM[i][j][k];
+        fscanf(filePointer, "%f,", gainM[i][j][k]);
       }
     }
   }
+
+  // reading quick stabilization matrices
+  float qsm[p][m][n];
+  for (int i = 0; i < p; i++) {
+    for (int j = 0; j < m; j++) {
+      for (int k = 0; k < n; k++) {
+        fscanf(filePointer, "%f,", qsm[i][j][k]);
+      }
+    }
+  }
+
+  // read trajectory points
+  float x[k][n];
+  for (int i = 0; i < k; i++) {
+    for (int j = 0; j < n; j++) {
+      fscanf(filePointer, "%f,", x[i][j]);
+    }
+  }
+  float u[k][m];
+  for (int i = 0; i < k; i++) {
+    for (int j = 0; j < m; j++) {
+      fscanf(filePointer, "%f,", u[i][j]);
+    }
+  }
+  float t[k];
+  for (int i = 0; i < k; i++) {
+    fscanf(filePointer, "%f,", t[i]);
+  }
+
+  // TODO: write out binary format
 }
 
 /*
