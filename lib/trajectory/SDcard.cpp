@@ -13,12 +13,12 @@
 #include <SD.h>
 
 int FILE_READ_ERR = -1;
-int NO_DATA_POINTS = -2;
+int FILE_WRITE_ERR = -2;
+int NO_DATA_POINTS = -3;
 
 // reading from inFile, will return 0 if successful
-
-int read (char *inFile) {
-  FILE* filePointer = fopen(inFile, "r");
+int encode(char *inFile, char *outFile) {
+  FILE *filePointer = fopen(inFile, "rb");
   if (filePointer == NULL) {
     return FILE_READ_ERR;
   }
@@ -26,8 +26,8 @@ int read (char *inFile) {
   // reading header
   int k, p, m, n, N;
   // k = p = m = n = N = 0;
-  // update format strings depending on imput format, may or may not change
-  int next = fscanf(filePointer,"%d,%d,%d,%d,%d\n", &k, &p, &m, &n, &N);
+  // update format strings depending on input format, may or may not change
+  int next = fscanf(filePointer, "%d,%d,%d,%d,%d\n", &k, &p, &m, &n, &N);
   if ((next == 0) || (next == EOF)) {
     fclose(filePointer);
     filePointer = NULL;
@@ -70,8 +70,30 @@ int read (char *inFile) {
   for (int i = 0; i < k; i++) {
     fscanf(filePointer, "%f,", t[i]);
   }
-
-  // TODO: write out binary format
+  // write out binary format
+  FILE *outFilePtr = fopen(outFile, "wb");
+  if (outFilePtr == NULL) {
+    fclose(filePointer);
+    filePointer = NULL;
+    return FILE_WRITE_ERR;
+  }
+  // write header
+  struct {int k, p, m, n, N} header = {k, p, m, n, N};
+  fwrite(&header, sizeof(header), 1, outFilePtr);
+  // write gain matrices
+  fwrite(&gainM, sizeof(gainM), 1, outFilePtr);
+  // write quick stabilization matrices
+  fwrite(&qsm, sizeof(qsm), 1, outFilePtr);
+  // write trajectory points
+  fwrite(&x, sizeof(x), 1, outFilePtr);
+  fwrite(&u, sizeof(u), 1, outFilePtr);
+  fwrite(&t, sizeof(t), 1, outFilePtr);
+  // close files
+  fclose(outFilePtr);
+  outFilePtr = NULL;
+  fclose(filePointer);
+  filePointer = NULL;
+  return 0;
 }
 
 /*
@@ -99,8 +121,7 @@ File myFile;
 void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+  while (!Serial) { ; // wait for serial port to connect. Needed for native USB port only
   }
 
 
