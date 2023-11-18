@@ -5,7 +5,7 @@
  * and writes to a binary SD card file called outFile
  *
  * Created: 11/11/2023 by Teresa Wan <teresawan04@gmail.com>
- * Last updated: 11/16/2023 by Ishan Goel
+ * Last updated: 11/18/2023 by Teresa Wan
  *
  */
 
@@ -38,17 +38,18 @@ int encode(char *inFile, char *outFile) {
   for (int i = 0; i < p; i++) {
     for (int j = 0; j < m; j++) {
       for (int k = 0; k < (n + N); k++) {
-        fscanf(filePointer, "%f,", gainM[i][j][k]);
+        fscanf(filePointer, "%f,", &gainM[i][j][k]);
       }
     }
   }
 
   // reading quick stabilization matrices
-  float qsm[p][m][n];
-  for (int i = 0; i < p; i++) {
+  // currently 3 qsm, may change later
+  float qsm[3][m][n];
+  for (int i = 0; i < 3; i++) {
     for (int j = 0; j < m; j++) {
       for (int k = 0; k < n; k++) {
-        fscanf(filePointer, "%f,", qsm[i][j][k]);
+        fscanf(filePointer, "%f,", &qsm[i][j][k]);
       }
     }
   }
@@ -57,18 +58,18 @@ int encode(char *inFile, char *outFile) {
   float x[k][n];
   for (int i = 0; i < k; i++) {
     for (int j = 0; j < n; j++) {
-      fscanf(filePointer, "%f,", x[i][j]);
+      fscanf(filePointer, "%f,", &x[i][j]);
     }
   }
   float u[k][m];
   for (int i = 0; i < k; i++) {
     for (int j = 0; j < m; j++) {
-      fscanf(filePointer, "%f,", u[i][j]);
+      fscanf(filePointer, "%f,", &u[i][j]);
     }
   }
   float t[k];
   for (int i = 0; i < k; i++) {
-    fscanf(filePointer, "%f,", t[i]);
+    fscanf(filePointer, "%f,", & t[i]);
   }
   // write out binary format
   FILE *outFilePtr = fopen(outFile, "wb");
