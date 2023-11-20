@@ -5,6 +5,7 @@
 #include "../lib/math/Integrator.h"
 #include "../lib/math/Derivative.h"
 #include "../lib/drivers/ASTRA/IMU/src/IMU.h"
+#include "../lib/encoders/AS5600.h"
 #include <Servo.h>
 //#include <ArduinoEigenDense.h>
 
@@ -35,11 +36,11 @@ int integratorErrorCode = -20;
 int integratorGyroErrorCode = -20;
 int derivativeErrorCode = -20;
 
-Adafruit_LSM6DSOX sox;
-
 Servo beta;
 
 Servo alpha;
+
+AS5600 as5600;
 
 
 void setup() {
@@ -49,30 +50,31 @@ void setup() {
   //sets LED to on indefinitely so we know teensy is on if setup() fails
   digitalWrite(LED_BUILTIN, HIGH); 
 
-  initalizeIMU();
+  //ENCODER SETUP
+  as5600.begin(4);  //  set direction pin.
+  as5600.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+  int b = as5600.isConnected();
+  //---
 
+  //IMU SETUP
+  initalizeIMU();
+  //---
+
+  //GYROSCOPE (IMU) INTEGRATOR SETUP
+  Serial.print("Integrator error code:");
+  integratorGyroErrorCode = gyroIntegrator.integratorSetup(&gyroVector);
+  Serial.println(integratorGyroErrorCode);
+  //---
+
+  //SERVO SETUP
   beta.attach(2);
   alpha.attach(3);
 
   beta.write(90);
   alpha.write(90);
-  
-  if (!sox.begin_I2C()) {
-    // if (!sox.begin_SPI(LSM_CS)) {
-    // if (!sox.begin_SPI(LSM_CS, LSM_SCK, LSM_MISO, LSM_MOSI)) {
-    // Serial.println("Failed to find LSM6DSOX chip");
-    // while (1) {
-    //   Serial.println("No IMU connection...");
-    //   delay(10);
-    // }
-    Serial.println("No IMU connection...");
-  }
+  //---
 
-  Serial.print("Integrator error code:");
   
-
-  integratorGyroErrorCode = gyroIntegrator.integratorSetup(&gyroVector);
-  Serial.println(integratorGyroErrorCode);
 
 
   // Serial.print("Derivative error code:");
@@ -158,6 +160,15 @@ void led() {
 void loop() {
   
   updateIMU();
+
+  
+  Serial.print(millis());
+  Serial.print("\t");
+  Serial.print(as5600.readAngle());
+  Serial.print("\t");
+  Serial.println(as5600.rawAngle());
+  Serial.print("\t");
+  Serial.println(as5600.rawAngle() * AS5600_RAW_TO_DEGREES);
 
   // sensors_event_t accel;
   // sensors_event_t gyro;
