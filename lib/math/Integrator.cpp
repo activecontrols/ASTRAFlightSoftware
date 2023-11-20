@@ -43,9 +43,11 @@ int Integrator::integratorUpdate()
 
     changeInTime = changeInTime / 1000000; //convert to seconds
     
+#if defined(ASTRA_INTEGRATOR_DEBUG) or defined(ASTRA_FULL_DEBUG)
     Serial.println("Time between integration seconds: ");
     Serial.println(changeInTime, 60);
-
+#endif
+    
     integratedData += (*dataToIntegrate) * changeInTime;
 
     timeBetweenIntegration = 0;
