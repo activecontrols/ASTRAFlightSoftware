@@ -42,5 +42,4 @@ int top;
 int** data;
 int eleSize;
 int numElements;
-
 };
