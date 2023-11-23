@@ -4,6 +4,13 @@
     #include <Arduino.h>
 #endif
 
+/*
+Buffer.cpp 
+Description: defines functions declared in Buffer.h
+Author: Siddarth Goel, Vincent Palmerio
+Last updated: 11/23/2023
+*/
+
 Buffer::Buffer(int elementSize, int numberOfElements, float* (*Fptr)() ){
     eleSize = elementSize;
     numElements = numberOfElements;
@@ -49,7 +56,7 @@ void Buffer::addData(){
     }
 }
 
-void printData(){
+void Buffer::printData() {
 
 #if defined(ASTRA_BUFFER_DEBUG) or defined(ASTRA_FULL_DEBUG)
     Serial.println("Input 1");

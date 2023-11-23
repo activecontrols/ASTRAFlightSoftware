@@ -1,3 +1,10 @@
+/*
+Buffer.h
+Description: A class for a 2D buffer of floats
+Author: Siddarth Goel, Vincent Palmerio
+Last updated: 11/23/2023
+*/
+
 #ifndef BUFFER_H
 #define BUFFER_H
 
