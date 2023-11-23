@@ -1,6 +1,8 @@
 #include "Buffer.h"
-
-#include <Arduino.h>
+#include "../../src/debug.h"
+#if defined(ASTRA_BUFFER_DEBUG) or defined(ASTRA_FULL_DEBUG)
+    #include <Arduino.h>
+#endif
 
 Buffer::Buffer(int elementSize, int numberOfElements, float* (*Fptr)() ){
     eleSize = elementSize;
@@ -25,61 +27,69 @@ void Buffer::addData(){
     if(top >= numElements){
         top = 0;
     }
-    // Serial.println("Adding element to top = ");
-    // Serial.print(top);
+#if defined(ASTRA_BUFFER_DEBUG) or defined(ASTRA_FULL_DEBUG)
+    Serial.println("Adding element to top = ");
+    Serial.print(top);
+#endif
+    
     for(int i = 0; i < eleSize; i++){
-        // Serial.println("Adding element ");
-        // Serial.print(i);
-        // Serial.print(" ");
-        // Serial.print(add[i]);
-        // Serial.println();
-        Serial.print("IM HERE");
-        Serial.println();
-        Serial.println(i);
-        Serial.println();
-        Serial.println(add[i]);
+
         temp = add[i];
-        
-        //Serial.print(temp);
         data[top][i] = temp;
+
+#if defined(ASTRA_BUFFER_DEBUG) or defined(ASTRA_FULL_DEBUG)
+        Serial.println("Adding element ");
+        Serial.print(i);
+        Serial.print(" ");
+        Serial.print(add[i]);
+        Serial.println();
+        Serial.println(temp);
+#endif
+       
     }
 }
 
 void printData(){
-    // Serial.println("Input 1");
-    // Serial.println(data[0][0]);
-    // Serial.println(data[0][1]);
-    // Serial.println(data[0][2]);
-    // Serial.println(data[0][3]);
-    // Serial.println("Input 2");
-    // Serial.println(data[1][0]);
-    // Serial.println(data[1][1]);
-    // Serial.println(data[1][2]);
-    // Serial.println(data[1][3]);
-    // Serial.println("Input 3");
-    // Serial.println(data[2][0]);
-    // Serial.println(data[2][1]);
-    // Serial.println(data[2][2]);
-    // Serial.println(data[2][3]);
+
+#if defined(ASTRA_BUFFER_DEBUG) or defined(ASTRA_FULL_DEBUG)
+    Serial.println("Input 1");
+    Serial.println(data[0][0]);
+    Serial.println(data[0][1]);
+    Serial.println(data[0][2]);
+    Serial.println(data[0][3]);
+    Serial.println("Input 2");
+    Serial.println(data[1][0]);
+    Serial.println(data[1][1]);
+    Serial.println(data[1][2]);
+    Serial.println(data[1][3]);
+    Serial.println("Input 3");
+    Serial.println(data[2][0]);
+    Serial.println(data[2][1]);
+    Serial.println(data[2][2]);
+    Serial.println(data[2][3]);
+#endif
     
 }
 
 float** Buffer::getData(){
-    // Serial.println("Input 1 FOR ACTUAL DATA");
-    // Serial.println(data[0][0]);
-    // Serial.println(data[0][1]);
-    // Serial.println(data[0][2]);
-    // Serial.println(data[0][3]);
-    // Serial.println("Input 2");
-    // Serial.println(data[1][0]);
-    // Serial.println(data[1][1]);
-    // Serial.println(data[1][2]);
-    // Serial.println(data[1][3]);
-    // Serial.println("Input 3");
-    // Serial.println(data[2][0]);
-    // Serial.println(data[2][1]);
-    // Serial.println(data[2][2]);
-    // Serial.println(data[2][3]);
+#if defined(ASTRA_BUFFER_DEBUG) or defined(ASTRA_FULL_DEBUG)
+    Serial.println("Input 1 FOR ACTUAL DATA");
+    Serial.println(data[0][0]);
+    Serial.println(data[0][1]);
+    Serial.println(data[0][2]);
+    Serial.println(data[0][3]);
+    Serial.println("Input 2");
+    Serial.println(data[1][0]);
+    Serial.println(data[1][1]);
+    Serial.println(data[1][2]);
+    Serial.println(data[1][3]);
+    Serial.println("Input 3");
+    Serial.println(data[2][0]);
+    Serial.println(data[2][1]);
+    Serial.println(data[2][2]);
+    Serial.println(data[2][3]);
+#endif
+
     float temp;
     int i = 0;
     int index;
@@ -92,39 +102,53 @@ float** Buffer::getData(){
         if (index < 0) {
             index = numElements + top - i;
         }
-        // Serial.println("Index of og array ");
-        // Serial.println(index);
-        // Serial.println("Index of new array");
-        // Serial.println(i);
+
+#if defined(ASTRA_BUFFER_DEBUG) or defined(ASTRA_FULL_DEBUG)
+        Serial.println("Index of og array ");
+        Serial.println(index);
+        Serial.println("Index of new array");
+        Serial.println(i);
+#endif
+
         for (j = 0; j < eleSize; j++) {
-            // Serial.print("Data Index ");
-            // Serial.println(index);
-            // Serial.print("j ");
-            // Serial.println(j);
+
             temp = data[index][j];
-            // Serial.print("Data Getting ADDED ");
-            // Serial.print(temp);
-            // Serial.println();
             auxData[i][j] = temp;
+
+#if defined(ASTRA_BUFFER_DEBUG) or defined(ASTRA_FULL_DEBUG)
+            Serial.print("Data Index ");
+            Serial.println(index);
+            Serial.print("j ");
+            Serial.println(j);
+            
+            Serial.print("Data Getting ADDED ");
+            Serial.print(temp);
+            Serial.println();
+#endif
+            
         }
 
         i++;
     }
-//   Serial.println("Aux Input 1");
-// Serial.println(auxData[0][0]);
-// Serial.println(auxData[0][1]);
-// Serial.println(auxData[0][2]);
-// Serial.println(auxData[0][3]);
-// Serial.println("Aux Input 2");
-// Serial.println(auxData[1][0]);
-// Serial.println(auxData[1][1]);
-// Serial.println(auxData[1][2]);
-// Serial.println(auxData[1][3]);
 
-// Serial.println("Input 3");
-// Serial.println(auxData[2][0]);
-// Serial.println(auxData[2][1]);
-// Serial.println(auxData[2][2]);
-// Serial.println(auxData[2][3]);
+#if defined(ASTRA_BUFFER_DEBUG) or defined(ASTRA_FULL_DEBUG) 
+    Serial.println("Aux Input 1");
+    Serial.println(auxData[0][0]);
+    Serial.println(auxData[0][1]);
+    Serial.println(auxData[0][2]);
+    Serial.println(auxData[0][3]);
+    Serial.println("Aux Input 2");
+    Serial.println(auxData[1][0]);
+    Serial.println(auxData[1][1]);
+    Serial.println(auxData[1][2]);
+    Serial.println(auxData[1][3]);
+
+    Serial.println("Input 3");
+    Serial.println(auxData[2][0]);
+    Serial.println(auxData[2][1]);
+    Serial.println(auxData[2][2]);
+    Serial.println(auxData[2][3]);
+#endif
+
     return auxData;
 }
