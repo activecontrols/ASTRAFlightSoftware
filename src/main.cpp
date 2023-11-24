@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Adafruit_LSM6DSOX.h>
+#include "../lib/buffer/Buffer.h"
 #include "../lib/estimator/Estimator.h"
 #include "../lib/controller/Controller.h"
 #include "../lib/math/Integrator.h"
@@ -26,22 +27,28 @@ Eigen::VectorXd gyroVector(3);
 
 elapsedMillis ledTime;
 
-elapsedMillis timeToEnd;
+elapsedMicros totalTimeElapsed;
+int lastTime = 0;
 
 bool ledOn = false;
 
+//ERROR CODES
 int controllerErrorCode = -20;
 int estimatorErrorCode = -20;
 int integratorErrorCode = -20;
 int integratorGyroErrorCode = -20;
 int derivativeErrorCode = -20;
 
+//SERVOS
 Servo beta;
-
 Servo alpha;
 
+//ENCODER
 AS5600 as5600;
 
+Buffer imuBuffer(3,5, getValues);
+float ** data;
+float* test;
 
 void setup() {
 
@@ -51,18 +58,19 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH); 
 
   //ENCODER SETUP
-  as5600.begin(4);  //  set direction pin.
-  as5600.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
-  int b = as5600.isConnected();
+  // as5600.begin(4);  //  set direction pin.
+  // as5600.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+  // int b = as5600.isConnected();
   //---
 
   //IMU SETUP
-  initalizeIMU();
+  initializeIMU();
   //---
 
   //GYROSCOPE (IMU) INTEGRATOR SETUP
   Serial.print("Integrator error code:");
   integratorGyroErrorCode = gyroIntegrator.integratorSetup(&gyroVector);
+  
   Serial.println(integratorGyroErrorCode);
   //---
 
@@ -75,8 +83,6 @@ void setup() {
   //---
 
   
-
-
   // Serial.print("Derivative error code:");
   // derivativeErrorCode = derivativeSetup(&integrateAndDeriveTest, integrateAndDeriveTest);
   // Serial.println(derivativeErrorCode);
@@ -159,43 +165,24 @@ void led() {
 
 void loop() {
   
+  Serial.print("Time between loop: ");
+  Serial.println(totalTimeElapsed-lastTime);
+  lastTime = totalTimeElapsed;
+
   updateIMU();
 
+  imuBuffer.addData();
+  data = imuBuffer.getData();
+
+  imuBuffer.printData();
   
-  Serial.print(millis());
-  Serial.print("\t");
-  Serial.print(as5600.readAngle());
-  Serial.print("\t");
-  Serial.println(as5600.rawAngle());
-  Serial.print("\t");
-  Serial.println(as5600.rawAngle() * AS5600_RAW_TO_DEGREES);
-
-  // sensors_event_t accel;
-  // sensors_event_t gyro;
-  // sensors_event_t temp;
-  // sox.getEvent(&accel, &gyro, &temp);
-
-
-  // Serial.print("Raw Data: ");
-  // Serial.print(millis(),7);
-  // Serial.print(",");
-
-  // Serial.print(temp.temperature,7);
-  // Serial.print(",");
-  //   /* Display the results (acceleration is measured in m/s^2) */
-  // Serial.print(accel.acceleration.x,7);
-  // Serial.print(",");
-  // Serial.print(accel.acceleration.y,7);
-  // Serial.print(",");
-  // Serial.print(accel.acceleration.z,7);
-  // Serial.print(",");
-  // /* Display the results (rotation is measured in rad/s) */
-  // Serial.print(gyro.gyro.x,7);
-  // Serial.print(",");
-  // Serial.print(gyro.gyro.y,7);
-  // Serial.print(",");
-  // Serial.print(gyro.gyro.z,7);
-  // Serial.println();
+  // Serial.print(millis());
+  // Serial.print("\t");
+  // Serial.print(as5600.readAngle());
+  // Serial.print("\t");
+  // Serial.println(as5600.rawAngle());
+  // Serial.print("\t");
+  // Serial.println(as5600.rawAngle() * AS5600_RAW_TO_DEGREES);
 
   // Serial.println("Sensor Fusion");
   // Serial.print("Roll: ");
@@ -205,15 +192,9 @@ void loop() {
   // Serial.print(", Heading: ");
   // Serial.print(heading);
 
-  // float gx = gyro.gyro.x * SENSORS_RADS_TO_DPS;
-  // float gy = gyro.gyro.y * SENSORS_RADS_TO_DPS;
-  // float gz = gyro.gyro.z * SENSORS_RADS_TO_DPS;
-
-
   gyroVector << gx, gy, gz;
   Serial.println("Integration data");
   gyroIntegrator.integratorUpdate();
-  Serial.println("Integration");
   for (int i = 0; i < gyroIntegrator.integratedData.size(); i++) {
     Serial.println(gyroIntegrator.integratedData(i), 60);
   }
@@ -304,8 +285,8 @@ void loop() {
   // wait for a second
   //delay(1000);
 
-  //end program after 100 millis
-  // if (timeToEnd >= 100) {
+  //end program after 1000000 micro seconds
+  // if (totalTimeElapsed >= 1000000) {
   //   digitalWrite(LED_BUILTIN, HIGH);
   //   delay(20000000);
   // }
