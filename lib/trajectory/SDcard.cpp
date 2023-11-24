@@ -5,7 +5,7 @@
  * and writes to a binary SD card file called outFile
  *
  * Created: 11/11/2023 by Teresa Wan <teresawan04@gmail.com>
- * Last updated: 11/18/2023 by Teresa Wan
+ * Last updated: 11/24/2023 by Ishan Goel
  *
  */
 
@@ -96,6 +96,39 @@ int encode(char *inFile, char *outFile) {
   filePointer = NULL;
   return 0;
 }
+
+// reading from binary SD card file, will return 0 if successful
+int decode(char* inFile, char* outFile) {
+  // open file
+  FILE *filePointer = fopen(inFile, "rb");
+  if (filePointer == NULL) {
+    return FILE_READ_ERR;
+  }
+  // read header
+  struct {int k, p, m, n, N} header;
+  fread(&header, sizeof(header), 1, filePointer);
+  k = header.k;
+  p = header.p;
+  m = header.m;
+  n = header.n;
+  N = header.N;
+
+  float gainM[p][m][n + N];
+  fread(&gainM, sizeof(gainM), 1, filePointer);
+  // read quick stabilization matrices. currently 3 qsm, may change later
+  float qsm[3][m][n];
+  fread(&qsm, sizeof(qsm), 1, filePointer);
+  // read trajectory points
+  float x[k][n];
+  fread(&x, sizeof(x), 1, filePointer);
+  float u[k][m];
+  fread(&u, sizeof(u), 1, filePointer);
+  float t[k];
+  fread(&t, sizeof(t), 1, filePointer);
+
+  // TODO: do something with the decoded data
+}
+
 
 /*
   SD card read/write
