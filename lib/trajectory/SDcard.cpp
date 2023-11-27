@@ -5,7 +5,7 @@
  * and writes to a binary SD card file called outFile
  *
  * Created: 11/11/2023 by Teresa Wan <teresawan04@gmail.com>
- * Last updated: 11/24/2023 by Ishan Goel
+ * Last updated: 11/27/2023 by Ishan Goel
  *
  */
 
@@ -107,11 +107,7 @@ int decode(char* inFile, char* outFile) {
   // read header
   struct {int k, p, m, n, N} header;
   fread(&header, sizeof(header), 1, filePointer);
-  k = header.k;
-  p = header.p;
-  m = header.m;
-  n = header.n;
-  N = header.N;
+  int k = header.k, p = header.p, m = header.m, n = header.n, N = header.N;
 
   float gainM[p][m][n + N];
   fread(&gainM, sizeof(gainM), 1, filePointer);
