@@ -17,11 +17,9 @@ int FILE_WRITE_ERR = -2;
 int NO_DATA_POINTS = -3;
 
 // reading from inFile, will return 0 if successful
-int encode(char *inFile, char *outFile) {
+int encode(char *inFile, char *outFile) { // this function doesn't run on the teensy: it generates the file to be flashed to the SD card
   FILE *filePointer = fopen(inFile, "rb");
-  if (filePointer == NULL) {
-    return FILE_READ_ERR;
-  }
+  if (filePointer == NULL) return FILE_READ_ERR;
   // what do all these vars mean?? refer to the PSRAM structure diagram
   // reading header
   int k, p, m, n, N;
@@ -35,42 +33,33 @@ int encode(char *inFile, char *outFile) {
   }
   // reading gain matrices
   float gainM[p][m][n + N];
-  for (int i = 0; i < p; i++) {
-    for (int j = 0; j < m; j++) {
-      for (int k = 0; k < (n + N); k++) {
+  for (int i = 0; i < p; i++)
+    for (int j = 0; j < m; j++)
+      for (int k = 0; k < (n + N); k++)
         fscanf(filePointer, "%f,", &gainM[i][j][k]);
-      }
-    }
-  }
 
   // reading quick stabilization matrices
   // currently 3 qsm, may change later
   float qsm[3][m][n];
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < m; j++) {
-      for (int k = 0; k < n; k++) {
+  for (int i = 0; i < 3; i++)
+    for (int j = 0; j < m; j++)
+      for (int k = 0; k < n; k++)
         fscanf(filePointer, "%f,", &qsm[i][j][k]);
-      }
-    }
-  }
 
   // read trajectory points
   float x[k][n];
-  for (int i = 0; i < k; i++) {
-    for (int j = 0; j < n; j++) {
+  for (int i = 0; i < k; i++)
+    for (int j = 0; j < n; j++)
       fscanf(filePointer, "%f,", &x[i][j]);
-    }
-  }
+
   float u[k][m];
-  for (int i = 0; i < k; i++) {
-    for (int j = 0; j < m; j++) {
+  for (int i = 0; i < k; i++)
+    for (int j = 0; j < m; j++)
       fscanf(filePointer, "%f,", &u[i][j]);
-    }
-  }
+
   float t[k];
-  for (int i = 0; i < k; i++) {
+  for (int i = 0; i < k; i++)
     fscanf(filePointer, "%f,", & t[i]);
-  }
   // write out binary format
   FILE *outFilePtr = fopen(outFile, "wb");
   if (outFilePtr == NULL) {
@@ -101,14 +90,14 @@ int encode(char *inFile, char *outFile) {
 int decode(char* inFile, char* outFile) {
   // open file
   FILE *filePointer = fopen(inFile, "rb");
-  if (filePointer == NULL) {
+  if (filePointer == NULL)
     return FILE_READ_ERR;
-  }
   // read header
   struct {int k, p, m, n, N} header;
   fread(&header, sizeof(header), 1, filePointer);
   int k = header.k, p = header.p, m = header.m, n = header.n, N = header.N;
 
+  // TODO: we probably need to change these to be dynamically allocated and return/set a pointer for each variable
   float gainM[p][m][n + N];
   fread(&gainM, sizeof(gainM), 1, filePointer);
   // read quick stabilization matrices. currently 3 qsm, may change later
@@ -122,7 +111,45 @@ int decode(char* inFile, char* outFile) {
   float t[k];
   fread(&t, sizeof(t), 1, filePointer);
 
-  // TODO: do something with the decoded data
+  // TODO: change to actual usage
+  // convert back to the original format
+  FILE *outFilePtr = fopen(outFile, "w");
+  if (outFilePtr == NULL) {
+    fclose(filePointer);
+    filePointer = NULL;
+    return FILE_WRITE_ERR;
+  }
+  // write header
+  fprintf(outFilePtr, "%d,%d,%d,%d,%d\n", k, p, m, n, N);
+  // write gain matrices
+  for (int i = 0; i < p; i++)
+    for (int j = 0; j < m; j++)
+      for (int k = 0; k < (n + N); k++)
+        fprintf(outFilePtr, "%f,", gainM[i][j][k]);
+  // write quick stabilization matrices
+  // currently 3 qsm, may change later
+  for (int i = 0; i < 3; i++)
+    for (int j = 0; j < m; j++)
+      for (int k = 0; k < n; k++)
+        fprintf(outFilePtr, "%f,", qsm[i][j][k]);
+
+  // write trajectory points
+  for (int i = 0; i < k; i++)
+    for (int j = 0; j < n; j++)
+      fprintf(outFilePtr, "%f,", x[i][j]);
+
+  for (int i = 0; i < k; i++)
+    for (int j = 0; j < m; j++)
+      fprintf(outFilePtr, "%f,", u[i][j]);
+
+  for (int i = 0; i < k; i++)
+    fprintf(outFilePtr, "%f,", t[i]);
+  // close files
+  fclose(outFilePtr);
+  outFilePtr = NULL;
+  fclose(filePointer);
+  filePointer = NULL;
+  return 0;
 }
 
 
