@@ -32,7 +32,8 @@ int encode(char *inFile, char *outFile) { // this function doesn't run on the te
     return NO_DATA_POINTS;
   }
   // reading gain matrices
-  float gainM[p][m][n + N];
+//  float gainM[p][m][n + N];
+  float (*gainM)[m][n + N] = calloc(p, sizeof *gainM);
   for (int i = 0; i < p; i++)
     for (int j = 0; j < m; j++)
       for (int k = 0; k < (n + N); k++)
@@ -40,26 +41,30 @@ int encode(char *inFile, char *outFile) { // this function doesn't run on the te
 
   // reading quick stabilization matrices
   // currently 3 qsm, may change later
-  float qsm[3][m][n];
+//  float qsm[3][m][n];
+  float (*qsm)[m][n] = calloc(3, sizeof *qsm);
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < m; j++)
       for (int k = 0; k < n; k++)
         fscanf(filePointer, "%f,", &qsm[i][j][k]);
 
   // read trajectory points
-  float x[k][n];
+//  float x[k][n];
+  float (*x)[n] = calloc(k, sizeof *x);
   for (int i = 0; i < k; i++)
     for (int j = 0; j < n; j++)
       fscanf(filePointer, "%f,", &x[i][j]);
 
-  float u[k][m];
+//  float u[k][m];
+  float (*u)[m] = calloc(k, sizeof *u);
   for (int i = 0; i < k; i++)
     for (int j = 0; j < m; j++)
       fscanf(filePointer, "%f,", &u[i][j]);
 
-  float t[k];
+//  float t[k];
+  float (*t) = calloc(k, sizeof *t);
   for (int i = 0; i < k; i++)
-    fscanf(filePointer, "%f,", & t[i]);
+    fscanf(filePointer, "%f,", &t[i]);
   // write out binary format
   FILE *outFilePtr = fopen(outFile, "wb");
   if (outFilePtr == NULL) {
@@ -68,16 +73,18 @@ int encode(char *inFile, char *outFile) { // this function doesn't run on the te
     return FILE_WRITE_ERR;
   }
   // write header
-  struct {int k, p, m, n, N} header = {k, p, m, n, N};
+  struct {
+      int k, p, m, n, N
+  } header = {k, p, m, n, N};
   fwrite(&header, sizeof(header), 1, outFilePtr);
   // write gain matrices
-  fwrite(&gainM, sizeof(gainM), 1, outFilePtr);
+  fwrite(gainM, sizeof(*gainM), p, outFilePtr);
   // write quick stabilization matrices
-  fwrite(&qsm, sizeof(qsm), 1, outFilePtr);
+  fwrite(qsm, sizeof(*qsm), 3, outFilePtr);
   // write trajectory points
-  fwrite(&x, sizeof(x), 1, outFilePtr);
-  fwrite(&u, sizeof(u), 1, outFilePtr);
-  fwrite(&t, sizeof(t), 1, outFilePtr);
+  fwrite(x, sizeof(*x), k, outFilePtr);
+  fwrite(u, sizeof(*u), k, outFilePtr);
+  fwrite(t, sizeof(*t), k, outFilePtr);
   // close files
   fclose(outFilePtr);
   outFilePtr = NULL;
@@ -86,30 +93,45 @@ int encode(char *inFile, char *outFile) { // this function doesn't run on the te
   return 0;
 }
 
+typedef struct {
+    int k, p, m, n, N;
+} Header;
+
 // reading from binary SD card file, will return 0 if successful
-int decode(char* inFile, char* outFile) {
+int decode(char *inFile, char *outFile) {
   // open file
   FILE *filePointer = fopen(inFile, "rb");
-  if (filePointer == NULL)
+  if (filePointer == NULL) {
     return FILE_READ_ERR;
+  }
   // read header
-  struct {int k, p, m, n, N} header;
+  static Header header;
   fread(&header, sizeof(header), 1, filePointer);
-  int k = header.k, p = header.p, m = header.m, n = header.n, N = header.N;
+  int k = header.k;
+  int p = header.p;
+  int m = header.m;
+  int n = header.n;
+  int N = header.N;
 
-  // TODO: we probably need to change these to be dynamically allocated and return/set a pointer for each variable
-  float gainM[p][m][n + N];
-  fread(&gainM, sizeof(gainM), 1, filePointer);
+  // float gainM[p][m][n + N];
+  float (*gainM)[m][n + N] = calloc(p, sizeof *gainM);
+  fread(gainM, sizeof(*gainM), p, filePointer);
+  printf("%ld\n", sizeof(*gainM) * p);
   // read quick stabilization matrices. currently 3 qsm, may change later
-  float qsm[3][m][n];
-  fread(&qsm, sizeof(qsm), 1, filePointer);
+  // float qsm[3][m][n];
+  float (*qsm)[m][n] = calloc(3, sizeof *qsm);
+  fread(qsm, sizeof(*qsm), 3, filePointer);
+
   // read trajectory points
-  float x[k][n];
-  fread(&x, sizeof(x), 1, filePointer);
-  float u[k][m];
-  fread(&u, sizeof(u), 1, filePointer);
-  float t[k];
-  fread(&t, sizeof(t), 1, filePointer);
+//  float x[k][n];
+  float (*x)[n] = calloc(k, sizeof *x);
+  fread(x, sizeof(*x), k, filePointer);
+//  float u[k][m];
+  float (*u)[m] = calloc(k, sizeof *u);
+  fread(u, sizeof(*u), k, filePointer);
+//  float t[k];
+  float (*t) = calloc(k, sizeof *t);
+  fread(t, sizeof(*t), k, filePointer);
 
   // TODO: change to actual usage
   // convert back to the original format
