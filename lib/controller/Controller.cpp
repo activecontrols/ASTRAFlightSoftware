@@ -3,14 +3,13 @@
 #include "../error/Error.h"
 #include "../estimator/Estimator.h"
 
-//float* controllerInputU = (float *)malloc(U_ARRAY_LENGTH * sizeof(float));
-Eigen::Matrix4Xd controllerInputU(U_ROW_LENGTH, U_COLUMN_LENGTH);
+
+Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
 double* k = (double *)malloc(K_ARRAY_LENGTH * sizeof(double));
 Eigen::MatrixXd kGain(K_ROW_LENGTH, K_COLUMN_LENGTH);
 Eigen::VectorXd deltaX(X_VECTOR_LENGTH);
 
 Eigen::VectorXd xRef{{0,0,0,0,0,0,0}};
-Eigen::VectorXd deltaXVector(7);
 
 int initializeController() {
 
@@ -28,7 +27,7 @@ int initializeController() {
         deltaX(i) = 0;
     }
 
-    for (unsigned int i = 0; i < U_ROW_LENGTH*U_COLUMN_LENGTH; i++) {
+    for (unsigned int i = 0; i < U_ROW_LENGTH; i++) {
         controllerInputU(i) = 1;
     }
 
@@ -39,12 +38,47 @@ int initializeController() {
     return NO_ERROR_CODE;
 }
 
+int updateController() {
+    getDeltaX(&estimatedStateX, &xRef);
+    controlLaw();
+    saturation();
+    return NO_ERROR_CODE;
+}
+
 int getDeltaX(Eigen::VectorXd* x, Eigen::VectorXd* xRef) {
-    deltaXVector = (*x)-(*xRef);
+    deltaX = (*x)-(*xRef);
 
     return NO_ERROR_CODE;
 }
 
+int controlLaw() {
+
+    controllerInputU = (kGain * deltaX);
+
+    return NO_ERROR_CODE;
+}
+
+int saturation() {
+    for (int i = 0; i < 3; i++) {
+        if (i == 2) { //thrust
+            if (controllerInputU(i) < 0) {
+                controllerInputU(i) = 0;
+            } else if (controllerInputU(i) > 1) {
+                controllerInputU(i) = 1;
+            }
+        } else { //beta, gamma, alpha
+            if (controllerInputU(i) < -8) {
+                controllerInputU(i) = -8;
+            } else if (controllerInputU(i) > 8) {
+                controllerInputU(i) = 8;
+            }
+        }
+    }
+}
+
+
+//UNUSED
+//-----------------------------------------------------------------------------------------
 Eigen::Quaterniond getConstrainedQuaternion(Eigen::Matrix4Xd* v) {
     //magnitude constraint of quaternion
     //prone to precision float errors
