@@ -10,21 +10,36 @@ Last updated: 10/16/2023
 #define CONTROLLER_H
 
 #include <ArduinoEigenDense.h>
+#include "../math/Integrator.h"
 
-#define U_ARRAY_LENGTH 12
+
 #define MODE_ARRAY_LENGTH 12
 #define K_ARRAY_LENGTH 10
 
-//size of x
-#define X_COLUMN_LENGTH 3
-#define X_ROW_LENGTH 4
+//dimensions of deltaX matrix
+#define X_VECTOR_LENGTH 4
 
+//dimensions of controllerInputU matrix
+#define U_ROW_LENGTH 12
+#define U_COLUMN_LENGTH 12
+
+//dimensions of kGain matrix
+#define K_ROW_LENGTH 12
+#define K_COLUMN_LENGTH 12
 
 //Global variables
-extern Eigen::VectorXd controllerInputU;
-extern double *mode;
+extern Eigen::Matrix4Xd controllerInputU;
 extern double *k;
-extern Eigen::Matrix4Xd deltaX;
+extern Eigen::MatrixXd kGain;
+extern Eigen::VectorXd deltaX;
+
+static Integrator zIntegrationObject;
+
+enum K_GAIN {
+    TRACK_K_GAIN = 1,
+    STABALIZE_K_GAIN = 1,
+    LAND_K_GAIN = 1
+};
 
 extern Eigen::VectorXd xRef;
 
@@ -33,18 +48,16 @@ extern Eigen::VectorXd xRef;
 extern int initializeController();
 
 //control law function that:
-    //takes in estimatedStateX (from Estimator.h)
-    //takes in k
-    //takes in mode
-    //modifies controllerInputU
+    //takes in previous u (output)
+    //accesses estimatedStateX (from Estimator.h)
+    //accesses k
+    //modifies controllerInputU (our output to servos, actuators, etc.)
     //returns error code
-int updateController();
+int controlLaw(Eigen::Matrix4Xd* uRef);
 
-//calculates mode
-    //takes in estimatedStateX
-    //modifies mode
+//set k to an value in the K_GAIN enum depending on the condition deltaX is in
     //returns error code
-int getControlMode();
+int controlMode(Eigen::Matrix4Xd* deltaX);
 
 #endif
 
