@@ -2,13 +2,16 @@
 //#include "../estimator/Estimator.h"
 //#include <stdlib.h>
 #include "../error/Error.h"
-
+#include "../estimator/Estimator.h"
 
 //float* controllerInputU = (float *)malloc(U_ARRAY_LENGTH * sizeof(float));
 Eigen::VectorXd controllerInputU(U_ARRAY_LENGTH);
 double* mode = (double *)malloc(MODE_ARRAY_LENGTH * sizeof(double));
 double* k = (double *)malloc(K_ARRAY_LENGTH * sizeof(double));
 Eigen::Matrix4Xd deltaX(X_ROW_LENGTH,X_COLUMN_LENGTH);
+
+Eigen::VectorXd xRef{{0,0,0,0,0,0,0}};
+Eigen::VectorXd deltaXVector(7);
 
 int initializeController() {
     
@@ -29,6 +32,12 @@ int initializeController() {
     for (unsigned int i = 0; i < U_ARRAY_LENGTH; i++) {
         deltaX(i) = 1;
     }
+
+    return NO_ERROR_CODE;
+}
+
+int getDeltaX(Eigen::VectorXd* x, Eigen::VectorXd* xRef) {
+    deltaXVector = (*x)-(*xRef);
 
     return NO_ERROR_CODE;
 }

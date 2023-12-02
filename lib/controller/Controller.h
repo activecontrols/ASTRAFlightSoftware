@@ -26,6 +26,8 @@ extern double *mode;
 extern double *k;
 extern Eigen::Matrix4Xd deltaX;
 
+extern Eigen::VectorXd xRef;
+
 //malloc's global variables in this header file, 
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
 extern int initializeController();
