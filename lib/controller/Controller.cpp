@@ -59,20 +59,29 @@ int controlLaw() {
 }
 
 int saturation() {
-    for (int i = 0; i < 3; i++) {
-        if (i == 2) { //thrust
-            if (controllerInputU(i) < 0) {
-                controllerInputU(i) = 0;
-            } else if (controllerInputU(i) > 1) {
-                controllerInputU(i) = 1;
-            }
-        } else { //beta, gamma, alpha
-            if (controllerInputU(i) < -8) {
-                controllerInputU(i) = -8;
-            } else if (controllerInputU(i) > 8) {
-                controllerInputU(i) = 8;
-            }
-        }
+
+    //beta
+    controllerInputU(0) = minMax(controllerInputU(0), BETA_MIN, BETA_MAX);
+
+    //gamma
+    controllerInputU(1) = minMax(controllerInputU(1), GAMMA_MIN, GAMMA_MAX);
+
+    //throttle
+    controllerInputU(2) = minMax(controllerInputU(2), THROTTLE_MIN, THROTTLE_MAX);
+
+    //alpha
+    controllerInputU(3) = minMax(controllerInputU(3), ALPHA_MIN, ALPHA_MAX);
+
+    return NO_ERROR_CODE;
+}
+
+double minMax(double value, double min, double max) {
+    if (value < min) {
+        return min;
+    } else if (value > max) {
+        return max;
+    } else {
+        return value;
     }
 }
 

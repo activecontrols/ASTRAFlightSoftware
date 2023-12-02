@@ -27,6 +27,18 @@ Last updated: 10/16/2023
 #define K_ROW_LENGTH 12
 #define K_COLUMN_LENGTH 12
 
+#define BETA_MIN -8
+#define BETA_MAX 8
+
+#define GAMMA_MIN -8
+#define GAMMA_MAX 8
+
+#define THROTTLE_MIN 0
+#define THROTTLE_MAX 1
+
+#define ALPHA_MIN -8
+#define ALPHA_MAX 8
+
 //Global variables
 extern Eigen::VectorXd controllerInputU;
 extern double *k;
@@ -52,6 +64,7 @@ extern int updateController();
 int getDeltaX(Eigen::VectorXd*, Eigen::VectorXd*);
 int controlLaw();
 int saturation();
+double minMax(double value, double min, double max);
 
 int controlLaw(Eigen::Matrix4Xd* uRef);
 
