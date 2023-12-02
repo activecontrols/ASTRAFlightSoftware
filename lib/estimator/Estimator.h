@@ -18,16 +18,8 @@ Last updated: 10/16/2023
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
 extern int initializeEstimator(); 
 
-//global variable
-    //will be accessible to controller.h file
-    //variables in the array correspond to ESTIMATOR_VARIABLE_ARRAY_POSITION values
 extern Eigen::VectorXd estimatedStateX;
 
-//calculates estimatedStateX
-    //updates estimatedStateX
-    //accesses measurement data (y) in buffer class
-    //accesses controller inputs (u) in Controller.h
-    //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE)
 int updateEstimator(); 
 
 float kalmanFilter();
