@@ -53,7 +53,7 @@ int getDeltaX(Eigen::VectorXd* x, Eigen::VectorXd* xRef) {
 
 int controlLaw() {
 
-    controllerInputU = (kGain * deltaX);
+    controllerInputU = -(kGain * deltaX);
 
     return NO_ERROR_CODE;
 }
