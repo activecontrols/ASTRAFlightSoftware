@@ -11,21 +11,25 @@ Last updated: 10/20/2023
 
 #include <ArduinoEigenDense.h>
 
-//TODO: I get a redefinition error if the two static variables below are uncommented
-    //I have not figured out why - Vincent
-//static Eigen::VectorXd* newestData;
-//static Eigen::VectorXd previousData;
 
-extern Eigen::VectorXd derivative;
+class Derivative {
 
-//assings pointer to newestData, initializes previousData and derivative
-//returns error code
-extern int derivativeSetup(Eigen::VectorXd*);
+public:
+    Eigen::VectorXd derivative;
 
-//updates the derivative variable with the derivative of between newestData and previousData
-extern int derivativeUpdate(); 
+    //assings pointer to newestData, initializes previousData to specified vector, initializes derivative
+    //returns error code
+    int derivativeSetup(Eigen::VectorXd*, Eigen::VectorXd);
+
+    //updates the derivative variable with the derivative of between newestData and previousData
+    int derivativeUpdate(); 
+
+private:
+    Eigen::VectorXd* newestData;
+    Eigen::VectorXd previousData;
+    elapsedMicros timeStepDerivative;
+
+};
 
 #endif
-
-
 

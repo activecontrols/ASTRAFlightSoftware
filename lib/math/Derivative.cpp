@@ -1,11 +1,18 @@
+/*
+Derivative.cpp - Derivative CPP file
+Description: defines the functions and variales in Derivative.h
+Author: Vincent Palmerio
+Created: 10/20/2023
+Last updated: 10/24/2023
+*/
+
 #include "Derivative.h"
 #include "../error/Error.h"
 
-static Eigen::VectorXd* newestData = nullptr;
-static Eigen::VectorXd previousData(0);
+
 Eigen::VectorXd derivative(0);
 
-int derivativeSetup(Eigen::VectorXd* pointerToData)
+int Derivative::derivativeSetup(Eigen::VectorXd* pointerToData, Eigen::VectorXd startingData)
 {
     newestData = pointerToData;
 
@@ -15,9 +22,18 @@ int derivativeSetup(Eigen::VectorXd* pointerToData)
 
     int vectorSize = newestData->size();
 
+    if (startingData.size() != vectorSize) {
+        return VECTOR_SIZE_MISMATCH;
+    }
+
+    previousData = startingData;
+
     Eigen::VectorXd v(vectorSize);
 
-    previousData = v;
+    //initialize vector to all 0 values
+    for (int i = 0; i < vectorSize; i++) {
+        v(i) = 0;
+    }
 
     derivative = v;
 
@@ -28,12 +44,30 @@ int derivativeSetup(Eigen::VectorXd* pointerToData)
     return NO_ERROR_CODE;
 }
 
-int derivativeUpdate()
+int Derivative::derivativeUpdate()
 {
+    Serial.println("Time Step Derivative (microseconds)");
+    Serial.println(timeStepDerivative);
 
-    derivative = (*newestData) - previousData;
+
+    Eigen::VectorXd newData = (*newestData);
+
+    Serial.println("Newest Data Vector");
+    for (int i = 0; i < newData.size(); i++) {
+        Serial.println(newData(i));
+    }
+
+    Serial.println("Previous Data Vector");
+    for (int i = 0; i < previousData.size(); i++) {
+        Serial.println(previousData(i));
+    }
+
+    derivative = ((*newestData) - previousData)/timeStepDerivative;
+
+    timeStepDerivative = 0;
 
     previousData = (*newestData);
 
     return NO_ERROR_CODE;
 }
+

@@ -31,7 +31,7 @@ Last updated: 10/16/2023
 
 //malloc's global variables in this header file
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
-extern int estimatorSetup(); 
+extern int initializeEstimator(); 
 
 //global variable
     //will be accessible to controller.h file
@@ -43,7 +43,7 @@ extern float* estimatedStateX;
     //accesses measurement data (y) in buffer class
     //accesses controller inputs (u) in Controller.h
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE)
-int calculateEstimatedStateX(); 
+int updateEstimator(); 
 
 float kalmanFilter();
 

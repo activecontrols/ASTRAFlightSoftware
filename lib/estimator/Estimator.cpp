@@ -6,7 +6,7 @@
 //research using extern
 float* estimatedStateX = (float *)malloc(STATE_DIMENSION * sizeof(float));
 
-int estimatorSetup() {
+int initializeEstimator() {
 
     if (estimatedStateX == NULL) {
         return MEMORY_ALLOCATION_ERROR_CODE;
