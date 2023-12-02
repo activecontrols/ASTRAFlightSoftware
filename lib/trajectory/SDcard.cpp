@@ -150,6 +150,54 @@ int decode(char *inFile) {
   return 0;
 }
 
+// This just serves as an example for how to use the decoded data
+// In this example, we just write out the plaintext format to a file
+void writePlainText() {
+  char* outFile = "newplain.txt";
+  // convert back to the original format
+  FILE *outFilePtr = fopen(outFile, "w");
+  if (outFilePtr == NULL) {
+    fclose(outFilePtr);
+    outFilePtr = NULL;
+    return FILE_WRITE_ERR;
+  }
+  // write header
+  fprintf(outFilePtr, "%d,%d,%d,%d,%d\n", k, p, m, n, N);
+
+  // convert void* back to the actual type
+  float (*gainM)[m][n + N] = vgainM;
+  float (*qsm)[m][n] = vqsm;
+  float (*x)[n] = vx;
+  float (*u)[m] = vu;
+
+  // write gain matrices
+  for (int i = 0; i < p; i++)
+    for (int j = 0; j < m; j++)
+      for (int k = 0; k < (n + N); k++)
+        fprintf(outFilePtr, "%f,", gainM[i][j][k]);
+  // write quick stabilization matrices
+  // currently 3 qsm, may change later
+  for (int i = 0; i < 3; i++)
+    for (int j = 0; j < m; j++)
+      for (int k = 0; k < n; k++)
+        fprintf(outFilePtr, "%f,", qsm[i][j][k]);
+
+  // write trajectory points
+  for (int i = 0; i < k; i++)
+    for (int j = 0; j < n; j++)
+      fprintf(outFilePtr, "%f,", x[i][j]);
+
+  for (int i = 0; i < k; i++)
+    for (int j = 0; j < m; j++)
+      fprintf(outFilePtr, "%f,", u[i][j]);
+
+  for (int i = 0; i < k; i++)
+    fprintf(outFilePtr, "%f,", t[i]);
+  // close files
+  fclose(outFilePtr);
+  outFilePtr = NULL;
+}
+
 /*
   SD card read/write
 
