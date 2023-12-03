@@ -1,6 +1,12 @@
 #include <Arduino.h>
 #include "../drivers/ASTRA/IMU/src/IMU.h"
 
+/*
+BufferTest.ino
+Description: Arduino testing code for the buffer class
+Author: Siddarth Goel
+*/
+
 class Buffer{
 
 public:

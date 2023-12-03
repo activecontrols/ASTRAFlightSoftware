@@ -2,8 +2,6 @@
 Debug.h - Easy debugging across ASTRA
 Description: Preprocessor variables to turn debugging println statements on and off
 Author: Vincent Palmerio
-Created: 10/24/2023
-Last updated: 10/24/2023
 */
 
 

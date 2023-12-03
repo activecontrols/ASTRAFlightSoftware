@@ -2,8 +2,6 @@
 Error.h - Error Header/Constants File
 Description: Error Constants for General Errors that can occur throughout Astra
 Author: Vincent Palmerio
-Created: 10/2/2023
-Last updated: 10/2/2023
 */
 
 

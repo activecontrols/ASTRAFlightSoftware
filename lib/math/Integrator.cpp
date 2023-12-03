@@ -2,8 +2,6 @@
 Integrator.cpp - Integrator CPP file
 Description: defines functions and variales in Integrator.h
 Author: Vincent Palmerio
-Created: 10/20/2023
-Last updated: 10/24/2023
 */
 
 #include "Integrator.h"

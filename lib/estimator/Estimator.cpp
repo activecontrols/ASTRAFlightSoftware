@@ -4,6 +4,12 @@
 #include "../drivers/ASTRA/IMU/src/IMU.h"
 #include <ArduinoEigenDense.h>
 
+/*
+Estimator.cpp
+Description:  Defines all functions for the estimator, including those declared in Estimator.h
+Author: Vincent Palmerio
+*/
+
 Eigen::VectorXd estimatedStateX(STATE_DIMENSION);
 Integrator linearAccelIntegrator;
 

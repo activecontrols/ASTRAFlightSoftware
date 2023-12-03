@@ -8,7 +8,6 @@
 Buffer.cpp 
 Description: defines functions declared in Buffer.h
 Author: Siddarth Goel, Vincent Palmerio
-Last updated: 11/23/2023
 */
 
 Buffer::Buffer(int elementSize, int numberOfElements, float* (*Fptr)() ){

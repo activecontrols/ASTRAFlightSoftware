@@ -3,6 +3,11 @@
 #include "../error/Error.h"
 #include "../estimator/Estimator.h"
 
+/*
+Controller.cpp  
+Description: Defines all functions for the controller, including those declared in Controller.h
+Author: Vincent Palmerio
+*/
 
 Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
 double* k = (double *)malloc(K_ARRAY_LENGTH * sizeof(double));

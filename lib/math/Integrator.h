@@ -2,8 +2,6 @@
 Integrator.h - Integrator Header file
 Description: Header file to Integrator.cpp
 Author: Vincent Palmerio
-Created: 10/20/2023
-Last updated: 10/20/2023
 */
 
 

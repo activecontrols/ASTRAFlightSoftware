@@ -1,9 +1,7 @@
 /*
 Controller.h - Controller Header file
 Description: Header file to Controller.cpp
-Author: Ani Gokhale, Vincent Palmerio
-Created: 9/13/2023
-Last updated: 10/16/2023
+Author: Vincent Palmerio
 */
 
 #ifndef CONTROLLER_H

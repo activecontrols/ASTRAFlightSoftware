@@ -2,8 +2,6 @@
 Estimator.h - Estimator Header file
 Description: Header file to Estimator.cpp
 Author: Vincent Palmerio
-Created: 9/18/2023
-Last updated: 10/16/2023
 */
 
 #ifndef ESTIMATOR_H

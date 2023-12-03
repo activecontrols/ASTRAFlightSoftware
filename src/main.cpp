@@ -14,7 +14,6 @@
 main.cpp 
 Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
-Last updated: 11/4/2023
 */
 
 Eigen::MatrixXd m(24, 24);
