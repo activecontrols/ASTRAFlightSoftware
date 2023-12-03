@@ -11,34 +11,12 @@
 
 #include <SPI.h>
 #include <SD.h>
-
-int FILE_READ_ERR = -1;
-int FILE_WRITE_ERR = -2;
-int NO_DATA_POINTS = -3;
-
-// what do all these vars mean?? refer to the PSRAM structure diagram
-int k, p, m, n, N;
-
-// why did we make the decision to use void*?? isn't that bad practice?
-// we're having to use void* because we don't know the size yet. the caller will have to cast it to the correct type
-// we don't want to use a 1d array with size k*m*n because we want to be able to access it like a 3d array (faster)
-// we also want to it to be stored as a contiguous block of memory which is faster and also allows a single fread
-// using pointers to VLAs on the heap is the best way to accomplish all of this.
-// ask ishan for help if needed
-
-void *vgainM; // cast to float (*gainM)[m][n + N]. Access like you would gainM[p][m][n + N]
-void *vqsm; // cast to float (*qsm)[m][n]. Access like you would qsm[3][m][n]
-void *vx; // cast to float (*x)[n]. Access like you would x[k][n]
-void *vu; // cast to float (*u)[m]. Access like you would u[k][m]
-float *t; // Last elem is t[k-1]
-
-typedef struct {
-    int k, p, m, n, N;
-} Header;
+#include <./SDcard.h>
 
 
 // reading from inFile, will return 0 if successful
-int encode(char *inFile, char *outFile) {
+int encode(char *inFile,
+           char *outFile) { // this function doesn't run on the teensy: it generates the file to be flashed to the SD card
   FILE *filePointer = fopen(inFile, "rb");
   if (filePointer == NULL) return FILE_READ_ERR;
   // reading header
@@ -52,7 +30,7 @@ int encode(char *inFile, char *outFile) {
     return NO_DATA_POINTS;
   }
   // reading gain matrices
-  float (*gainM)[m][n + N] = calloc(p, sizeof *gainM);
+  float (*gainM)[m][n + N] = (float (*)[m][n + N]) calloc(p, sizeof *gainM);
   for (int i = 0; i < p; i++)
     for (int j = 0; j < m; j++)
       for (int k = 0; k < (n + N); k++)
@@ -60,24 +38,24 @@ int encode(char *inFile, char *outFile) {
 
   // reading quick stabilization matrices
   // currently 3 qsm, may change later
-  float (*qsm)[m][n] = calloc(3, sizeof *qsm);
+  float (*qsm)[m][n] = (float (*)[m][n]) calloc(3, sizeof *qsm);
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < m; j++)
       for (int k = 0; k < n; k++)
         fscanf(filePointer, "%f,", &qsm[i][j][k]);
 
   // read trajectory points
-  float (*x)[n] = calloc(k, sizeof *x);
+  float (*x)[n] = (float (*)[n]) calloc(k, sizeof *x);
   for (int i = 0; i < k; i++)
     for (int j = 0; j < n; j++)
       fscanf(filePointer, "%f,", &x[i][j]);
 
-  float (*u)[m] = calloc(k, sizeof *u);
+  float (*u)[m] = (float (*)[m]) calloc(k, sizeof *u);
   for (int i = 0; i < k; i++)
     for (int j = 0; j < m; j++)
       fscanf(filePointer, "%f,", &u[i][j]);
 
-  float (*t) = calloc(k, sizeof *t);
+  float (*t) = (float *) calloc(k, sizeof *t);
   for (int i = 0; i < k; i++)
     fscanf(filePointer, "%f,", &t[i]);
   // write out binary format
@@ -108,94 +86,80 @@ int encode(char *inFile, char *outFile) {
 
 // reading from binary SD card file, will return 0 if successful
 int decode(char *inFile) {
+  // TODO: error out if the amount of bytes asked for is not the same as the amount of bytes read
   // open file
-  FILE *filePointer = fopen(inFile, "rb");
-  if (filePointer == NULL) {
-    fclose(filePointer);
-    filePointer = NULL;
-    return FILE_READ_ERR;
-  }
+  File file = SD.open(inFile, FILE_READ);
+  if (!file) return FILE_READ_ERR;
   // read header
-  static Header header;
-  fread(&header, sizeof(header), 1, filePointer);
+  Header header;
+  file.read(&header, sizeof(header));
   k = header.k;
   p = header.p;
   m = header.m;
   n = header.n;
   N = header.N;
 
-  float (*gainM)[m][n + N] = calloc(p, sizeof *gainM);
-  fread(gainM, sizeof(*gainM), p, filePointer);
+  float (*gainM)[m][n + N] = (float (*)[m][n + N]) calloc(p, sizeof *gainM);
+  file.read(gainM, sizeof(*gainM) * p);
   printf("%ld\n", sizeof(*gainM) * p);
   vgainM = gainM;
   // read quick stabilization matrices. currently 3 qsm, may change later
-  float (*qsm)[m][n] = calloc(3, sizeof *qsm);
-  fread(qsm, sizeof(*qsm), 3, filePointer);
+  float (*qsm)[m][n] = (float (*)[m][n]) calloc(3, sizeof *qsm);
+  file.read(qsm, sizeof(*qsm) * 3);
   vqsm = qsm;
 
   // read trajectory points
-  float (*x)[n] = calloc(k, sizeof *x);
-  fread(x, sizeof(*x), k, filePointer);
+  float (*x)[n] = (float (*)[n]) calloc(k, sizeof(float[n]));
+  file.read(x, sizeof(*x) * k);
   vx = x;
 
-  float (*u)[m] = calloc(k, sizeof *u);
-  fread(u, sizeof(*u), k, filePointer);
+  float (*u)[m] = (float (*)[m]) calloc(k, sizeof *u);
+  file.read(u, sizeof(*u) * k);
   vu = u;
 
-  t = calloc(k, sizeof *t);
-  fread(t, sizeof(*t), k, filePointer);
+  t = (float *) calloc(k, sizeof *t);
+  file.read(t, sizeof(*t) * k);
 
-  fclose(filePointer);
-  filePointer = NULL;
+  file.close();
   return 0;
 }
 
-// This just serves as an example for how to use the decoded data
-// In this example, we just write out the plaintext format to a file
-void writePlainText() {
-  char* outFile = "newplain.txt";
-  // convert back to the original format
-  FILE *outFilePtr = fopen(outFile, "w");
-  if (outFilePtr == NULL) {
-    fclose(outFilePtr);
-    outFilePtr = NULL;
-    return FILE_WRITE_ERR;
-  }
-  // write header
-  fprintf(outFilePtr, "%d,%d,%d,%d,%d\n", k, p, m, n, N);
-
+// This is just an example for how to cast and access/set the decoded data
+// (if you actually want to clear data, you can free the pointers and set to a 
+// newly allocated array)
+int clearAllData() {
   // convert void* back to the actual type
-  float (*gainM)[m][n + N] = vgainM;
-  float (*qsm)[m][n] = vqsm;
-  float (*x)[n] = vx;
-  float (*u)[m] = vu;
+  float (*gainM)[m][n + N] = (float (*)[m][n + N]) vgainM;
+  float (*qsm)[m][n] = (float (*)[m][n]) vqsm;
+  float (*x)[n] = (float (*)[n]) vx;
+  float (*u)[m] = (float (*)[m]) vu;
+
+  k = p = m = n = N = 0;
 
   // write gain matrices
   for (int i = 0; i < p; i++)
     for (int j = 0; j < m; j++)
       for (int k = 0; k < (n + N); k++)
-        fprintf(outFilePtr, "%f,", gainM[i][j][k]);
+        gainM[i][j][k] = 0;
+
   // write quick stabilization matrices
   // currently 3 qsm, may change later
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < m; j++)
       for (int k = 0; k < n; k++)
-        fprintf(outFilePtr, "%f,", qsm[i][j][k]);
+        qsm[i][j][k] = 0;
 
   // write trajectory points
   for (int i = 0; i < k; i++)
     for (int j = 0; j < n; j++)
-      fprintf(outFilePtr, "%f,", x[i][j]);
+      x[i][j] = 0;
 
   for (int i = 0; i < k; i++)
     for (int j = 0; j < m; j++)
-      fprintf(outFilePtr, "%f,", u[i][j]);
+      u[i][j] = 0;
 
   for (int i = 0; i < k; i++)
-    fprintf(outFilePtr, "%f,", t[i]);
-  // close files
-  fclose(outFilePtr);
-  outFilePtr = NULL;
+    t[i] = 0;
 }
 
 /*
