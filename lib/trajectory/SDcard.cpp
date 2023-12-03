@@ -99,21 +99,21 @@ int decode(char *inFile) {
   n = header.n;
   N = header.N;
 
-  float (*gainM)[m][n + N] = (float (*)[m][n + N]) calloc(p, sizeof *gainM);
+  float (*gainM)[m][n + N] = (float (*)[m][n + N]) extmem_malloc(p * sizeof(*gainM)); // extmem means PSRAM. malloc slightly faster than calloc
   file.read(gainM, sizeof(*gainM) * p);
-  printf("%ld\n", sizeof(*gainM) * p);
+  // printf("%ld\n", sizeof(*gainM) * p);
   vgainM = gainM;
   // read quick stabilization matrices. currently 3 qsm, may change later
-  float (*qsm)[m][n] = (float (*)[m][n]) calloc(3, sizeof *qsm);
+  float (*qsm)[m][n] = (float (*)[m][n]) extmem_malloc(3 * sizeof(*qsm));
   file.read(qsm, sizeof(*qsm) * 3);
   vqsm = qsm;
 
   // read trajectory points
-  float (*x)[n] = (float (*)[n]) calloc(k, sizeof(float[n]));
+  float (*x)[n] = (float (*)[n]) extmem_malloc(k * sizeof(*x));
   file.read(x, sizeof(*x) * k);
   vx = x;
 
-  float (*u)[m] = (float (*)[m]) calloc(k, sizeof *u);
+  float (*u)[m] = (float (*)[m]) extmem_malloc(k * sizeof(*u));
   file.read(u, sizeof(*u) * k);
   vu = u;
 
