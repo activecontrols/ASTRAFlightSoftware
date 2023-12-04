@@ -14,11 +14,54 @@
 #include <./SDcard.h>
 
 
+namespace traj {
+// reading from binary SD card file, will return 0 if successful
+    int decode(char *inFile) {
+      // TODO: error out if the amount of bytes asked for is not the same as the amount of bytes read
+      // open file
+      File file = SD.open(inFile, FILE_READ);
+      if (!file) return FILE_READ_ERR;
+      // read header
+      Header header;
+      file.read(&header, sizeof(header));
+      k = header.k;
+      p = header.p;
+      m = header.m;
+      n = header.n;
+      N = header.N;
+
+      float (*gainM)[m][n + N] = (float (*)[m][n + N]) extmem_malloc(
+              p * sizeof(*gainM)); // extmem means PSRAM. malloc slightly faster than calloc
+      file.read(gainM, sizeof(*gainM) * p);
+      // printf("%ld\n", sizeof(*gainM) * p);
+      vgainM = gainM;
+      // read quick stabilization matrices. currently 3 qsm, may change later
+      float (*qsm)[m][n] = (float (*)[m][n]) extmem_malloc(3 * sizeof(*qsm));
+      file.read(qsm, sizeof(*qsm) * 3);
+      vqsm = qsm;
+
+      // read trajectory points
+      float (*x)[n] = (float (*)[n]) extmem_malloc(k * sizeof(*x));
+      file.read(x, sizeof(*x) * k);
+      vx = x;
+
+      float (*u)[m] = (float (*)[m]) extmem_malloc(k * sizeof(*u));
+      file.read(u, sizeof(*u) * k);
+      vu = u;
+
+      t = (float *) calloc(k, sizeof *t);
+      file.read(t, sizeof(*t) * k);
+
+      file.close();
+      return 0;
+    }
+}
+
 // reading from inFile, will return 0 if successful
 int encode(char *inFile,
            char *outFile) { // this function doesn't run on the teensy: it generates the file to be flashed to the SD card
   FILE *filePointer = fopen(inFile, "rb");
-  if (filePointer == NULL) return FILE_READ_ERR;
+  if (filePointer == NULL) return traj::FILE_READ_ERR;
   // reading header
   int k, p, m, n, N;
   // k = p = m = n = N = 0;
@@ -27,22 +70,22 @@ int encode(char *inFile,
   if ((next == 0) || (next == EOF)) {
     fclose(filePointer);
     filePointer = NULL;
-    return NO_DATA_POINTS;
+    return traj::NO_DATA_POINTS;
   }
   // reading gain matrices
   float (*gainM)[m][n + N] = (float (*)[m][n + N]) calloc(p, sizeof *gainM);
   for (int i = 0; i < p; i++)
     for (int j = 0; j < m; j++)
-      for (int k = 0; k < (n + N); k++)
-        fscanf(filePointer, "%f,", &gainM[i][j][k]);
+      for (int K = 0; K < (n + N); K++) // avoid shadowing
+        fscanf(filePointer, "%f,", &gainM[i][j][K]);
 
   // reading quick stabilization matrices
   // currently 3 qsm, may change later
   float (*qsm)[m][n] = (float (*)[m][n]) calloc(3, sizeof *qsm);
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < m; j++)
-      for (int k = 0; k < n; k++)
-        fscanf(filePointer, "%f,", &qsm[i][j][k]);
+      for (int K = 0; K < n; K++)
+        fscanf(filePointer, "%f,", &qsm[i][j][K]);
 
   // read trajectory points
   float (*x)[n] = (float (*)[n]) calloc(k, sizeof *x);
@@ -63,10 +106,10 @@ int encode(char *inFile,
   if (outFilePtr == NULL) {
     fclose(filePointer);
     filePointer = NULL;
-    return FILE_WRITE_ERR;
+    return traj::FILE_WRITE_ERR;
   }
   // write header
-  Header header = {k, p, m, n, N};
+  traj::Header header = {k, p, m, n, N};
   fwrite(&header, sizeof(header), 1, outFilePtr);
   // write gain matrices
   fwrite(gainM, sizeof(*gainM), p, outFilePtr);
@@ -84,82 +127,43 @@ int encode(char *inFile,
   return 0;
 }
 
-// reading from binary SD card file, will return 0 if successful
-int decode(char *inFile) {
-  // TODO: error out if the amount of bytes asked for is not the same as the amount of bytes read
-  // open file
-  File file = SD.open(inFile, FILE_READ);
-  if (!file) return FILE_READ_ERR;
-  // read header
-  Header header;
-  file.read(&header, sizeof(header));
-  k = header.k;
-  p = header.p;
-  m = header.m;
-  n = header.n;
-  N = header.N;
-
-  float (*gainM)[m][n + N] = (float (*)[m][n + N]) extmem_malloc(p * sizeof(*gainM)); // extmem means PSRAM. malloc slightly faster than calloc
-  file.read(gainM, sizeof(*gainM) * p);
-  // printf("%ld\n", sizeof(*gainM) * p);
-  vgainM = gainM;
-  // read quick stabilization matrices. currently 3 qsm, may change later
-  float (*qsm)[m][n] = (float (*)[m][n]) extmem_malloc(3 * sizeof(*qsm));
-  file.read(qsm, sizeof(*qsm) * 3);
-  vqsm = qsm;
-
-  // read trajectory points
-  float (*x)[n] = (float (*)[n]) extmem_malloc(k * sizeof(*x));
-  file.read(x, sizeof(*x) * k);
-  vx = x;
-
-  float (*u)[m] = (float (*)[m]) extmem_malloc(k * sizeof(*u));
-  file.read(u, sizeof(*u) * k);
-  vu = u;
-
-  t = (float *) calloc(k, sizeof *t);
-  file.read(t, sizeof(*t) * k);
-
-  file.close();
-  return 0;
-}
-
 // This is just an example for how to cast and access/set the decoded data
-// (if you actually want to clear data, you can free the pointers and set to a 
+// (if you actually want to clear data, you can free the pointers and set to a
 // newly allocated array)
 int clearAllData() {
   // convert void* back to the actual type
-  float (*gainM)[m][n + N] = (float (*)[m][n + N]) vgainM;
-  float (*qsm)[m][n] = (float (*)[m][n]) vqsm;
-  float (*x)[n] = (float (*)[n]) vx;
-  float (*u)[m] = (float (*)[m]) vu;
+  // TODO: check if static cast still works
+  float (*gainM)[traj::m][traj::n + traj::N] = (float (*)[traj::m][traj::n + traj::N]) traj::vgainM;
+  float (*qsm)[traj::m][traj::n] = (float (*)[traj::m][traj::n]) traj::vqsm;
+  float (*x)[traj::n] = (float (*)[traj::n]) traj::vx;
+  float (*u)[traj::m] = (float (*)[traj::m]) traj::vu;
 
-  k = p = m = n = N = 0;
+  traj::k = traj::p = traj::m = traj::n = traj::N = 0;
 
   // write gain matrices
-  for (int i = 0; i < p; i++)
-    for (int j = 0; j < m; j++)
-      for (int k = 0; k < (n + N); k++)
+  for (int i = 0; i < traj::p; i++)
+    for (int j = 0; j < traj::m; j++)
+      for (int k = 0; k < (traj::n + traj::N); k++)
         gainM[i][j][k] = 0;
 
   // write quick stabilization matrices
   // currently 3 qsm, may change later
   for (int i = 0; i < 3; i++)
-    for (int j = 0; j < m; j++)
-      for (int k = 0; k < n; k++)
+    for (int j = 0; j < traj::m; j++)
+      for (int k = 0; k < traj::n; k++)
         qsm[i][j][k] = 0;
 
   // write trajectory points
-  for (int i = 0; i < k; i++)
-    for (int j = 0; j < n; j++)
+  for (int i = 0; i < traj::k; i++)
+    for (int j = 0; j < traj::n; j++)
       x[i][j] = 0;
 
-  for (int i = 0; i < k; i++)
-    for (int j = 0; j < m; j++)
+  for (int i = 0; i < traj::k; i++)
+    for (int j = 0; j < traj::m; j++)
       u[i][j] = 0;
 
-  for (int i = 0; i < k; i++)
-    t[i] = 0;
+  for (int i = 0; i < traj::k; i++)
+    traj::t[i] = 0;
 }
 
 /*
