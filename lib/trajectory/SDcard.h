@@ -1,3 +1,13 @@
+/*
+  SDcard.h - SDcard Header file
+  Description: Header file to SDcard.cpp
+  Created: 12/2/2023 by Ishan Goel
+  Last updated: 12/4/2023 by Ishan Goel
+*/
+
+#ifndef TRAJ_H
+#define TARJ_H
+
 namespace traj {
 
     int FILE_READ_ERR = -1;
@@ -28,5 +38,6 @@ namespace traj {
   // int encode(char *inFile, char *outFile); // runs on the ground station
 
     int decode(char *inFile);
-
 }
+
+#endif
