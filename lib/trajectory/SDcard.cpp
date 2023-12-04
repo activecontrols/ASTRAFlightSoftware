@@ -14,6 +14,13 @@
 #include <./SDcard.h>
 
 // reading from binary SD card file, will return 0 if successful
+namespace traj {
+  int FILE_READ_ERR = -1, FILE_WRITE_ERR = -2, NO_DATA_POINTS = -3;
+  int k, p, m, n, N;
+  void *vgainM, *vqsm, *vx, *vu;
+  float *t;
+}
+
 int traj::decode(char* inFile) {
   // TODO: error out if the amount of bytes asked for is not the same as the amount of bytes read
   // open file
