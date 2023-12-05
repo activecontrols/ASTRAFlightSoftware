@@ -78,6 +78,9 @@ void CommsManager::updateHealth(fmav_sys_status_t data) {
  */
 void CommsManager::sendStatusText(MAV_SEVERITY severity, const char *text) {
     int len = strlen(text);
+    if (this->statusTextID == 0) {
+        this->statusTextID = 1;
+    }
     while (len > 0) {
         fmav_statustext_t data;
         data.severity = severity;
