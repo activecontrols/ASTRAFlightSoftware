@@ -3,6 +3,7 @@
 //#include <stdlib.h>
 #include "../error/Error.h"
 #include <Arduino.h>
+#include <cstring>
 
 /* ----- PUBLIC INTERFACES ----- */
 
@@ -30,6 +31,7 @@ void CommsManager::spin() {
 
     if (millis() - this->lastHeartbeat > (1000 / HEARTBEAT_HZ)) {
         this->sendHeartbeat();
+        this->sendStatusText(MAV_SEVERITY_DEBUG, "This is a text status text message. I'm purposely making it long to demonstrate that we can send multiple chunked messages. We can use this to send more detailed information about errors encountered in the system, or to print out debug messages (since Serial.println will interfere with MAVLink comms).");
         this->lastHeartbeat = millis();
     }
 
@@ -75,12 +77,22 @@ void CommsManager::updateHealth(fmav_sys_status_t data) {
  * used to send debug messages, warnings, or errors.
  */
 void CommsManager::sendStatusText(MAV_SEVERITY severity, const char *text) {
-    fmav_statustext_t data;
-    data.severity = severity;
-    strcpy(data.text, text);
-    data.id = 1;
-    fmav_msg_statustext_encode_to_serial(this->sysid, this->compid,
-                                         &data, &(this->status));
+    int len = strlen(text);
+    while (len > 0) {
+        fmav_statustext_t data;
+        data.severity = severity;
+        // TODO: We should limit this to read less than 50 at the tail
+        // But for some reason that duplicates the text
+        // So for now we do this and assume memory security isn't an issue
+        memcpy(data.text, text, 50);
+        data.id = this->statusTextID;
+        fmav_msg_statustext_encode_to_serial(this->sysid, this->compid,
+                                             &data, &(this->status));
+        len -= 50;
+        text += 50;
+    }
+
+    this->statusTextID += 1; // Will underflow automatically, no round necessary
 }
 
 /* ----- PRIVATE HELPERS ----- */

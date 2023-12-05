@@ -77,6 +77,9 @@ private:
     int lastTelem = 0;
     int lastHealth = 0;
 
+    // Status text ID tracker
+    uint16_t statusTextID = 1;
+
     // Telemetry Data
     fmav_control_system_state_t state;
     fmav_controller_status_t trajectoryStatus;

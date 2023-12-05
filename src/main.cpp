@@ -14,6 +14,7 @@ Eigen::VectorXd integrateAndDerive(3);
 CommsManager comms;
 
 elapsedMillis ledTime;
+int lastLED;
 
 bool ledOn = false;
 
@@ -100,36 +101,35 @@ void led() {
 
 void loop() {
   comms.spin();
-  // Eigen::VectorXd vo = m * v;
-  // v = vo;
+  if (millis() - lastLED > 1000) {
+    Eigen::VectorXd vo = m * v;
+    v = vo;
 
-  // integrateAndDerive *= 2;
+    integrateAndDerive *= 2;
 
-  // integratorUpdate();
-  // Serial.println("Integration");
-  // for (int i = 0; i < integratedData.size(); i++) {
-  //   Serial.println(integratedData(i));
-  // }
+    integratorUpdate();
+    Serial.println("Integration");
+    for (int i = 0; i < integratedData.size(); i++) {
+      Serial.println(integratedData(i));
+    }
 
-  // derivativeUpdate();
-  // Serial.println("Derivative");
-  // for (int i = 0; i < derivative.size(); i++) {
-  //   Serial.println(derivative(i));
-  // }
+    derivativeUpdate();
+    Serial.println("Derivative");
+    for (int i = 0; i < derivative.size(); i++) {
+      Serial.println(derivative(i));
+    }
 
-  // Serial.println("New Vector: ");
-  // Serial.print(v(0));
-  // Serial.println();
-  // Serial.print(v(1));
-  // Serial.println();
-  // Serial.print(v(2));
-  // Serial.println();
+    Serial.println("New Vector: ");
+    Serial.print(v(0));
+    Serial.println();
+    Serial.print(v(1));
+    Serial.println();
+    Serial.print(v(2));
+    Serial.println();
 
-  //turns led on and off
-  // led();
-  // 
-
-  // // wait for a second
-  // delay(1000);
+    // turns led on and off
+    led();
+    lastLED = millis();
+  }
 }
 
