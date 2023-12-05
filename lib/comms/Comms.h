@@ -8,12 +8,17 @@ Created: 2023-10-27
 #ifndef COMMS_H 
 #define COMMS_H 
 
+#define FASTMAVLINK_SERIAL_WRITE_CHAR 1
+#define FASTMAVLINK_IGNORE_WADDRESSOFPACKEDMEMBER
+void fmav_serial_write_char(char c);
+
+#include <Arduino.h>
 #include "../message_lib/pscom/pscom.h"
 #include <ArduinoEigenDense.h>
 #include <stdint.h>
 
 /* Define serial interface to use at compile time */
-#define MAVLinkSerial Serial1
+#define MAVLinkSerial Serial
 
 /* Define dimensions of vectors/matrices used in controller */
 #define U_ARRAY_LENGTH 12

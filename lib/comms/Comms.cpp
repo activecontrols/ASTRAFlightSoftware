@@ -2,32 +2,17 @@
 //#include "../estimator/Estimator.h"
 //#include <stdlib.h>
 #include "../error/Error.h"
-#include <cstdint>
-
-/* ----- PRIVATE HELPER FORWARD-DECLS ----- */
-
-/* We want to define a serial helper for our fastmavlink
- * library so it can more efficiently write messages to serial
- * without requiring intermediate buffers
- */
-#define FASTMAVLINK_SERIAL_WRITE_CHAR
-void fmav_serial_write_char(char c) {
-    MAVLinkSerial.write(c);
-}
+#include <Arduino.h>
 
 /* ----- PUBLIC INTERFACES ----- */
 
 /**
- * We leave the constructor empty for now; most initialization
+ * We leave the constructor and init empty for now; most initialization
  * functions should be handled in init() in the style of most Arduino
  * libraries.
  */
 CommsManager::CommsManager() { }
-
-/**
- * Init function; currently doesn't need to do anything
- */
-void CommsManager::init(Stream *serial) { }
+void CommsManager::init() { }
 
 /**
  * Spin function; this should be run every loop. Processes
@@ -43,17 +28,17 @@ void CommsManager::spin() {
         }
     }
 
-    if (millis() - this->lastHeartbeat > (1 / HEARTBEAT_HZ)) {
+    if (millis() - this->lastHeartbeat > (1000 / HEARTBEAT_HZ)) {
         this->sendHeartbeat();
         this->lastHeartbeat = millis();
     }
 
-    if (millis() - lastTelem > (1 / TELEM_HZ)) {
+    if (millis() - lastTelem > (1000 / TELEM_HZ)) {
         this->sendTelem();
         this->lastTelem = millis();
     }
 
-    if (millis() - lastHealth > (1 / HEALTH_HZ)) {
+    if (millis() - lastHealth > (1000 / HEALTH_HZ)) {
         this->sendHealth();
         this->lastHealth = millis();
     }
@@ -90,6 +75,12 @@ void CommsManager::updateHealth(fmav_sys_status_t data) {
  * used to send debug messages, warnings, or errors.
  */
 void CommsManager::sendStatusText(MAV_SEVERITY severity, const char *text) {
+    fmav_statustext_t data;
+    data.severity = severity;
+    strcpy(data.text, text);
+    data.id = 1;
+    fmav_msg_statustext_encode_to_serial(this->sysid, this->compid,
+                                         &data, &(this->status));
 }
 
 /* ----- PRIVATE HELPERS ----- */
@@ -111,6 +102,8 @@ void CommsManager::processMessage(fmav_message_t *msg) {
         case FASTMAVLINK_MSG_ID_PARAM_REQUEST_READ:
             break; // Handling currently not implemented
         case FASTMAVLINK_MSG_ID_PARAM_SET:
+            break; // Handling currently not implemented
+        case FASTMAVLINK_MSG_ID_TRAJ_LOAD_SD_CARD:
             break; // Handling currently not implemented
         case FASTMAVLINK_MSG_ID_TRAJ_INFO:
             break; // Handling currently not implemented
@@ -189,10 +182,10 @@ void CommsManager::handleLandMission() {
  */
 void CommsManager::sendHeartbeat() {
     fmav_heartbeat_t hb = {
-        .base_mode = 0,
         .custom_mode = 0,
-        .autopilot = 69,
         .type = MAV_TYPE_ROCKET,
+        .autopilot = 69,
+        .base_mode = 0,
         .system_status = MAV_STATE_ACTIVE, // TODO: Allow updating state
     };
     fmav_status_t status;
@@ -224,3 +217,14 @@ void CommsManager::sendTrajPtReq(int n) {
 /**
  * Private 
  */
+
+/* ----- PRIVATE HELPER ----- */
+
+/* We want to define a serial helper for our fastmavlink
+ * library so it can more efficiently write messages to serial
+ * without requiring intermediate buffers
+ */
+#define FASTMAVLINK_SERIAL_WRITE_CHAR 1
+void fmav_serial_write_char(char c) {
+    MAVLinkSerial.write(c);
+}
