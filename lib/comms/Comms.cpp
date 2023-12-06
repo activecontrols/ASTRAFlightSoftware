@@ -31,7 +31,6 @@ void CommsManager::spin() {
 
     if (millis() - this->lastHeartbeat > (1000 / HEARTBEAT_HZ)) {
         this->sendHeartbeat();
-        this->sendStatusText(MAV_SEVERITY_DEBUG, "This is a text status text message. I'm purposely making it long to demonstrate that we can send multiple chunked messages. We can use this to send more detailed information about errors encountered in the system, or to print out debug messages (since Serial.println will interfere with MAVLink comms).");
         this->lastHeartbeat = millis();
     }
 
@@ -110,7 +109,7 @@ void CommsManager::processMessage(fmav_message_t *msg) {
         case FASTMAVLINK_MSG_ID_COMMAND_LONG:
             fmav_command_long_t command;
             fmav_msg_command_long_decode(&command, msg);
-            this->processCommand(&command);
+            this->processCommand(msg->sysid, msg->compid, &command);
             break;
         case FASTMAVLINK_MSG_ID_PARAM_REQUEST_LIST:
             break; // Handling currently not implemented
@@ -138,18 +137,57 @@ void CommsManager::processMessage(fmav_message_t *msg) {
 /**
  * Command processor. Further routes commands to respecting handlers.
  */
-void CommsManager::processCommand(fmav_command_long_t *cmd) {
+void CommsManager::processCommand(uint8_t sysid, uint8_t compid, fmav_command_long_t *cmd) {
+    // TODO: More generic method of registering handlers
     switch (cmd->command) {
-        case MAV_CMD_DO_SET_MISSION_CURRENT:
+        case MAV_CMD_DO_PAUSE_CONTINUE: {
+            if (this->missionPauseCallback == NULL) {
+                this->rejectCommand(cmd->command, (String("IGNORE CMD: No callback to execute pause registered. cont=") + String((int)cmd->param1)).c_str());
+                return;
+            }
+            fmav_command_ack_t ack = this->missionPauseCallback((int)cmd->param1);
+            fmav_msg_command_ack_encode_to_serial(this->sysid, this->compid,
+                                              &ack, &(this->status));
             break;
-        case MAV_CMD_DO_PAUSE_CONTINUE:
+        }
+        case MAV_CMD_NAV_LAND: {
+            if (this->missionLandCallback == NULL) {
+                this->rejectCommand(cmd->command, "IGNORE CMD: No callback to execute LAND registered.");
+                return;
+            }
             break;
-        case MAV_CMD_NAV_LAND:
+        }
+        case MAV_CMD_MISSION_START: {
+            if (this->missionStartCallback == NULL) {
+                this->rejectCommand(cmd->command, "IGNORE CMD: No callback to execute mission start registered.");
+                return;
+            }
+            fmav_command_ack_t ack = this->missionStartCallback();
+            fmav_msg_command_ack_encode_to_serial(this->sysid, this->compid,
+                                              &ack, &(this->status));
             break;
-        case MAV_CMD_MISSION_START:
+        }
+        case MAV_CMD_MISSION_LOAD_SD: {
+            if (this->trajLoadSDCallback == NULL) {
+                this->rejectCommand(cmd->command, (String("IGNORE CMD: No callback to load trajectory from SD card registered. mission=") + String((int)cmd->param1)).c_str());
+                return;
+            }
+            fmav_traj_ack_t ack = this->trajLoadSDCallback((int)cmd->param1);
+            fmav_msg_traj_ack_encode_to_serial(this->sysid, this->compid,
+                                               &ack, &(this->status));
             break;
-        case MAV_CMD_MISSION_LOAD_SD:
+        }
+        default: {
+            // We return the generic acknowledgement UNSUPPORTED
+            fmav_command_ack_t ack;
+            ack.result = MAV_RESULT_UNSUPPORTED;
+            ack.command = cmd->command;
+            ack.target_system = sysid;
+            ack.target_component = compid;
+            fmav_msg_command_ack_encode_to_serial(this->sysid, this->compid,
+                                              &ack, &(this->status));
             break;
+        }
     }
 }
 
@@ -173,6 +211,34 @@ void CommsManager::sendHealth() {
         &(this->health), &(this->status)
     );
 }
+
+/**
+ * Register handlers for certain command messages
+ * These functions should be used with pointers to handling functions
+ * to trigger actions on certain commands (e.g. comms.registerMissionStartAction(func)
+ * will call func when the mission start command is received)
+ */
+void CommsManager::registerMissionStartAction(fmav_command_ack_t (*callback) (void)) {
+    this->missionStartCallback = callback;
+}
+void CommsManager::registerMissionPauseAction(fmav_command_ack_t (*callback) (int)) {
+    this->missionPauseCallback = callback;
+}
+void CommsManager::registerLandAction(fmav_command_ack_t (*callback) (void)) {
+    this->missionLandCallback = callback;
+}
+void CommsManager::registerTrajSDLoadAction(fmav_traj_ack_t (*callback) (int number)) {
+    this->trajLoadSDCallback = callback;
+}
+
+/**
+ * Send acknowledgement of trajectory (trajectory read success? not enough memory?)
+ */
+// void CommsManager::sendTrajAck(fmav_traj_ack_t ack) {
+//     fmav_msg_traj_ack_encode_to_serial(this->sysid, this->compid,
+//                                        &ack, &(this->status));
+// }
+
 
 /**
  * Handle mission start command
@@ -232,6 +298,18 @@ void CommsManager::sendTrajPtReq(int n) {
 /**
  * Private 
  */
+
+/**
+ * Reject command with FAILED, mostly used for missing handlers
+ */
+void CommsManager::rejectCommand(uint16_t command, const char *reason) {
+    this->sendStatusText(MAV_SEVERITY_WARNING, reason);
+    fmav_command_ack_t ack;
+    ack.command = command;
+    ack.result = MAV_RESULT_FAILED;
+    fmav_msg_command_ack_encode_to_serial(this->sysid, this->compid,
+                                      &ack, &(this->status));
+}
 
 /* ----- PRIVATE HELPER ----- */
 

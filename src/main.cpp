@@ -18,6 +18,16 @@ int lastLED;
 
 bool ledOn = false;
 
+fmav_traj_ack_t loadSD(int number) {
+    comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
+
+    // Return example affirmative
+    fmav_traj_ack_t ack;
+    ack.result = MAV_RESULT_ACCEPTED;
+    ack.points_loaded = 592; // I made up a number
+    return ack;
+}
+
 void setup() {
   Serial.print("Controller error code:");
   Serial.print(controllerSetup());
@@ -27,6 +37,7 @@ void setup() {
 
   Serial.print("Set up comms...");
   comms.init();
+  comms.registerTrajSDLoadAction(loadSD);
   Serial.println("Done");
 
   integrateAndDerive << 1, 2, 3;

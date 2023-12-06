@@ -6,6 +6,9 @@ the LQR controller and communications code.
 The MAVLink message definitions are also contained in this directory. To auto-generate HTML
 documentation for these, go to `../docs/`.
 
+For a comprehensive guide on using MAVLink and modifying the comms code, see the README under
+`comms/`.
+
 ## Writing New Messages
 
 Communications message definitions are located under message_definitions/1.0/pscom.xml. Enums and

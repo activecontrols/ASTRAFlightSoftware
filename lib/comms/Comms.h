@@ -41,19 +41,20 @@ public:
     void sendStatusText(MAV_SEVERITY severity, const char *text); // Send status text. ONLY USE SPARINGLY (high bandwidth usage).
 
     // Register callbacks for mission control events
-    void registerMissionStartAction(void (*callback) (void));
-    void registerMissionNextSegmentAction(void (*callback) (float* K, float* trajStart, uint16_t trajLen));
-    void registerLandAction(void (*callback) (void));
+    void registerMissionStartAction(fmav_command_ack_t (*callback) (void));
+    void registerMissionNextSegmentAction(fmav_command_ack_t (*callback) (float* K, float* trajStart, uint16_t trajLen));
+    void registerMissionPauseAction(fmav_command_ack_t (*callback) (int));
+    void registerLandAction(fmav_command_ack_t (*callback) (void));
 
     // Register callbacks for trajectory manager
-    void registerTrajSDLoadAction(void (*callback) (const char* filename));
-    void registerTrajK(void (*callback) (int k, int dim1, int dim2, float *K));
-    void registerTrajPt(void (*callback) (int k, fmav_traj_pt_t pt));
-    void sendTrajAck(fmav_traj_ack_t ack);
+    void registerTrajSDLoadAction(fmav_traj_ack_t (*trajLoadSDCallback) (int number));
+    // void registerTrajK(void (*callback) (int k, int dim1, int dim2, float *K));
+    // void registerTrajPt(void (*callback) (int k, fmav_traj_pt_t pt));
+    // void sendTrajAck(fmav_traj_ack_t ack);
 private:
     // Highest-level: handle all incoming messages/commands
     void processMessage(fmav_message_t *msg);
-    void processCommand(fmav_command_long_t *cmd);
+    void processCommand(uint8_t sysid, uint8_t compid, fmav_command_long_t *cmd);
     // High-level microservice handlers
     // Parameter Protocol - currently unimplemented (figure out what to do about STL and maps)
 
@@ -71,6 +72,7 @@ private:
     void sendTrajK2Req(int k);       // Send request for part 2 of a gain matrix K
     void sendTrajPtReq(int n);       // Send request for trajectory point
     void sendTrajAck();               // Send final message indicating end of mission upload
+    void rejectCommand(uint16_t command, const char *reason); // Send ack with command cancelled with an error
     
     // Timers for periodics
     int lastHeartbeat = 0;
@@ -92,7 +94,11 @@ private:
     fmav_status_t status;
     fmav_message_t message;
 
-    // Trajectory 
+    // Callback handling 
+    fmav_command_ack_t (*missionStartCallback) (void);
+    fmav_command_ack_t (*missionPauseCallback) (int); // pause = 0, continue = 1
+    fmav_command_ack_t (*missionLandCallback) (void);
+    fmav_traj_ack_t (*trajLoadSDCallback) (int number);
 };
 
 #endif
