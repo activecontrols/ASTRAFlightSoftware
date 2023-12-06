@@ -1,11 +1,15 @@
+/*
+Integrator.cpp - Integrator CPP file
+Description: defines functions and variales in Integrator.h
+Author: Vincent Palmerio
+Created: 10/20/2023
+Last updated: 10/24/2023
+*/
+
 #include "Integrator.h"
 #include "../error/Error.h"
 
-static Eigen::VectorXd* dataToIntegrate = nullptr;
-Eigen::VectorXd integratedData(0);
-
-
-int integratorSetup(Eigen::VectorXd* pointerToData)
+int Integrator::integratorSetup(Eigen::VectorXd* pointerToData)
 {
 
     dataToIntegrate = pointerToData;
@@ -18,7 +22,12 @@ int integratorSetup(Eigen::VectorXd* pointerToData)
 
     Eigen::VectorXd v(vectorSize);
 
+    for (int i = 0; i < vectorSize; i++) {
+        v(i) = 0;
+    }
+
     integratedData = v;
+
 
     if (integratedData.size() == 0) {
         return VECTOR_INIT_ZERO_SIZE_ERROR;
@@ -28,16 +37,24 @@ int integratorSetup(Eigen::VectorXd* pointerToData)
     return NO_ERROR_CODE;
 }
 
-int integratorUpdate()
+int Integrator::integratorUpdate()
 {
-    int changeInTime = timeBetweenIntegration;
+    double changeInTime = timeBetweenIntegration;
+
+    changeInTime = changeInTime / 1000000; //convert to seconds
+    
+#if defined(ASTRA_INTEGRATOR_DEBUG) or defined(ASTRA_FULL_DEBUG)
+    Serial.println("Time between integration seconds: ");
+    Serial.println(changeInTime, 60);
+#endif
+    
+    integratedData += (*dataToIntegrate) * changeInTime;
+
     timeBetweenIntegration = 0;
 
     if (changeInTime > MAX_ALLOWED_TIME_BETWEEN_INTEGRATION) {
         return MAX_ALLOWED_TIME_BETWEEN_INTEGRATION_EXCEEDED;
     }
-
-    integratedData += (*dataToIntegrate) * changeInTime;
 
     return NO_ERROR_CODE;
 }

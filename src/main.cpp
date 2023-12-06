@@ -1,22 +1,58 @@
 #include <Arduino.h>
+#include <Adafruit_LSM6DSOX.h>
+#include "../lib/buffer/Buffer.h"
 #include "../lib/estimator/Estimator.h"
 #include "../lib/controller/Controller.h"
 #include "../lib/math/Integrator.h"
 #include "../lib/math/Derivative.h"
 #include "../lib/comms/Comms.h"
+#include "../lib/drivers/ASTRA/IMU/src/IMU.h"
+#include "../lib/encoders/AS5600.h"
+#include <Servo.h>
 //#include <ArduinoEigenDense.h>
 
-Eigen::MatrixXd m(3, 3);
-Eigen::VectorXd v(3);
+/*
+main.cpp 
+Description: Currently used to run tests for the entire flight software
+Author: Vincent Palmerio
+Last updated: 11/4/2023
+*/
 
-Eigen::VectorXd integrateAndDerive(3);
+Eigen::MatrixXd m(24, 24);
+Eigen::VectorXd v(24);
 
-CommsManager comms;
+Eigen::VectorXd integrateAndDeriveTest(3);
+
+Integrator gyroIntegrator;
+Eigen::VectorXd gyroVector(3);
 
 elapsedMillis ledTime;
-int lastLED;
+
+elapsedMicros totalTimeElapsed;
+int lastTime = 0;
 
 bool ledOn = false;
+
+// COMMS
+CommsManager comms;
+
+//ERROR CODES
+int controllerErrorCode = -20;
+int estimatorErrorCode = -20;
+int integratorErrorCode = -20;
+int integratorGyroErrorCode = -20;
+int derivativeErrorCode = -20;
+
+//SERVOS
+Servo beta;
+Servo alpha;
+
+//ENCODER
+AS5600 as5600;
+
+Buffer imuBuffer(3,5, getValues);
+float ** data;
+float* test;
 
 fmav_traj_ack_t loadSD(int number) {
     comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
@@ -29,72 +65,105 @@ fmav_traj_ack_t loadSD(int number) {
 }
 
 void setup() {
-  Serial.print("Controller error code:");
-  Serial.print(controllerSetup());
 
-  Serial.print("Estimator error code:");
-  Serial.print(estimatorSetup());
-
-  Serial.print("Set up comms...");
-  comms.init();
-  comms.registerTrajSDLoadAction(loadSD);
-  Serial.println("Done");
-
-  integrateAndDerive << 1, 2, 3;
-
-  Serial.print("Integrator error code:");
-  Serial.print(integratorSetup(&integrateAndDerive));
-
-  Serial.print("Derivative error code:");
-  Serial.print(derivativeSetup(&integrateAndDerive));
-  
   //Sets up led
   pinMode(LED_BUILTIN, OUTPUT);
+  //sets LED to on indefinitely so we know teensy is on if setup() fails
+  digitalWrite(LED_BUILTIN, HIGH); 
 
+  //ENCODER SETUP
+  // as5600.begin(4);  //  set direction pin.
+  // as5600.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+  // int b = as5600.isConnected();
+  //---
+  // Serial.print("Set up comms...");
+  comms.init();
+  comms.registerTrajSDLoadAction(loadSD);
+  // Serial.println("Done");
 
-  for (unsigned int i = 0; i<U_ARRAY_LENGTH; i++) {
-    Serial.print(controllerInputU(i));
-  }
+  //IMU SETUP
+  initializeIMU();
+  //---
 
-  for (unsigned int i = 0; i<STATE_DIMENSION; i++) {
-    Serial.print(estimatedStateX[i]);
-  }
+  //GYROSCOPE (IMU) INTEGRATOR SETUP
+  // Serial.print("Integrator error code:");
+  integratorGyroErrorCode = gyroIntegrator.integratorSetup(&gyroVector);
+  
+  // Serial.println(integratorGyroErrorCode);
+  //---
 
-  float theta = PI/2;
+  //SERVO SETUP
+  beta.attach(2);
+  alpha.attach(3);
 
+  beta.write(90);
+  alpha.write(90);
+  //---
 
   
-  m(0, 0) = 1;
-  m(1, 0) = 0;
-  m(2, 0) = 0;
-  m(0, 1) = 0;
-  m(0, 2) = 0;
-  m(1, 1) = cos(theta);
-  m(1, 2) = -sin(theta);
-  m(2, 1) = sin(theta);
-  m(2, 2) = cos(theta);
+  // Serial.print("Derivative error code:");
+  // derivativeErrorCode = derivativeSetup(&integrateAndDeriveTest, integrateAndDeriveTest);
+  // Serial.println(derivativeErrorCode);
+
+  // Serial.print("Controller error code:");
+  // controllerErrorCode = controllerSetup();
+  // Serial.println(controllerErrorCode);
+
+  // Serial.print("Estimator error code:");
+  // estimatorErrorCode = estimatorSetup();
+  // Serial.println(estimatorErrorCode);
+
+  // integrateAndDeriveTest << 1, 2, 3;
+
+  // Serial.print("Integrator error code:");
+  // integratorErrorCode = integratorSetup(&integrateAndDeriveTest);
+  // Serial.println(integratorErrorCode);
+
+  // Serial.print("Derivative error code:");
+  // derivativeErrorCode = derivativeSetup(&integrateAndDeriveTest, integrateAndDeriveTest);
+  // Serial.println(derivativeErrorCode);
+  
+  
+
+
+  // for (unsigned int i = 0; i<U_ARRAY_LENGTH; i++) {
+  //   Serial.print(controllerInputU(i));
+  // }
+
+  // for (unsigned int i = 0; i<STATE_DIMENSION; i++) {
+  //   Serial.print(estimatedStateX[i]);
+  // }
+
+  // float theta = PI/2;
+
+
+  // //ALWAYS INITIALIZE EACH VALUE IN VECTORS AND MATRICES
+  // for (int i = 0; i < 24; i++) {
+  //   for (int j = 0; j < 24; j++) {
+  //     m(i, j) = 2;
+  //   }
+  // }
+
+  // for (int i = 0; i < 24; i++) {
+  //   v(i) = 2;
+  // }
+
+  
 
   //Undefined Vector Test
-  Serial.println("Vector w/o initialized values: ");
-  Serial.print(v(0));
-  Serial.println();
-  Serial.print(v(1));
-  Serial.println();
-  Serial.print(v(2));
-  Serial.println();
-
-  v(0) = 0;
-  v(1) = 1;
-  v(2) = 0;
-   
-  
-
+  // Serial.println("Vector w/o initialized values: ");
+  // Serial.print(v(0));
+  // Serial.println();
+  // Serial.print(v(1));
+  // Serial.println();
+  // Serial.print(v(2));
+  // Serial.println();
 }
 
 //turns the LED on and off every 3 seconds 
 void led() {
   
-  if (ledTime == 3000) {
+  if (ledTime >= 3000) {
 
     //(HIGH and LOW are the voltage levels)
     if (ledOn == true) {
@@ -105,42 +174,76 @@ void led() {
       ledOn = true;
     }
     
+    // Serial.println("LED Time");
+    // Serial.println(ledTime);
 
-    ledTime -= 3000;
+    ledTime = 0;
   }
 }
 
 void loop() {
   comms.spin();
-  if (millis() - lastLED > 1000) {
-    Eigen::VectorXd vo = m * v;
-    v = vo;
+  // comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
+  // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
+  lastTime = totalTimeElapsed;
 
-    integrateAndDerive *= 2;
+  // updateIMU();
 
-    integratorUpdate();
-    Serial.println("Integration");
-    for (int i = 0; i < integratedData.size(); i++) {
-      Serial.println(integratedData(i));
-    }
+  // imuBuffer.addData();
+  // data = imuBuffer.getData();
 
-    derivativeUpdate();
-    Serial.println("Derivative");
-    for (int i = 0; i < derivative.size(); i++) {
-      Serial.println(derivative(i));
-    }
+  // imuBuffer.printData();
+  
+  // Serial.print(millis());
+  // Serial.print("\t");
+  // Serial.print(as5600.readAngle());
+  // Serial.print("\t");
+  // Serial.println(as5600.rawAngle());
+  // Serial.print("\t");
+  // Serial.println(as5600.rawAngle() * AS5600_RAW_TO_DEGREES);
 
-    Serial.println("New Vector: ");
-    Serial.print(v(0));
-    Serial.println();
-    Serial.print(v(1));
-    Serial.println();
-    Serial.print(v(2));
-    Serial.println();
+  // Serial.println("Sensor Fusion");
+  // Serial.print("Roll: ");
+  // Serial.print(roll);
+  // Serial.print("Pitch: ");
+  // Serial.print(pitch);
+  // Serial.print(", Heading: ");
+  // Serial.print(heading);
 
-    // turns led on and off
-    led();
-    lastLED = millis();
+  gyroVector << gx, gy, gz;
+  //comms.sendStatusText(MAV_SEVERITY_INFO, "Integration data");
+  gyroIntegrator.integratorUpdate();
+  for (int i = 0; i < gyroIntegrator.integratedData.size(); i++) {
+    // Serial.println(gyroIntegrator.integratedData(i), 60);
+    // comms.sendStatusText(MAV_SEVERITY_INFO, String(gyroIntegrator.integratedData(i)).c_str());
   }
+  
+  int x = gyroIntegrator.integratedData(0);
+  int y = gyroIntegrator.integratedData(1);
+
+  int limit = 15;
+
+  if (x > limit) {
+    x = limit;
+  } else if (x < -limit) {
+    x = -limit;
+  }
+
+  if (y > limit) {
+    y = limit;
+  } else if (y < -limit) {
+    y = -limit;
+  }
+
+  x += 90;
+  y += 90;
+
+  beta.write(x);
+  alpha.write(y);
+
+  delayMicroseconds(100);
+
+  //turns led on and off
+  led();
 }
 

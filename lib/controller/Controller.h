@@ -15,15 +15,20 @@ Last updated: 10/16/2023
 #define MODE_ARRAY_LENGTH 12
 #define K_ARRAY_LENGTH 10
 
+//size of x
+#define X_COLUMN_LENGTH 3
+#define X_ROW_LENGTH 4
+
 
 //Global variables
 extern Eigen::VectorXd controllerInputU;
-extern float *mode;
-extern float *k;
+extern double *mode;
+extern double *k;
+extern Eigen::Matrix4Xd deltaX;
 
 //malloc's global variables in this header file, 
     //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
-extern int controllerSetup();
+extern int initializeController();
 
 //control law function that:
     //takes in estimatedStateX (from Estimator.h)
@@ -31,13 +36,13 @@ extern int controllerSetup();
     //takes in mode
     //modifies controllerInputU
     //returns error code
-int controlLawU();
+int updateController();
 
 //calculates mode
     //takes in estimatedStateX
     //modifies mode
     //returns error code
-int controlMode();
+int getControlMode();
 
 #endif
 
