@@ -1,0 +1,1640 @@
+<html>
+ <body>
+  <p>
+   <strong>MAVLink Include Files:</strong>
+   <a href="minimal.md">minimal.xml</a>
+  </p>
+  <h2>MAVLink Protocol Version</h2>
+  <p>The current MAVLink version is 2.1. The minor version numbers (after the dot) range from 1-255.</p>
+  <p>This file has protocol dialect: 69.</p>
+  <h2 id="enums">MAVLink Type Enumerations</h2>
+  <h3 id="MAV_SYS_STATUS_SENSOR">MAV_SYS_STATUS_SENSOR</h3>
+  <p>
+   <a href="#enums">
+    [Enum]
+   </a>These encode the sensors whose status is sent as part of the <a href="#SYS_STATUS">SYS_STATUS</a> message.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Value</th>
+     <th>Field Name</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_GYRO">
+     <td>1</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_GYRO">MAV_SYS_STATUS_SENSOR_3D_GYRO</a>
+     </td>
+     <td>0x01 3D gyro</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_ACCEL">
+     <td>2</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_ACCEL">MAV_SYS_STATUS_SENSOR_3D_ACCEL</a>
+     </td>
+     <td>0x02 3D accelerometer</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_MAG">
+     <td>4</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_MAG">MAV_SYS_STATUS_SENSOR_3D_MAG</a>
+     </td>
+     <td>0x04 3D magnetometer</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE">
+     <td>8</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE">MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE</a>
+     </td>
+     <td>0x08 absolute pressure</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_DIFFERENTIAL_PRESSURE">
+     <td>16</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_DIFFERENTIAL_PRESSURE">MAV_SYS_STATUS_SENSOR_DIFFERENTIAL_PRESSURE</a>
+     </td>
+     <td>0x10 differential pressure</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_GPS">
+     <td>32</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_GPS">MAV_SYS_STATUS_SENSOR_GPS</a>
+     </td>
+     <td>0x20 GPS</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW">
+     <td>64</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW">MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW</a>
+     </td>
+     <td>0x40 optical flow</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_VISION_POSITION">
+     <td>128</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_VISION_POSITION">MAV_SYS_STATUS_SENSOR_VISION_POSITION</a>
+     </td>
+     <td>0x80 computer vision position</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_LASER_POSITION">
+     <td>256</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_LASER_POSITION">MAV_SYS_STATUS_SENSOR_LASER_POSITION</a>
+     </td>
+     <td>0x100 laser based position</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_EXTERNAL_GROUND_TRUTH">
+     <td>512</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_EXTERNAL_GROUND_TRUTH">MAV_SYS_STATUS_SENSOR_EXTERNAL_GROUND_TRUTH</a>
+     </td>
+     <td>0x200 external ground truth (Vicon or Leica)</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL">
+     <td>1024</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL">MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL</a>
+     </td>
+     <td>0x400 3D angular rate control</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION">
+     <td>2048</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION">MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION</a>
+     </td>
+     <td>0x800 attitude stabilization</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_YAW_POSITION">
+     <td>4096</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_YAW_POSITION">MAV_SYS_STATUS_SENSOR_YAW_POSITION</a>
+     </td>
+     <td>0x1000 yaw position</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL">
+     <td>8192</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL">MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL</a>
+     </td>
+     <td>0x2000 z/altitude control</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL">
+     <td>16384</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL">MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL</a>
+     </td>
+     <td>0x4000 x/y position control</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS">
+     <td>32768</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS">MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS</a>
+     </td>
+     <td>0x8000 motor outputs / control</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_RC_RECEIVER">
+     <td>65536</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_RC_RECEIVER">MAV_SYS_STATUS_SENSOR_RC_RECEIVER</a>
+     </td>
+     <td>0x10000 RC receiver</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_GYRO2">
+     <td>131072</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_GYRO2">MAV_SYS_STATUS_SENSOR_3D_GYRO2</a>
+     </td>
+     <td>0x20000 2nd 3D gyro</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_ACCEL2">
+     <td>262144</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_ACCEL2">MAV_SYS_STATUS_SENSOR_3D_ACCEL2</a>
+     </td>
+     <td>0x40000 2nd 3D accelerometer</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_3D_MAG2">
+     <td>524288</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_3D_MAG2">MAV_SYS_STATUS_SENSOR_3D_MAG2</a>
+     </td>
+     <td>0x80000 2nd 3D magnetometer</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_GEOFENCE">
+     <td>1048576</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_GEOFENCE">MAV_SYS_STATUS_GEOFENCE</a>
+     </td>
+     <td>0x100000 geofence</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_AHRS">
+     <td>2097152</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_AHRS">MAV_SYS_STATUS_AHRS</a>
+     </td>
+     <td>0x200000 AHRS subsystem health</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_TERRAIN">
+     <td>4194304</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_TERRAIN">MAV_SYS_STATUS_TERRAIN</a>
+     </td>
+     <td>0x400000 Terrain subsystem health</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_REVERSE_MOTOR">
+     <td>8388608</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_REVERSE_MOTOR">MAV_SYS_STATUS_REVERSE_MOTOR</a>
+     </td>
+     <td>0x800000 Motors are reversed</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_LOGGING">
+     <td>16777216</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_LOGGING">MAV_SYS_STATUS_LOGGING</a>
+     </td>
+     <td>0x1000000 Logging</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_BATTERY">
+     <td>33554432</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_BATTERY">MAV_SYS_STATUS_SENSOR_BATTERY</a>
+     </td>
+     <td>0x2000000 Battery</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_PROXIMITY">
+     <td>67108864</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_PROXIMITY">MAV_SYS_STATUS_SENSOR_PROXIMITY</a>
+     </td>
+     <td>0x4000000 Proximity</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_SATCOM">
+     <td>134217728</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_SATCOM">MAV_SYS_STATUS_SENSOR_SATCOM</a>
+     </td>
+     <td>0x8000000 Satellite Communication</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_PREARM_CHECK">
+     <td>268435456</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_PREARM_CHECK">MAV_SYS_STATUS_PREARM_CHECK</a>
+     </td>
+     <td>0x10000000 pre-arm check status. Always healthy when armed</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_OBSTACLE_AVOIDANCE">
+     <td>536870912</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_OBSTACLE_AVOIDANCE">MAV_SYS_STATUS_OBSTACLE_AVOIDANCE</a>
+     </td>
+     <td>0x20000000 Avoidance/collision prevention</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_SENSOR_PROPULSION">
+     <td>1073741824</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR_PROPULSION">MAV_SYS_STATUS_SENSOR_PROPULSION</a>
+     </td>
+     <td>0x40000000 propulsion (actuator, esc, motor or propellor)</td>
+    </tr>
+    <tr id="MAV_SYS_STATUS_EXTENSION_USED">
+     <td>2147483648</td>
+     <td>
+      <a href="#MAV_SYS_STATUS_EXTENSION_USED">MAV_SYS_STATUS_EXTENSION_USED</a>
+     </td>
+     <td>0x80000000 Extended bit-field are used for further sensor status bits (needs to be set in onboard_control_sensors_present only)</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="MAV_SEVERITY">MAV_SEVERITY</h3>
+  <p>
+   <a href="#enums">
+    [Enum]
+   </a>Indicates the severity level, generally used for status messages to indicate their relative urgency. Based on RFC-5424 using expanded definitions at: http://www.kiwisyslog.com/kb/info:-syslog-message-levels/.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Value</th>
+     <th>Field Name</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr id="MAV_SEVERITY_EMERGENCY">
+     <td>0</td>
+     <td>
+      <a href="#MAV_SEVERITY_EMERGENCY">MAV_SEVERITY_EMERGENCY</a>
+     </td>
+     <td>System is unusable. This is a "panic" condition.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_ALERT">
+     <td>1</td>
+     <td>
+      <a href="#MAV_SEVERITY_ALERT">MAV_SEVERITY_ALERT</a>
+     </td>
+     <td>Action should be taken immediately. Indicates error in non-critical systems.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_CRITICAL">
+     <td>2</td>
+     <td>
+      <a href="#MAV_SEVERITY_CRITICAL">MAV_SEVERITY_CRITICAL</a>
+     </td>
+     <td>Action must be taken immediately. Indicates failure in a primary system.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_ERROR">
+     <td>3</td>
+     <td>
+      <a href="#MAV_SEVERITY_ERROR">MAV_SEVERITY_ERROR</a>
+     </td>
+     <td>Indicates an error in secondary/redundant systems.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_WARNING">
+     <td>4</td>
+     <td>
+      <a href="#MAV_SEVERITY_WARNING">MAV_SEVERITY_WARNING</a>
+     </td>
+     <td>Indicates about a possible future error if this is not resolved within a given timeframe. Example would be a low battery warning.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_NOTICE">
+     <td>5</td>
+     <td>
+      <a href="#MAV_SEVERITY_NOTICE">MAV_SEVERITY_NOTICE</a>
+     </td>
+     <td>An unusual event has occurred, though not an error condition. This should be investigated for the root cause.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_INFO">
+     <td>6</td>
+     <td>
+      <a href="#MAV_SEVERITY_INFO">MAV_SEVERITY_INFO</a>
+     </td>
+     <td>Normal operational messages. Useful for logging. No action is required for these messages.</td>
+    </tr>
+    <tr id="MAV_SEVERITY_DEBUG">
+     <td>7</td>
+     <td>
+      <a href="#MAV_SEVERITY_DEBUG">MAV_SEVERITY_DEBUG</a>
+     </td>
+     <td>Useful non-operational messages that can assist in debugging. These should not occur during normal operation.</td>
+    </tr>
+   </tbody>
+  </table>
+  <a id="MAV_CMD">
+  </a>
+  <h2 id="mav_commands">MAVLink Commands (<a href="#mav_commands">MAV_CMD</a>)</h2>
+  <blockquote class="alert alert-info clearfix">
+   <strong class="fa fa-2x fa-edit">
+   </strong>
+   <p>MAVLink commands (<a href="#mav_commands">MAV_CMD</a>) and messages are different! These commands define the values of up to 7 parameters that are packaged INSIDE specific messages used in the Mission Protocol and Command Protocol. Use commands for actions in missions or if you need acknowledgment and/or retry logic from a request. Otherwise use messages.</p>
+  </blockquote>
+  <p>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the <a href="#mav_commands">MAV_CMD</a> entries. NOTE: not all common commands are supported, and sometimes only subsets of e.g. mission protocol are implemented. Not all messages behave the same as in common.</p>
+  <h3 id="MAV_CMD_DO_SET_MISSION_CURRENT">MAV_CMD_DO_SET_MISSION_CURRENT (<a href="#MAV_CMD_DO_SET_MISSION_CURRENT">224</a>
+   )
+  </h3>
+  <p>
+   <a href="#mav_commands">
+    [Command]
+   </a>Start the trajectory segment specified by Number. Note that this should also be used for RTL, since ASTRA does not support RTL.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Param (:Label)</th>
+     <th>Description</th>
+     <th>Values</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>1: Number</td>
+     <td>Mission sequence value to set. -1 for the current mission item (use to reset mission without changing current mission item).</td>
+     <td>
+      <em>min:</em>
+      -1 
+      <em>increment:</em>1</td>
+    </tr>
+    <tr>
+     <td>2: Reset Mission</td>
+     <td>
+      (CURRENTLY IGNORED) Resets mission. 1: true, 0: false. Resets jump counters to initial values and changes mission state "completed" to be "active" or "paused".
+     </td>
+     <td>
+      <em>min:</em>0 <em>max:</em>1 <em>increment:</em>1</td>
+    </tr>
+    <tr>
+     <td>3</td>
+     <td>Empty</td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>4</td>
+     <td>Empty</td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>5</td>
+     <td>Empty</td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>6</td>
+     <td>Empty</td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>7</td>
+     <td>Empty</td>
+     <td>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="MAV_CMD_DO_PAUSE_CONTINUE">MAV_CMD_DO_PAUSE_CONTINUE (<a href="#MAV_CMD_DO_PAUSE_CONTINUE">193</a>
+   )
+  </h3>
+  <p>
+   <a href="#mav_commands">
+    [Command]
+   </a>Hold the current position or continue.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Param (:Label)</th>
+     <th>Description</th>
+     <th>Values</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>1: Continue</td>
+     <td>0: Pause current mission or reposition command, hold current position. 1: Continue mission. On pause, enter hover mode.</td>
+     <td>
+      <em>min:</em>0 <em>max:</em>1 <em>increment:</em>1</td>
+    </tr>
+    <tr>
+     <td>2</td>
+     <td>Reserved</td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>3</td>
+     <td>Reserved</td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>4</td>
+     <td>Reserved</td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>5</td>
+     <td>Reserved</td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>6</td>
+     <td>Reserved</td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>7</td>
+     <td>Reserved</td>
+     <td>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="MAV_CMD_NAV_LAND">MAV_CMD_NAV_LAND (<a href="#MAV_CMD_NAV_LAND">21</a>
+   )
+  </h3>
+  <p>
+   <a href="#mav_commands">
+    [Command]
+   </a>Land at current location.</p>
+  <p>Send this command in a <a href="#COMMAND_INT">COMMAND_INT</a> (if supported by your flight stack), as it specifies positional information.
+        If sent in a <a href="#COMMAND_LONG">COMMAND_LONG</a>, no frame of reference can be set, and lat/lon values in param 5/6 are less precise.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Param (:Label)</th>
+     <th>Description</th>
+     <th>Values</th>
+     <th>Units</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>1: Abort Alt</td>
+     <td>Minimum target altitude if landing is aborted (0 = undefined/use system default).</td>
+     <td>
+     </td>
+     <td>m</td>
+    </tr>
+    <tr>
+     <td>2: Land Mode</td>
+     <td>
+      (IGNORED) Precision land mode.
+     </td>
+     <td>
+      <a href="#PRECISION_LAND_MODE">PRECISION_LAND_MODE</a>
+     </td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>3</td>
+     <td>Empty.</td>
+     <td>
+     </td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>4: Yaw Angle</td>
+     <td>Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.).</td>
+     <td>
+     </td>
+     <td>deg</td>
+    </tr>
+    <tr>
+     <td>5: Latitude</td>
+     <td>
+      (IGNORED) Latitude.
+     </td>
+     <td>
+     </td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>6: Longitude</td>
+     <td>
+      (IGNORED) Longitude.
+     </td>
+     <td>
+     </td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>7: Altitude</td>
+     <td>Landing altitude (ground level in current frame).</td>
+     <td>
+     </td>
+     <td>m</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="MAV_CMD_MISSION_START">MAV_CMD_MISSION_START (<a href="#MAV_CMD_MISSION_START">300</a>
+   )
+  </h3>
+  <p>
+   <a href="#mav_commands">
+    [Command]
+   </a>start running a mission</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Param (:Label)</th>
+     <th>Description</th>
+     <th>Values</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>1: First Item</td>
+     <td>first_item: the first mission item to run</td>
+     <td>
+      <em>min:</em>0 <em>increment:</em>1</td>
+    </tr>
+    <tr>
+     <td>2: Last Item</td>
+     <td>last_item:  the last mission item to run (after this item is run, the vehicle lands in place)</td>
+     <td>
+      <em>min:</em>0 <em>increment:</em>1</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="MAV_CMD_MISSION_LOAD_SD">MAV_CMD_MISSION_LOAD_SD (<a href="#MAV_CMD_MISSION_LOAD_SD">51801</a>
+   )
+  </h3>
+  <p>
+   <a href="#mav_commands">
+    [Command]
+   </a>Load a trajectory mission from the SD card (/missions/mission{number}.atf) into PSRAM.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Param (:Label)</th>
+     <th>Description</th>
+     <th>Values</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>1: Mission number</td>
+     <td>the mission number to load</td>
+     <td>
+      <em>min:</em>0 </td>
+    </tr>
+   </tbody>
+  </table>
+  <h2 id="messages">MAVLink Messages</h2>
+  <h3 id="SYS_STATUS">SYS_STATUS (<a href="#SYS_STATUS">
+    #1
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>General system state. Non-standard message.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Units</th>
+     <th>Values</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>onboard_control_sensors_present</td>
+     <td>uint32_t</td>
+     <td>
+     </td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR">MAV_SYS_STATUS_SENSOR</a>
+     </td>
+     <td>Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.</td>
+    </tr>
+    <tr>
+     <td>onboard_control_sensors_enabled</td>
+     <td>uint32_t</td>
+     <td>
+     </td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR">MAV_SYS_STATUS_SENSOR</a>
+     </td>
+     <td>Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.</td>
+    </tr>
+    <tr>
+     <td>onboard_control_sensors_health</td>
+     <td>uint32_t</td>
+     <td>
+     </td>
+     <td>
+      <a href="#MAV_SYS_STATUS_SENSOR">MAV_SYS_STATUS_SENSOR</a>
+     </td>
+     <td>Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.</td>
+    </tr>
+    <tr>
+     <td>load</td>
+     <td>uint16_t</td>
+     <td>d%</td>
+     <td>
+     </td>
+     <td>Maximum usage in percent of the mainloop time. Values: [0-1000] - should always be below 1000</td>
+    </tr>
+    <tr>
+     <td>voltage_battery</td>
+     <td>uint16_t</td>
+     <td>mV</td>
+     <td>
+     </td>
+     <td>Battery voltage, UINT16_MAX: Voltage not sent by autopilot</td>
+    </tr>
+    <tr>
+     <td>current_battery</td>
+     <td>int16_t</td>
+     <td>cA</td>
+     <td>
+     </td>
+     <td>Battery current, -1: Current not sent by autopilot</td>
+    </tr>
+    <tr>
+     <td>battery_remaining</td>
+     <td>int8_t</td>
+     <td>
+      %
+     </td>
+     <td>
+     </td>
+     <td>Battery energy remaining, -1: Battery remaining energy not sent by autopilot</td>
+    </tr>
+    <tr>
+     <td>drop_rate_comm</td>
+     <td>uint16_t</td>
+     <td>c%</td>
+     <td>
+     </td>
+     <td>Communication drop rate, (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)</td>
+    </tr>
+    <tr>
+     <td>errors_comm</td>
+     <td>uint16_t</td>
+     <td>
+     </td>
+     <td>
+     </td>
+     <td>Communication errors (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)</td>
+    </tr>
+    <tr>
+     <td>errors_count1</td>
+     <td>uint16_t</td>
+     <td>
+     </td>
+     <td>
+     </td>
+     <td>Autopilot-specific errors</td>
+    </tr>
+    <tr>
+     <td>errors_count2</td>
+     <td>uint16_t</td>
+     <td>
+     </td>
+     <td>
+     </td>
+     <td>Autopilot-specific errors</td>
+    </tr>
+    <tr>
+     <td>errors_count3</td>
+     <td>uint16_t</td>
+     <td>
+     </td>
+     <td>
+     </td>
+     <td>Autopilot-specific errors</td>
+    </tr>
+    <tr>
+     <td>errors_count4</td>
+     <td>uint16_t</td>
+     <td>
+     </td>
+     <td>
+     </td>
+     <td>Autopilot-specific errors</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="CONTROL_SYSTEM_STATE">CONTROL_SYSTEM_STATE (<a href="#CONTROL_SYSTEM_STATE">
+    #146
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>The smoothed, monotonic system state used to feed the control loops of the system.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Units</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>time_usec</td>
+     <td>uint64_t</td>
+     <td>us</td>
+     <td>Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</td>
+    </tr>
+    <tr>
+     <td>x_acc</td>
+     <td>float</td>
+     <td>m/s/s</td>
+     <td>X acceleration in body frame</td>
+    </tr>
+    <tr>
+     <td>y_acc</td>
+     <td>float</td>
+     <td>m/s/s</td>
+     <td>Y acceleration in body frame</td>
+    </tr>
+    <tr>
+     <td>z_acc</td>
+     <td>float</td>
+     <td>m/s/s</td>
+     <td>Z acceleration in body frame</td>
+    </tr>
+    <tr>
+     <td>x_vel</td>
+     <td>float</td>
+     <td>m/s</td>
+     <td>X velocity in body frame</td>
+    </tr>
+    <tr>
+     <td>y_vel</td>
+     <td>float</td>
+     <td>m/s</td>
+     <td>Y velocity in body frame</td>
+    </tr>
+    <tr>
+     <td>z_vel</td>
+     <td>float</td>
+     <td>m/s</td>
+     <td>Z velocity in body frame</td>
+    </tr>
+    <tr>
+     <td>x_pos</td>
+     <td>float</td>
+     <td>m</td>
+     <td>X position in local frame</td>
+    </tr>
+    <tr>
+     <td>y_pos</td>
+     <td>float</td>
+     <td>m</td>
+     <td>Y position in local frame</td>
+    </tr>
+    <tr>
+     <td>z_pos</td>
+     <td>float</td>
+     <td>m</td>
+     <td>Z position in local frame</td>
+    </tr>
+    <tr>
+     <td>airspeed</td>
+     <td>float</td>
+     <td>m/s</td>
+     <td>Airspeed, set to -1 if unknown</td>
+    </tr>
+    <tr>
+     <td>vel_variance</td>
+     <td>float[3]</td>
+     <td>
+     </td>
+     <td>Variance of body velocity estimate</td>
+    </tr>
+    <tr>
+     <td>pos_variance</td>
+     <td>float[3]</td>
+     <td>
+     </td>
+     <td>Variance in local position</td>
+    </tr>
+    <tr>
+     <td>q</td>
+     <td>float[4]</td>
+     <td>
+     </td>
+     <td>The attitude, represented as Quaternion</td>
+    </tr>
+    <tr>
+     <td>roll_rate</td>
+     <td>float</td>
+     <td>rad/s</td>
+     <td>Angular rate in roll axis</td>
+    </tr>
+    <tr>
+     <td>pitch_rate</td>
+     <td>float</td>
+     <td>rad/s</td>
+     <td>Angular rate in pitch axis</td>
+    </tr>
+    <tr>
+     <td>yaw_rate</td>
+     <td>float</td>
+     <td>rad/s</td>
+     <td>Angular rate in yaw axis</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="COMMAND_LONG">COMMAND_LONG (<a href="#COMMAND_LONG">
+    #76
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>Send a command with up to seven parameters to the MAV. <a href="#COMMAND_INT">COMMAND_INT</a> is generally preferred when sending <a href="#mav_commands">MAV_CMD</a> commands that include positional information; it offers higher precision and allows the <a href="#MAV_FRAME">MAV_FRAME</a> to be specified (which may otherwise be ambiguous, particularly for altitude). The command microservice is documented at https://mavlink.io/en/services/command.html</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Values</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>target_system</td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>System which should execute the command</td>
+    </tr>
+    <tr>
+     <td>target_component</td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>Component which should execute the command, 0 for all components</td>
+    </tr>
+    <tr>
+     <td>command</td>
+     <td>uint16_t</td>
+     <td>
+      <a href="#MAV_CMD">MAV_CMD</a>
+     </td>
+     <td>Command ID (of command to send).</td>
+    </tr>
+    <tr>
+     <td>confirmation</td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)</td>
+    </tr>
+    <tr>
+     <td>param1</td>
+     <td>float</td>
+     <td>
+     </td>
+     <td>Parameter 1 (for the specific command).</td>
+    </tr>
+    <tr>
+     <td>param2</td>
+     <td>float</td>
+     <td>
+     </td>
+     <td>Parameter 2 (for the specific command).</td>
+    </tr>
+    <tr>
+     <td>param3</td>
+     <td>float</td>
+     <td>
+     </td>
+     <td>Parameter 3 (for the specific command).</td>
+    </tr>
+    <tr>
+     <td>param4</td>
+     <td>float</td>
+     <td>
+     </td>
+     <td>Parameter 4 (for the specific command).</td>
+    </tr>
+    <tr>
+     <td>param5</td>
+     <td>float</td>
+     <td>
+     </td>
+     <td>Parameter 5 (for the specific command).</td>
+    </tr>
+    <tr>
+     <td>param6</td>
+     <td>float</td>
+     <td>
+     </td>
+     <td>Parameter 6 (for the specific command).</td>
+    </tr>
+    <tr>
+     <td>param7</td>
+     <td>float</td>
+     <td>
+     </td>
+     <td>Parameter 7 (for the specific command).</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="COMMAND_ACK">COMMAND_ACK (<a href="#COMMAND_ACK">
+    #77
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>Report status of a command. Includes feedback whether the command was executed. The command microservice is documented at https://mavlink.io/en/services/command.html</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Units</th>
+     <th>Values</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>command</td>
+     <td>uint16_t</td>
+     <td>
+     </td>
+     <td>
+      <a href="#MAV_CMD">MAV_CMD</a>
+     </td>
+     <td>Command ID (of acknowledged command).</td>
+    </tr>
+    <tr>
+     <td>result</td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>
+      <a href="#MAV_RESULT">MAV_RESULT</a>
+     </td>
+     <td>Result of command.</td>
+    </tr>
+    <tr>
+     <td style="color:blue;">progress<a href="#mav2_extension_field" title="MAVLink2 extension field">
+       **
+      </a>
+     </td>
+     <td>uint8_t</td>
+     <td>
+      %
+     </td>
+     <td>
+     </td>
+     <td>The progress percentage when result is <a href="#MAV_RESULT_IN_PROGRESS">MAV_RESULT_IN_PROGRESS</a>. Values: [0-100], or UINT8_MAX if the progress is unknown.</td>
+    </tr>
+    <tr>
+     <td style="color:blue;">result_param2<a href="#mav2_extension_field" title="MAVLink2 extension field">
+       **
+      </a>
+     </td>
+     <td>int32_t</td>
+     <td>
+     </td>
+     <td>
+     </td>
+     <td>Additional result information. Can be set with a command-specific enum containing command-specific error reasons for why the command might be denied. If used, the associated enum must be documented in the corresponding <a href="#mav_commands">MAV_CMD</a> (this enum should have a 0 value to indicate "unused" or "unknown").</td>
+    </tr>
+    <tr>
+     <td style="color:blue;">target_system<a href="#mav2_extension_field" title="MAVLink2 extension field">
+       **
+      </a>
+     </td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>
+     </td>
+     <td>System ID of the target recipient. This is the ID of the system that sent the command for which this <a href="#COMMAND_ACK">COMMAND_ACK</a> is an acknowledgement.</td>
+    </tr>
+    <tr>
+     <td style="color:blue;">target_component<a href="#mav2_extension_field" title="MAVLink2 extension field">
+       **
+      </a>
+     </td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>
+     </td>
+     <td>Component ID of the target recipient. This is the ID of the system that sent the command for which this <a href="#COMMAND_ACK">COMMAND_ACK</a> is an acknowledgement.</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="PARAM_REQUEST_READ">PARAM_REQUEST_READ (<a href="#PARAM_REQUEST_READ">
+    #20
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>Request to read the onboard parameter with the param_id string id. Onboard parameters are stored as key[const char*] -&gt; value[float]. This allows to send a parameter to any other component (such as the GCS) without the need of previous knowledge of possible parameter names. Thus the same GCS can store different parameters for different autopilots. See also https://mavlink.io/en/services/parameter.html for a full documentation of QGroundControl and IMU code.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>target_system</td>
+     <td>uint8_t</td>
+     <td>System ID</td>
+    </tr>
+    <tr>
+     <td>target_component</td>
+     <td>uint8_t</td>
+     <td>Component ID</td>
+    </tr>
+    <tr>
+     <td>param_id</td>
+     <td>char[16]</td>
+     <td>Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</td>
+    </tr>
+    <tr>
+     <td>param_index</td>
+     <td>int16_t</td>
+     <td>Parameter index. Send -1 to use the param ID field as identifier (else the param id will be ignored)</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="PARAM_REQUEST_LIST">PARAM_REQUEST_LIST (<a href="#PARAM_REQUEST_LIST">
+    #21
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>Request all parameters of this component. After this request, all parameters are emitted. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>target_system</td>
+     <td>uint8_t</td>
+     <td>System ID</td>
+    </tr>
+    <tr>
+     <td>target_component</td>
+     <td>uint8_t</td>
+     <td>Component ID</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="PARAM_VALUE">PARAM_VALUE (<a href="#PARAM_VALUE">
+    #22
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>Emit the value of a onboard parameter. The inclusion of param_count and param_index in the message allows the recipient to keep track of received parameters and allows him to re-request missing parameters after a loss or timeout. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Values</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>param_id</td>
+     <td>char[16]</td>
+     <td>
+     </td>
+     <td>Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</td>
+    </tr>
+    <tr>
+     <td>param_value</td>
+     <td>float</td>
+     <td>
+     </td>
+     <td>Onboard parameter value</td>
+    </tr>
+    <tr>
+     <td>param_type</td>
+     <td>uint8_t</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE">MAV_PARAM_TYPE</a>
+     </td>
+     <td>Onboard parameter type.</td>
+    </tr>
+    <tr>
+     <td>param_count</td>
+     <td>uint16_t</td>
+     <td>
+     </td>
+     <td>Total number of onboard parameters</td>
+    </tr>
+    <tr>
+     <td>param_index</td>
+     <td>uint16_t</td>
+     <td>
+     </td>
+     <td>Index of this onboard parameter</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="PARAM_SET">PARAM_SET (<a href="#PARAM_SET">
+    #23
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>Set a parameter value (write new value to permanent storage).
+      The receiving component should acknowledge the new parameter value by broadcasting a <a href="#PARAM_VALUE">PARAM_VALUE</a> message (broadcasting ensures that multiple GCS all have an up-to-date list of all parameters). If the sending GCS did not receive a <a href="#PARAM_VALUE">PARAM_VALUE</a> within its timeout time, it should re-send the <a href="#PARAM_SET">PARAM_SET</a> message. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html.
+        <a href="#PARAM_SET">PARAM_SET</a> may also be called within the context of a transaction (started with <a href="#MAV_CMD_PARAM_TRANSACTION">MAV_CMD_PARAM_TRANSACTION</a>). Within a transaction the receiving component should respond with <a href="#PARAM_ACK_TRANSACTION">PARAM_ACK_TRANSACTION</a> to the setter component (instead of broadcasting <a href="#PARAM_VALUE">PARAM_VALUE</a>), and <a href="#PARAM_SET">PARAM_SET</a> should be re-sent if this is ACK not received.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Values</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>target_system</td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>System ID</td>
+    </tr>
+    <tr>
+     <td>target_component</td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>Component ID</td>
+    </tr>
+    <tr>
+     <td>param_id</td>
+     <td>char[16]</td>
+     <td>
+     </td>
+     <td>Onboard parameter id, terminated by NULL if the length is less than 16 human-readable chars and WITHOUT null termination (NULL) byte if the length is exactly 16 chars - applications have to provide 16+1 bytes storage if the ID is stored as string</td>
+    </tr>
+    <tr>
+     <td>param_value</td>
+     <td>float</td>
+     <td>
+     </td>
+     <td>Onboard parameter value</td>
+    </tr>
+    <tr>
+     <td>param_type</td>
+     <td>uint8_t</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE">MAV_PARAM_TYPE</a>
+     </td>
+     <td>Onboard parameter type.</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="STATUSTEXT">STATUSTEXT (<a href="#STATUSTEXT">
+    #253
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Values</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>severity</td>
+     <td>uint8_t</td>
+     <td>
+      <a href="#MAV_SEVERITY">MAV_SEVERITY</a>
+     </td>
+     <td>Severity of status. Relies on the definitions within RFC-5424.</td>
+    </tr>
+    <tr>
+     <td>text</td>
+     <td>char[50]</td>
+     <td>
+     </td>
+     <td>Status text message, without null termination character</td>
+    </tr>
+    <tr>
+     <td style="color:blue;">id<a href="#mav2_extension_field" title="MAVLink2 extension field">
+       **
+      </a>
+     </td>
+     <td>uint16_t</td>
+     <td>
+     </td>
+     <td>Unique (opaque) identifier for this statustext message.  May be used to reassemble a logical long-statustext message from a sequence of chunks.  A value of zero indicates this is the only chunk in the sequence and the message can be emitted immediately.</td>
+    </tr>
+    <tr>
+     <td style="color:blue;">chunk_seq<a href="#mav2_extension_field" title="MAVLink2 extension field">
+       **
+      </a>
+     </td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>This chunk's sequence number; indexing is from zero.  Any null character in the text field is taken to mean this was the last chunk.</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="CONTROLLER_STATUS">CONTROLLER_STATUS (<a href="#CONTROLLER_STATUS">
+    #51801
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Controller system state.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>current_segment</td>
+     <td>uint16_t</td>
+     <td>Current trajectory segment being followed.</td>
+    </tr>
+    <tr>
+     <td>current_point</td>
+     <td>uint16_t</td>
+     <td>Current point of trajectory segment being followed.</td>
+    </tr>
+    <tr>
+     <td>total_segments</td>
+     <td>uint16_t</td>
+     <td>Total segments stored.</td>
+    </tr>
+    <tr>
+     <td>total_points</td>
+     <td>uint16_t</td>
+     <td>Total trajectory points being followed.</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_LOAD_SD_CARD">TRAJ_LOAD_SD_CARD (<a href="#TRAJ_LOAD_SD_CARD">
+    #51809
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Load trajectory file from SD card.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>filename</td>
+     <td>char[63]</td>
+     <td>Name of file</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_INFO">TRAJ_INFO (<a href="#TRAJ_INFO">
+    #51810
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Start a trajectory upload. NOTE: GAIN MATRIX K[0] SHOULD ALWAYS BE THE HOVER MATRIX.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint16_t</td>
+     <td>
+      # Gain matrices
+     </td>
+    </tr>
+    <tr>
+     <td>n</td>
+     <td>uint32_t</td>
+     <td>
+      # Trajectory points
+     </td>
+    </tr>
+    <tr>
+     <td>k_dim1</td>
+     <td>uint16_t</td>
+     <td>Gain matrix dim1</td>
+    </tr>
+    <tr>
+     <td>k_dim2</td>
+     <td>uint16_t</td>
+     <td>Gain matrix dim2</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_REQ_K1">TRAJ_REQ_K1 (<a href="#TRAJ_REQ_K1">
+    #51811
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Request the first half of a gain matrix. K[0] is always the hover matrix.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint16_t</td>
+     <td>Index of gain matrix</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_K1">TRAJ_K1 (<a href="#TRAJ_K1">
+    #51812
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Send first half of a gain matrix. K[0] is always the hover matrix.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint16_t</td>
+     <td>Index of gain matrix</td>
+    </tr>
+    <tr>
+     <td>K1</td>
+     <td>float[60]</td>
+     <td>First half of gain matrix</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_REQ_K2">TRAJ_REQ_K2 (<a href="#TRAJ_REQ_K2">
+    #51813
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Request the second half of a gain matrix.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint16_t</td>
+     <td>Index of gain matrix</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_K2">TRAJ_K2 (<a href="#TRAJ_K2">
+    #51814
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Send second half of a gain matrix</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint16_t</td>
+     <td>Index of gain matrix</td>
+    </tr>
+    <tr>
+     <td>K2</td>
+     <td>float[60]</td>
+     <td>Second half of gain matrix</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_REQ_PT">TRAJ_REQ_PT (<a href="#TRAJ_REQ_PT">
+    #51815
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Request a trajectory point.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint32_t</td>
+     <td>Index of trajectory point</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_PT">TRAJ_PT (<a href="#TRAJ_PT">
+    #51816
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Send a trajectory point.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>k</td>
+     <td>uint32_t</td>
+     <td>Index of trajectory point</td>
+    </tr>
+    <tr>
+     <td>x</td>
+     <td>float[12]</td>
+     <td>State trajectory vector</td>
+    </tr>
+    <tr>
+     <td>uref</td>
+     <td>float[4]</td>
+     <td>Reference input vector</td>
+    </tr>
+    <tr>
+     <td>time</td>
+     <td>float</td>
+     <td>Time</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="TRAJ_ACK">TRAJ_ACK (<a href="#TRAJ_ACK">
+    #51820
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Send a response regarding whether the trajectory load was successful.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Values</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>points_loaded</td>
+     <td>uint32_t</td>
+     <td>
+     </td>
+     <td>Number of points successfully loaded (-1 if error).</td>
+    </tr>
+    <tr>
+     <td>result</td>
+     <td>uint8_t</td>
+     <td>
+      <a href="#MAV_RESULT">MAV_RESULT</a>
+     </td>
+     <td>Result of load.</td>
+    </tr>
+   </tbody>
+  </table>
+ </body>
+</html>

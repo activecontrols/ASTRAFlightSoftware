@@ -1,0 +1,4 @@
+#ifndef STATEESTIMATOR_H
+#define STATEESTIMATOR_H
+#endif // STATEESTIMATOR_H
+
