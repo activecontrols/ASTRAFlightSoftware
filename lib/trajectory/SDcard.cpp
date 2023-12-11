@@ -5,7 +5,7 @@
  * and writes to a binary SD card file called outFile
  *
  * Created: 11/11/2023 by Teresa Wan <teresawan04@gmail.com>
- * Last updated: 12/2/2023 by Ishan Goel
+ * Last updated: 12/4/2023 by Ishan Goel
  *
  */
 
@@ -13,55 +13,60 @@
 #include <SD.h>
 #include <./SDcard.h>
 
-
-namespace traj {
 // reading from binary SD card file, will return 0 if successful
-    int decode(char *inFile) {
-      // TODO: error out if the amount of bytes asked for is not the same as the amount of bytes read
-      // open file
-      File file = SD.open(inFile, FILE_READ);
-      if (!file) return FILE_READ_ERR;
-      // read header
-      Header header;
-      file.read(&header, sizeof(header));
-      k = header.k;
-      p = header.p;
-      m = header.m;
-      n = header.n;
-      N = header.N;
+namespace traj {
+  int FILE_READ_ERR = -1, FILE_WRITE_ERR = -2, NO_DATA_POINTS = -3;
+  int k, p, m, n, N;
+  void *vgainM, *vqsm, *vx, *vu;
+  float *t;
+}
 
-      float (*gainM)[m][n + N] = (float (*)[m][n + N]) extmem_malloc(
-              p * sizeof(*gainM)); // extmem means PSRAM. malloc slightly faster than calloc
-      file.read(gainM, sizeof(*gainM) * p);
-      // printf("%ld\n", sizeof(*gainM) * p);
-      vgainM = gainM;
-      // read quick stabilization matrices. currently 3 qsm, may change later
-      float (*qsm)[m][n] = (float (*)[m][n]) extmem_malloc(3 * sizeof(*qsm));
-      file.read(qsm, sizeof(*qsm) * 3);
-      vqsm = qsm;
+int traj::decode(char* inFile) {
+  // TODO: error out if the amount of bytes asked for is not the same as the amount of bytes read
+  // open file
+  File file = SD.open(inFile, FILE_READ);
+  if (!file) return FILE_READ_ERR;
+  // read header
+  Header header;
+  file.read(&header, sizeof(header));
+  k = header.k;
+  p = header.p;
+  m = header.m;
+  n = header.n;
+  N = header.N;
 
-      // read trajectory points
-      float (*x)[n] = (float (*)[n]) extmem_malloc(k * sizeof(*x));
-      file.read(x, sizeof(*x) * k);
-      vx = x;
+  float (*gainM)[m][n + N] = (float (*)[m][n + N]) extmem_malloc(
+    p * sizeof(*gainM)); // extmem means PSRAM. malloc slightly faster than calloc
+  file.read(gainM, sizeof(*gainM) * p);
+  // printf("%ld\n", sizeof(*gainM) * p);
+  vgainM = gainM;
+  // read quick stabilization matrices. currently 3 qsm, may change later
+  float (*qsm)[m][n] = (float (*)[m][n]) extmem_malloc(3 * sizeof(*qsm));
+  file.read(qsm, sizeof(*qsm) * 3);
+  vqsm = qsm;
 
-      float (*u)[m] = (float (*)[m]) extmem_malloc(k * sizeof(*u));
-      file.read(u, sizeof(*u) * k);
-      vu = u;
+  // read trajectory points
+  float (*x)[n] = (float (*)[n]) extmem_malloc(k * sizeof(*x));
+  file.read(x, sizeof(*x) * k);
+  vx = x;
 
-      t = (float *) calloc(k, sizeof *t);
-      file.read(t, sizeof(*t) * k);
+  float (*u)[m] = (float (*)[m]) extmem_malloc(k * sizeof(*u));
+  file.read(u, sizeof(*u) * k);
+  vu = u;
 
-      file.close();
-      return 0;
-    }
+  t = (float *) calloc(k, sizeof *t);
+  file.read(t, sizeof(*t) * k);
+
+  file.close();
+  return 0;
 }
 
 // reading from inFile, will return 0 if successful
-int encode(char *inFile,
-           char *outFile) { // this function doesn't run on the teensy: it generates the file to be flashed to the SD card
-  FILE *filePointer = fopen(inFile, "rb");
-  if (filePointer == NULL) return traj::FILE_READ_ERR;
+int encode(char* inFile,
+           char* outFile) {
+  // this function doesn't run on the teensy: it generates the file to be flashed to the SD card
+  FILE* filePointer = fopen(inFile, "rb");
+  if (filePointer == nullptr) return traj::FILE_READ_ERR;
   // reading header
   int k, p, m, n, N;
   // k = p = m = n = N = 0;
@@ -69,7 +74,7 @@ int encode(char *inFile,
   int next = fscanf(filePointer, "%d,%d,%d,%d,%d\n", &k, &p, &m, &n, &N);
   if ((next == 0) || (next == EOF)) {
     fclose(filePointer);
-    filePointer = NULL;
+    filePointer = nullptr;
     return traj::NO_DATA_POINTS;
   }
   // reading gain matrices
@@ -102,10 +107,10 @@ int encode(char *inFile,
   for (int i = 0; i < k; i++)
     fscanf(filePointer, "%f,", &t[i]);
   // write out binary format
-  FILE *outFilePtr = fopen(outFile, "wb");
-  if (outFilePtr == NULL) {
+  FILE* outFilePtr = fopen(outFile, "wb");
+  if (outFilePtr == nullptr) {
     fclose(filePointer);
-    filePointer = NULL;
+    filePointer = nullptr;
     return traj::FILE_WRITE_ERR;
   }
   // write header
@@ -121,16 +126,16 @@ int encode(char *inFile,
   fwrite(t, sizeof(*t), k, outFilePtr);
   // close files
   fclose(outFilePtr);
-  outFilePtr = NULL;
+  outFilePtr = nullptr;
   fclose(filePointer);
-  filePointer = NULL;
+  filePointer = nullptr;
   return 0;
 }
 
 // This is just an example for how to cast and access/set the decoded data
 // (if you actually want to clear data, you can free the pointers and set to a
 // newly allocated array)
-int clearAllData() {
+void clearAllData() {
   // convert void* back to the actual type
   // TODO: check if static cast still works
   float (*gainM)[traj::m][traj::n + traj::N] = (float (*)[traj::m][traj::n + traj::N]) traj::vgainM;
@@ -191,7 +196,8 @@ File myFile;
 void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
-  while (!Serial) { ; // wait for serial port to connect. Needed for native USB port only
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
   }
 
 
