@@ -34,10 +34,9 @@ public:
     int integratorUpdate(); 
 
 private: 
-    Eigen::VectorXd* dataToIntegrate; 
+    Eigen::VectorXd* dataToIntegrate;
+    Eigen::VectorXd previousValue;
     elapsedMicros timeBetweenIntegration;
-
-    
 
 };
 

@@ -28,6 +28,7 @@ int Integrator::integratorSetup(Eigen::VectorXd* pointerToData)
 
     integratedData = v;
 
+    previousValue = *dataToIntegrate; // initialize previousValue to the first value of dataToIntegrate
 
     if (integratedData.size() == 0) {
         return VECTOR_INIT_ZERO_SIZE_ERROR;
@@ -48,9 +49,13 @@ int Integrator::integratorUpdate()
     Serial.println(changeInTime, 60);
 #endif
     
-    integratedData += (*dataToIntegrate) * changeInTime;
+    integratedData += (*dataToIntegrate + previousValue) / 2.0 * changeInTime; // trapezoidal integration
+
+    // TODO: maybe use https://en.wikipedia.org/wiki/Simpson%27s_rule if we're able to save 3 values in the future.
 
     timeBetweenIntegration = 0;
+
+    previousValue = *dataToIntegrate;
 
     if (changeInTime > MAX_ALLOWED_TIME_BETWEEN_INTEGRATION) {
         return MAX_ALLOWED_TIME_BETWEEN_INTEGRATION_EXCEEDED;
