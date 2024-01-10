@@ -9,15 +9,28 @@ Author: Aditya , Vincent Palmerio
 
 #include "AS5600.h"
 
-extern AS5600 as5600;
+extern AS5600 magEncoder1;
+extern AS5600 magEncoder2;
 
-bool encoderSetup()
+bool encoderSetup(int pin1, int pin2)
 {
-    as5600.begin(4);  //  set direction pin.
-    as5600.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
-    bool b = as5600.isConnected();
+    magEncoder1.begin(pin1);  //  set direction pin.
+    magEncoder1.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+    bool a = magEncoder1.isConnected();
 
-    return b;
+    magEncoder2.begin(pin2);  //  set direction pin.
+    magEncoder2.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
+    bool b = magEncoder2.isConnected();
+
+    return a && b;
+}
+
+int getAngleEncoder1() {
+    return magEncoder1.readAngle();
+}
+
+int getAngleEncoder2() {
+    return magEncoder2.readAngle();
 }
 
 #endif

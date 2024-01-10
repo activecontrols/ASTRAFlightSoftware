@@ -42,9 +42,6 @@ int derivativeErrorCode = -20;
 Servo beta;
 Servo alpha;
 
-//ENCODER
-AS5600 as5600;
-
 Buffer imuBuffer(3,5, getValues);
 float ** data;
 float* test;
@@ -57,7 +54,7 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH); 
 
   //ENCODER SETUP
-  while (!encoderSetup()) {
+  while (!encoderSetup(1, 2)) {
     Serial.println("Connecting to encoder...");
   }
   //---
@@ -83,7 +80,8 @@ void setup() {
 //turns the LED on and off every 3 seconds 
 void led() {
 
-  as5600.readAngle();
+  getAngleEncoder1();
+  getAngleEncoder2();
   
   if (ledTime >= 3000) {
 
