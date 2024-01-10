@@ -117,8 +117,6 @@ void CommsManager::processMessage(fmav_message_t *msg) {
             break; // Handling currently not implemented
         case FASTMAVLINK_MSG_ID_PARAM_SET:
             break; // Handling currently not implemented
-        case FASTMAVLINK_MSG_ID_TRAJ_LOAD_SD_CARD:
-            break; // Handling currently not implemented
         case FASTMAVLINK_MSG_ID_TRAJ_INFO:
             break; // Handling currently not implemented
         case FASTMAVLINK_MSG_ID_TRAJ_K1:
