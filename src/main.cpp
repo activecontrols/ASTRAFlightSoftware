@@ -6,7 +6,7 @@
 #include "../lib/math/Integrator.h"
 #include "../lib/math/Derivative.h"
 #include "../lib/drivers/ASTRA/IMU/src/IMU.h"
-#include "../lib/encoders/AS5600.h"
+#include "../lib/encoders/Encoder.h"
 #include <Servo.h>
 //#include <ArduinoEigenDense.h>
 
@@ -57,9 +57,9 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH); 
 
   //ENCODER SETUP
-  // as5600.begin(4);  //  set direction pin.
-  // as5600.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
-  // int b = as5600.isConnected();
+  while (!encoderSetup()) {
+    Serial.println("Connecting to encoder...");
+  }
   //---
 
   //IMU SETUP
@@ -82,6 +82,8 @@ void setup() {
 
 //turns the LED on and off every 3 seconds 
 void led() {
+
+  as5600.readAngle();
   
   if (ledTime >= 3000) {
 
