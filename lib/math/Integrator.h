@@ -13,7 +13,7 @@ Last updated: 10/20/2023
 #include <ArduinoEigenDense.h>
 
 //currently set to arbritrary value
-//unit is in microseconds
+//unit is in seconds
 //TODO: decide if this variable should be a constant or an assigned variable upon the calling of integratorSetup
 #define MAX_ALLOWED_TIME_BETWEEN_INTEGRATION 10
 
@@ -35,8 +35,15 @@ public:
 
 private: 
     Eigen::VectorXd* dataToIntegrate;
-    Eigen::VectorXd previousValue;
-    elapsedMicros timeBetweenIntegration;
+    Eigen::VectorXd prevValue;
+    Eigen::VectorXd prev2Value;
+    elapsedMicros time;
+    double dt;
+    double dtPrev;
+
+    Eigen::VectorXd simpson_nonuniform_cumulative(
+        Eigen::VectorXd prev2_f, Eigen::VectorXd prev_f, Eigen::VectorXd new_f,
+        double dt, double dtPrev) const;
 
 };
 
