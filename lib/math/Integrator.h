@@ -3,7 +3,7 @@ Integrator.h - Integrator Header file
 Description: Header file to Integrator.cpp
 Author: Vincent Palmerio
 Created: 10/20/2023
-Last updated: 10/20/2023
+Last updated: 01/10/2024 by Ishan Goel
 */
 
 
@@ -33,7 +33,13 @@ public:
     //returns error code
     int integratorUpdate(); 
 
-private: 
+private:
+// We now use Simpson's rule for integration. Here's a comparison of its accuracy against other common techniques:
+// https://cplayground.com/?p=salmon-cat-turkey. (Simpson's is orders of magnitude better)
+//
+// Simpson's also has the advantage that it integrates quadratics _exactly_ (because it does a quadratic fit on each
+// step), and since much real world data is quadratic in nature (eg. falling, forces being applied, etc.) Simpson's rule
+// gives way better results than other techniques.
     Eigen::VectorXd* dataToIntegrate;
     Eigen::VectorXd prevValue;
     Eigen::VectorXd prev2Value;
