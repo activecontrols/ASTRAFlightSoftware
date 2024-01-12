@@ -5,6 +5,7 @@
 #include "../lib/controller/Controller.h"
 #include "../lib/math/Integrator.h"
 #include "../lib/math/Derivative.h"
+#include "../lib/comms/Comms.h"
 #include "../lib/drivers/ASTRA/IMU/src/IMU.h"
 #include "../lib/encoders/AS5600.h"
 #include <Servo.h>
@@ -32,6 +33,9 @@ int lastTime = 0;
 
 bool ledOn = false;
 
+// COMMS
+CommsManager comms;
+
 //ERROR CODES
 int controllerErrorCode = -20;
 int estimatorErrorCode = -20;
@@ -50,6 +54,16 @@ Buffer imuBuffer(3,5, getValues);
 float ** data;
 float* test;
 
+fmav_traj_ack_t loadSD(int number) {
+    comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
+
+    // Return example affirmative
+    fmav_traj_ack_t ack;
+    ack.result = MAV_RESULT_ACCEPTED;
+    ack.points_loaded = 592; // I made up a number
+    return ack;
+}
+
 void setup() {
 
   //Sets up led
@@ -62,16 +76,20 @@ void setup() {
   // as5600.setDirection(AS5600_CLOCK_WISE);  // default, just be explicit.
   // int b = as5600.isConnected();
   //---
+  // Serial.print("Set up comms...");
+  comms.init();
+  comms.registerTrajSDLoadAction(loadSD);
+  // Serial.println("Done");
 
   //IMU SETUP
   initializeIMU();
   //---
 
   //GYROSCOPE (IMU) INTEGRATOR SETUP
-  Serial.print("Integrator error code:");
+  // Serial.print("Integrator error code:");
   integratorGyroErrorCode = gyroIntegrator.integratorSetup(&gyroVector);
   
-  Serial.println(integratorGyroErrorCode);
+  // Serial.println(integratorGyroErrorCode);
   //---
 
   //SERVO SETUP
@@ -164,17 +182,17 @@ void led() {
 }
 
 void loop() {
-  
-  Serial.print("Time between loop: ");
-  Serial.println(totalTimeElapsed-lastTime);
+  comms.spin();
+  // comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
+  // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
   lastTime = totalTimeElapsed;
 
-  updateIMU();
+  // updateIMU();
 
-  imuBuffer.addData();
-  data = imuBuffer.getData();
+  // imuBuffer.addData();
+  // data = imuBuffer.getData();
 
-  imuBuffer.printData();
+  // imuBuffer.printData();
   
   // Serial.print(millis());
   // Serial.print("\t");
@@ -193,10 +211,11 @@ void loop() {
   // Serial.print(heading);
 
   gyroVector << gx, gy, gz;
-  Serial.println("Integration data");
+  //comms.sendStatusText(MAV_SEVERITY_INFO, "Integration data");
   gyroIntegrator.integratorUpdate();
   for (int i = 0; i < gyroIntegrator.integratedData.size(); i++) {
-    Serial.println(gyroIntegrator.integratedData(i), 60);
+    // Serial.println(gyroIntegrator.integratedData(i), 60);
+    // comms.sendStatusText(MAV_SEVERITY_INFO, String(gyroIntegrator.integratedData(i)).c_str());
   }
   
   int x = gyroIntegrator.integratedData(0);
@@ -224,71 +243,7 @@ void loop() {
 
   delayMicroseconds(100);
 
-  //int x_actual = beta.read();
-
-  //Matrix Multiplication test
-  // Eigen::VectorXd vo = m * v;
-  // v = vo;
-
-
-  // Serial.print("Controller error code:");
-  // Serial.println(controllerErrorCode);
-
-  // Serial.print("Estimator error code:");
-  // Serial.println(estimatorErrorCode);
-
-  // Serial.print("Integrator error code:");
-  // Serial.println(integratorErrorCode);
-
-  // Serial.print("Derivative error code:");
-  // Serial.println(derivativeErrorCode);
-
-  //integrateAndDeriveTest += 2;
-  //2, 4, 6
-
-  //Integrator and Derivative Test
-  // integrateAndDeriveTest(0) = integrateAndDeriveTest(0) + 2;
-  // integrateAndDeriveTest(1) = integrateAndDeriveTest(1) + 2;
-  // integrateAndDeriveTest(2) = integrateAndDeriveTest(2) + 2;
-
-  // Serial.println("Main.cpp Vector");
-  // for (int i = 0; i < integrateAndDeriveTest.size(); i++) {
-  //   Serial.println(integrateAndDeriveTest(i));
-  // }
-
-  // Serial.println("Integration data");
-  // integratorUpdate();
-  // Serial.println("Integration");
-  // for (int i = 0; i < integratedData.size(); i++) {
-  //   Serial.println(integratedData(i), 60);
-  // }
-
-  // Serial.println("Derivative data");
-  // derivativeUpdate();
-  // Serial.println("Derivative");
-  // for (int i = 0; i < derivative.size(); i++) {
-  //   Serial.println(derivative(i), 60);
-  // }
-
-  // Serial.println("New Vector: ");
-  // Serial.print(v(0));
-  // Serial.println();
-  // Serial.print(v(1));
-  // Serial.println();
-  // Serial.print(v(2));
-  // Serial.println();
-
   //turns led on and off
   led();
-  
-
-  // wait for a second
-  //delay(1000);
-
-  //end program after 1000000 micro seconds
-  // if (totalTimeElapsed >= 1000000) {
-  //   digitalWrite(LED_BUILTIN, HIGH);
-  //   delay(20000000);
-  // }
 }
 

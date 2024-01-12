@@ -1,3 +1,9 @@
 [submodule "lib/drivers"]
 	path = lib/drivers
 	url = https://github.com/activecontrols/Avionics.git
+[submodule "lib/fastmavlink"]
+	path = lib/fastmavlink
+	url = https://github.com/olliw42/fastmavlink
+[submodule "lib/message_definitions"]
+	path = lib/message_definitions
+	url = https://github.com/activecontrols/ASTRAMessageDefinitions
