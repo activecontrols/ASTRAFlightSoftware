@@ -39,8 +39,8 @@ Author: Vincent Palmerio
 
 #define INNER_GIMBAL_PIN 0
 #define OUTER_GIMBAL_PIN 0
-#define TORQUE_VANE_1_PIN 0
-#define TORQUE_VANE_2_PIN 0
+#define LEFT_TORQUE_VANE_PIN 0
+#define RIGHT_TORQUE_VANE_PIN 0
 
 //Global variables
 extern Eigen::VectorXd controllerInputU;

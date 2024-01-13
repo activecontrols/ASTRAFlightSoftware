@@ -18,8 +18,8 @@ Eigen::VectorXd xRef{{0,0,0,0,0,0,0}};
 
 Servo innerGimbal;
 Servo outerGimbal;
-Servo torqueVane1;
-Servo torqueVane2;
+Servo torqueVaneLeft;
+Servo torqueVaneRight;
 
 int initializeController() {
 
@@ -50,8 +50,8 @@ int initializeController() {
 
     innerGimbal.attach(INNER_GIMBAL_PIN);
     outerGimbal.attach(OUTER_GIMBAL_PIN);
-    torqueVane1.attach(TORQUE_VANE_1_PIN);
-    torqueVane2.attach(TORQUE_VANE_2_PIN);
+    torqueVaneLeft.attach(LEFT_TORQUE_VANE_PIN);
+    torqueVaneRight.attach(RIGHT_TORQUE_VANE_PIN);
 
     if (!innerGimbal.attached()) {
         return INNER_GIMBAL_NOT_ATTACHED;
@@ -61,12 +61,12 @@ int initializeController() {
         return OUTER_GIMBAL_NOT_ATTACHED;
     }
 
-    if (!torqueVane1.attached()) {
-        return TORQUE_VANE_1_NOT_ATTACHED;
+    if (!torqueVaneLeft.attached()) {
+        return LEFT_TORQUE_VANE_NOT_ATTACHED;
     }
 
-    if (!torqueVane2.attached()) {
-        return TORQUE_VANE_2_NOT_ATTACHED;
+    if (!torqueVaneRight.attached()) {
+        return RIGHT_TORQUE_VANE_NOT_ATTACHED;
     }
 
     return NO_ERROR_CODE;
@@ -84,8 +84,8 @@ int controlServos() {
 
     innerGimbal.write(controllerInputU(1)); //write gamma to inner gimbal
     outerGimbal.write(controllerInputU(0)); //write beta to outer gimbal
-    torqueVane1.write(controllerInputU(3)); //write alpha to torque vane 1
-    torqueVane2.write(-controllerInputU(3)); //write -alpha to torque vane 2
+    torqueVaneLeft.write(controllerInputU(3)); //write alpha to left torque vane
+    torqueVaneRight.write(-controllerInputU(3)); //write -alpha to right torque vane
 
     return NO_ERROR_CODE;
 }
