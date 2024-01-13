@@ -42,6 +42,11 @@ Author: Vincent Palmerio
 #define LEFT_TORQUE_VANE_PIN 0
 #define RIGHT_TORQUE_VANE_PIN 0
 
+#define INNER_GIMBAL_INITIAL_SETTING 90
+#define OUTER_GIMBAL_INITIAL_SETTING 90
+#define LEFT_TORQUE_VANE_INITIAL_SETTING 90
+#define RIGHT_TORQUE_VANE_INITIAL_SETTING 90
+
 //Global variables
 extern Eigen::VectorXd controllerInputU;
 extern double *k;

@@ -69,6 +69,11 @@ int initializeController() {
         return RIGHT_TORQUE_VANE_NOT_ATTACHED;
     }
 
+    innerGimbal.write(INNER_GIMBAL_INITIAL_SETTING);
+    outerGimbal.write(OUTER_GIMBAL_INITIAL_SETTING);
+    torqueVaneLeft.write(LEFT_TORQUE_VANE_INITIAL_SETTING);
+    torqueVaneRight.write(RIGHT_TORQUE_VANE_INITIAL_SETTING);
+
     return NO_ERROR_CODE;
 }
 
@@ -82,10 +87,10 @@ int updateController() {
 
 int controlServos() {
 
-    innerGimbal.write(controllerInputU(1)); //write gamma to inner gimbal
-    outerGimbal.write(controllerInputU(0)); //write beta to outer gimbal
-    torqueVaneLeft.write(controllerInputU(3)); //write alpha to left torque vane
-    torqueVaneRight.write(-controllerInputU(3)); //write -alpha to right torque vane
+    innerGimbal.write(controllerInputU(1) + INNER_GIMBAL_INITIAL_SETTING); //write gamma to inner gimbal
+    outerGimbal.write(controllerInputU(0) + OUTER_GIMBAL_INITIAL_SETTING); //write beta to outer gimbal
+    torqueVaneLeft.write(controllerInputU(3) + LEFT_TORQUE_VANE_INITIAL_SETTING); //write alpha to left torque vane
+    torqueVaneRight.write(-controllerInputU(3) + RIGHT_TORQUE_VANE_INITIAL_SETTING); //write -alpha to right torque vane
 
     return NO_ERROR_CODE;
 }
