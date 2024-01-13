@@ -1,9 +1,11 @@
 #include <Arduino.h>
 #include "../drivers/ASTRA/IMU/src/IMU.h"
+#include "../encoders/Encoder.h"
 
 /*
 BufferTest.ino
 Description: Arduino testing code for the buffer class
+THERE IS A DATA FREE STATEMENT IN ADD DATA TO MAKE SURE DATA SPACE DOESNT RUN OUT. NEEDS TO BE TESTED. THERE ARE ATTACHED CODE PIECES IN IMU AND ENCODER DRIVERS
 Author: Siddarth Goel
 */
 
@@ -55,6 +57,7 @@ void addData(){
     //Serial.print(temp);
     data[top][i] = temp;
   }
+  free(add);
 }
 
 void printData(){
@@ -74,6 +77,18 @@ void printData(){
   // Serial.println(data[2][2]);
   // Serial.println(data[2][3]);
   
+}
+
+float* getAverage(){
+  float avg[eleSize];
+for(int i = 0; i < eleSize; i++){
+  for(int j = 0; j < numElements; j++){
+    avg[i] += data[i][j];
+  }
+  avg[i] = avg[i]/numElements;
+}
+return avg;
+
 }
 
 float** getData(){
@@ -164,6 +179,8 @@ float* testData(){
 
 
 Buffer buff(3,5, getValues);
+Buffer encoderBuff1(1,5, getAngleEncoder1);
+Buffer encoderBuff2(1,5, getAngleEncoder2);
 float ** data;
 float* test;
 void setup() {
