@@ -16,31 +16,12 @@ Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
 
-Eigen::MatrixXd m(24, 24);
-Eigen::VectorXd v(24);
-
-Eigen::VectorXd integrateAndDeriveTest(3);
-
-Integrator gyroIntegrator;
-Eigen::VectorXd gyroVector(3);
-
 elapsedMillis ledTime;
 
 elapsedMicros totalTimeElapsed;
 int lastTime = 0;
 
 bool ledOn = false;
-
-//ERROR CODES
-int controllerErrorCode = -20;
-int estimatorErrorCode = -20;
-int integratorErrorCode = -20;
-int integratorGyroErrorCode = -20;
-int derivativeErrorCode = -20;
-
-//SERVOS
-Servo beta;
-Servo alpha;
 
 Buffer imuBuffer(3,5, getValues);
 float ** data;
@@ -61,15 +42,12 @@ void setup() {
 
   //IMU SETUP
   int errorCode = initializeIMU();
-  Serial.println(errorCode);
-  //---
-
-  //SERVO SETUP
-  beta.attach(2);
-  alpha.attach(3);
-
-  beta.write(90);
-  alpha.write(90);
+  while(errorCode != 0) {
+    Serial.print("Failed to initialize IMU, error code: ");
+    Serial.print(errorCode);
+    Serial.println(". Retrying...");
+    errorCode = initializeIMU();
+  }
   //---
 
   initializeEstimator();
