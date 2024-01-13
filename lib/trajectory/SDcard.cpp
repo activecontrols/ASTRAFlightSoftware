@@ -5,7 +5,7 @@
  * and writes to a binary SD card file called outFile
  *
  * Created: 11/11/2023 by Teresa Wan <teresawan04@gmail.com>
- * Last updated: 12/4/2023 by Ishan Goel
+ * Last updated: 12/4/2023 by Ishan Goel <goeli@purdue.edu>
  *
  */
 
