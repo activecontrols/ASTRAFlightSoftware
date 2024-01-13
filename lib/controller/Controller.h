@@ -37,6 +37,11 @@ Author: Vincent Palmerio
 #define ALPHA_MIN -8
 #define ALPHA_MAX 8
 
+#define INNER_GIMBAL_PIN 0
+#define OUTER_GIMBAL_PIN 0
+#define TORQUE_VANE_1_PIN 0
+#define TORQUE_VANE_2_PIN 0
+
 //Global variables
 extern Eigen::VectorXd controllerInputU;
 extern double *k;
@@ -62,6 +67,7 @@ extern int updateController();
 int getDeltaX(Eigen::VectorXd*, Eigen::VectorXd*);
 int controlLaw();
 int saturation();
+int controlServos();
 double minMax(double value, double min, double max);
 
 int controlLaw(Eigen::Matrix4Xd* uRef);

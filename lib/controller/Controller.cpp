@@ -2,7 +2,8 @@
 //#include "../estimator/Estimator.h"
 #include "../error/Error.h"
 #include "../estimator/Estimator.h"
-
+#include <Arduino.h>
+#include <Servo.h>
 /*
 Controller.cpp  
 Description: Defines all functions for the controller, including those declared in Controller.h
@@ -13,8 +14,12 @@ Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
 double* k = (double *)malloc(K_ARRAY_LENGTH * sizeof(double));
 Eigen::MatrixXd kGain(K_ROW_LENGTH, K_COLUMN_LENGTH);
 Eigen::VectorXd deltaX(X_VECTOR_LENGTH);
-
 Eigen::VectorXd xRef{{0,0,0,0,0,0,0}};
+
+Servo innerGimbal;
+Servo outerGimbal;
+Servo torqueVane1;
+Servo torqueVane2;
 
 int initializeController() {
 
@@ -28,16 +33,40 @@ int initializeController() {
         return MEMORY_ALLOCATION_ERROR_CODE; //Memory Allocation Error Code
     }
 
-    for (unsigned int i = 0; i < X_VECTOR_LENGTH; i++) {
-        deltaX(i) = 0;
+    // for (unsigned int i = 0; i < X_VECTOR_LENGTH; i++) {
+    //     deltaX(i) = 0;
+    // }
+    deltaX.setZero();
+
+    // for (unsigned int i = 0; i < U_ROW_LENGTH; i++) {
+    //     controllerInputU(i) = 1;
+    // }
+    controllerInputU.setConstant(1);
+
+    // for (unsigned int i = 0; i < K_ROW_LENGTH*K_COLUMN_LENGTH; i++) {
+    //     kGain(i) = 1;
+    // }
+    kGain.setConstant(1);
+
+    innerGimbal.attach(INNER_GIMBAL_PIN);
+    outerGimbal.attach(OUTER_GIMBAL_PIN);
+    torqueVane1.attach(TORQUE_VANE_1_PIN);
+    torqueVane2.attach(TORQUE_VANE_2_PIN);
+
+    if (!innerGimbal.attached()) {
+        return INNER_GIMBAL_NOT_ATTACHED;
     }
 
-    for (unsigned int i = 0; i < U_ROW_LENGTH; i++) {
-        controllerInputU(i) = 1;
+    if (!outerGimbal.attached()) {
+        return OUTER_GIMBAL_NOT_ATTACHED;
     }
 
-    for (unsigned int i = 0; i < K_ROW_LENGTH*K_COLUMN_LENGTH; i++) {
-        kGain(i) = 1;
+    if (!torqueVane1.attached()) {
+        return TORQUE_VANE_1_NOT_ATTACHED;
+    }
+
+    if (!torqueVane2.attached()) {
+        return TORQUE_VANE_2_NOT_ATTACHED;
     }
 
     return NO_ERROR_CODE;
@@ -47,6 +76,17 @@ int updateController() {
     getDeltaX(&estimatedStateX, &xRef);
     controlLaw();
     saturation();
+    controlServos();
+    return NO_ERROR_CODE;
+}
+
+int controlServos() {
+
+    innerGimbal.write(controllerInputU(1)); //write gamma to inner gimbal
+    outerGimbal.write(controllerInputU(0)); //write beta to outer gimbal
+    torqueVane1.write(controllerInputU(3)); //write alpha to torque vane 1
+    torqueVane2.write(-controllerInputU(3)); //write -alpha to torque vane 2
+
     return NO_ERROR_CODE;
 }
 
