@@ -2,8 +2,6 @@
 Derivative.cpp - Derivative CPP file
 Description: defines the functions and variales in Derivative.h
 Author: Vincent Palmerio
-Created: 10/20/2023
-Last updated: 10/24/2023
 */
 
 #include "Derivative.h"

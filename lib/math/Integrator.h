@@ -1,7 +1,7 @@
 /*
 Integrator.h - Integrator Header file
 Description: Header file to Integrator.cpp
-Author: Vincent Palmerio
+Author: Ishan Goel, Vincent Palmerio
 Created: 10/20/2023
 Last updated: 01/10/2024 by Ishan Goel
 */

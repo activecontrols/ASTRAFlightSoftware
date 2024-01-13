@@ -1,7 +1,7 @@
 /*
 Integrator.cpp - Integrator CPP file
 Description: defines functions and variales in Integrator.h
-Author: Vincent Palmerio
+Author: Ishan Goel, Vincent Palmerio
 Created: 10/20/2023
 Last updated: 01/10/2024 by Ishan Goel
 */
