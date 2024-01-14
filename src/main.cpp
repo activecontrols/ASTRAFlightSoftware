@@ -27,13 +27,6 @@ bool ledOn = false;
 // COMMS
 CommsManager comms;
 
-//ERROR CODES
-int controllerErrorCode = -20;
-int estimatorErrorCode = -20;
-int integratorErrorCode = -20;
-int integratorGyroErrorCode = -20;
-int derivativeErrorCode = -20;
-
 Buffer imuBuffer(3,5, getValues);
 float ** data;
 float* test;
