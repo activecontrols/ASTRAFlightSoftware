@@ -4,8 +4,6 @@ Description: Error Constants for General Errors that can occur throughout Astra
 Author: Vincent Palmerio
 */
 
-
-
 #ifndef ERROR_H
 #define ERROR_H
 

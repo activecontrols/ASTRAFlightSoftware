@@ -5,6 +5,7 @@
 #include "../lib/controller/Controller.h"
 #include "../lib/math/Integrator.h"
 #include "../lib/math/Derivative.h"
+#include "../lib/comms/Comms.h"
 #include "../lib/drivers/ASTRA/IMU/src/IMU.h"
 #include "../lib/encoders/Encoder.h"
 #include <Servo.h>
@@ -23,9 +24,29 @@ int lastTime = 0;
 
 bool ledOn = false;
 
+// COMMS
+CommsManager comms;
+
+//ERROR CODES
+int controllerErrorCode = -20;
+int estimatorErrorCode = -20;
+int integratorErrorCode = -20;
+int integratorGyroErrorCode = -20;
+int derivativeErrorCode = -20;
+
 Buffer imuBuffer(3,5, getValues);
 float ** data;
 float* test;
+
+fmav_traj_ack_t loadSD(int number) {
+    comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
+
+    // Return example affirmative
+    fmav_traj_ack_t ack;
+    ack.result = MAV_RESULT_ACCEPTED;
+    ack.points_loaded = 592; // I made up a number
+    return ack;
+}
 
 void setup() {
 
@@ -39,6 +60,10 @@ void setup() {
     Serial.println("Connecting to encoder...");
   }
   //---
+  // Serial.print("Set up comms...");
+  comms.init();
+  comms.registerTrajSDLoadAction(loadSD);
+  // Serial.println("Done");
 
   //IMU SETUP
   int errorCode = initializeIMU();
@@ -80,9 +105,9 @@ void led() {
 }
 
 void loop() {
-  
-  Serial.print("Time between loop: ");
-  Serial.println(totalTimeElapsed-lastTime);
+  comms.spin();
+  // comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
+  // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
   lastTime = totalTimeElapsed;
 
   updateEstimator();
@@ -92,6 +117,5 @@ void loop() {
 
   //turns led on and off
   led();
-  
 }
 

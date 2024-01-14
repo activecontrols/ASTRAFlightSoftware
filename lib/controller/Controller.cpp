@@ -13,13 +13,24 @@ Author: Vincent Palmerio
 Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
 double* k = (double *)malloc(K_ARRAY_LENGTH * sizeof(double));
 Eigen::MatrixXd kGain(K_ROW_LENGTH, K_COLUMN_LENGTH);
+
 Eigen::VectorXd deltaX(X_VECTOR_LENGTH);
 Eigen::VectorXd xRef{{0,0,0,0,0,0,0}};
+
+Eigen::VectorXd xSnap{X_VECTOR_LENGTH};
+Eigen::VectorXd deltaXSnap(X_VECTOR_LENGTH);
+
+Integrator zIntegrationObject;
+Integrator zSnapIntegrationObject;
 
 Servo innerGimbal;
 Servo outerGimbal;
 Servo torqueVaneLeft;
 Servo torqueVaneRight;
+
+elapsedMicros xSnapTimer;
+
+double offset = 0;
 
 int initializeController() {
 
@@ -78,7 +89,7 @@ int initializeController() {
 }
 
 int updateController() {
-    getDeltaX(&estimatedStateX, &xRef);
+    //getDeltaX(&estimatedStateX, &xRef);
     controlLaw();
     saturation();
     controlServos();
@@ -97,13 +108,6 @@ int controlServos() {
 
 int getDeltaX(Eigen::VectorXd* x, Eigen::VectorXd* xRef) {
     deltaX = (*x)-(*xRef);
-
-    return NO_ERROR_CODE;
-}
-
-int controlLaw() {
-
-    controllerInputU = -(kGain * deltaX);
 
     return NO_ERROR_CODE;
 }
@@ -133,6 +137,104 @@ double minMax(double value, double min, double max) {
     } else {
         return value;
     }
+}
+
+//determines which control function to use based on priority:
+//1. comms commands
+//   - Calls controlLaw()
+//2. analysis of estimated state
+//   - Calls controlMode()
+int controlLaw() {
+
+    //if comms
+    //else {
+    controlMode(&estimatedStateX, &xRef);
+    //}
+
+}
+
+int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef) {
+    
+    //if deltaX == some condition for controlLawStability
+    //Get snapshot of estimatedStateX with just position (everything else zero) (position not implemented yet)
+    //set xSnap to that snapshot
+    //initialize xSnap integrator and set it to zSnapIntegrationObject
+    //start a new timer and set it to xSnapTimer
+
+    //if deltaX == some condition for controlLawTrack
+    //if previously in controlLawStability,
+        //end timer, set timer value to offset
+
+    return NO_ERROR_CODE;
+}
+
+int controlLawRegulate() {
+
+    controllerInputU = -(kGain * estimatedStateX);
+
+    return NO_ERROR_CODE;
+}
+
+int controlLawTrack(Eigen::Matrix4Xd* uRef) {
+
+    getDeltaX(&estimatedStateX, &xRef);
+
+    //update the integrator now that a new deltaX has been set
+    //the integrator is being updated here because this is the closest point
+    //between the integration of the data and the usage of the data. 
+    //we don't want there to be any gaps in time where the integrator is not updated
+    int errorCode = zIntegrationObject.integratorUpdate();
+
+    if (errorCode != 0) {
+        return errorCode;
+    }
+    
+    Eigen::Matrix2Xd deltaXIntegratedX;
+    
+    //deltaX in first row
+    for (int i = 0; i < deltaX.size(); i++) {
+        deltaXIntegratedX(0, i) = deltaX(i);
+    }
+
+    //integrated X in second row
+    for (int i = 0; i < zIntegrationObject.integratedData.size(); i++) {
+        deltaXIntegratedX(0, i) = zIntegrationObject.integratedData(i);
+    }
+
+    controllerInputU = (*uRef) - (kGain * deltaXIntegratedX);
+
+    return NO_ERROR_CODE;
+}
+
+int controlLawStability() {
+
+    getDeltaX(&estimatedStateX, &xSnap);
+
+    //update the integrator now that a new deltaX has been set
+    //the integrator is being updated here because this is the closest point
+    //between the integration of the data and the usage of the data. 
+    //we don't want there to be any gaps in time where the integrator is not updated
+    int errorCode = zSnapIntegrationObject.integratorUpdate();
+
+    if (errorCode != 0) {
+        return errorCode;
+    }
+    
+    Eigen::Matrix2Xd deltaXIntegratedX;
+    
+    //deltaX in first row
+    for (int i = 0; i < deltaX.size(); i++) {
+        deltaXIntegratedX(0, i) = deltaX(i);
+    }
+
+    //integrated X in second row
+    for (int i = 0; i < zSnapIntegrationObject.integratedData.size(); i++) {
+        deltaXIntegratedX(0, i) = zSnapIntegrationObject.integratedData(i);
+    }
+
+    controllerInputU = - (kGain * deltaXIntegratedX);
+
+    return NO_ERROR_CODE;
 }
 
 
@@ -174,39 +276,4 @@ int getDeltaX(Eigen::Matrix4Xd* x, Eigen::Matrix4Xd* xRef) {
 
     return NO_ERROR_CODE;
 }
-
-int controlMode(Eigen::Matrix4Xd* deltaX) {
-    
-    return NO_ERROR_CODE;
-}
-
-int controlLaw(Eigen::Matrix4Xd* uRef) {
-
-    //update the integrator now that a new deltaX has been set
-    //the integrator is being updated here because this is the closest point
-    //between the integration of the data and the usage of the data. 
-    //we don't want there to be any gaps in time where the integrator is not updated
-    int errorCode = zIntegrationObject.integratorUpdate();
-
-    if (errorCode != 0) {
-        return errorCode;
-    }
-    
-    Eigen::Matrix2Xd deltaXIntegratedX;
-    
-    //deltaX in first row
-    for (int i = 0; i < deltaX.size(); i++) {
-        deltaXIntegratedX(0, i) = deltaX(i);
-    }
-
-    //integrated X in second row
-    for (int i = 0; i < zIntegrationObject.integratedData.size(); i++) {
-        deltaXIntegratedX(0, i) = zIntegrationObject.integratedData(i);
-    }
-
-    controllerInputU = (*uRef) - (kGain * deltaXIntegratedX);
-
-    return NO_ERROR_CODE;
-}
-
 

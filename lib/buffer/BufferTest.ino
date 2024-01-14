@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "../drivers/ASTRA/IMU/src/IMU.h"
+
 #include "../encoders/Encoder.h"
 
 /*
@@ -166,6 +167,9 @@ float* (*fptr)();
 float input1[4] = {1, 2, 3, 4};
 float input2[4] = {4, 3, 2, 1};
 
+AS5600 magenc1;
+AS5600 magenc2;
+
 
 
 float* testData(){
@@ -178,9 +182,11 @@ float* testData(){
 // }
 
 
-Buffer buff(3,5, getValues);
+
+Buffer IMUbuff(3,5, getValues);
 Buffer encoderBuff1(1,5, getAngleEncoder1);
 Buffer encoderBuff2(1,5, getAngleEncoder2);
+
 float ** data;
 float* test;
 void setup() {
@@ -199,11 +205,11 @@ void loop() {
   Serial.println("Input 1");
   delay(5000);
   //Serial.println("Input 2");
-  buff.addData();
+  IMUbuff.addData();
   Serial.println("Input 3");
   // Serial.println("HELLOOO!");
   //buff.printData();
-  data = buff.getData();
+  data = IMUbuff.getData();
   Serial.println("Input 1");
   Serial.println(data[0][0]);
   Serial.println(data[0][1]);

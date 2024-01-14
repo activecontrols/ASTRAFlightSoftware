@@ -53,8 +53,6 @@ extern double *k;
 extern Eigen::MatrixXd kGain;
 extern Eigen::VectorXd deltaX;
 
-static Integrator zIntegrationObject;
-
 enum K_GAIN {
     TRACK_K_GAIN = 1,
     STABALIZE_K_GAIN = 1,
@@ -77,7 +75,7 @@ double minMax(double value, double min, double max);
 
 int controlLaw(Eigen::Matrix4Xd* uRef);
 
-int controlMode(Eigen::Matrix4Xd* deltaX);
+int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
 
 #endif
 
