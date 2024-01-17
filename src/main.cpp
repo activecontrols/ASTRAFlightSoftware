@@ -27,13 +27,6 @@ bool ledOn = false;
 // COMMS
 CommsManager comms;
 
-//ERROR CODES
-int controllerErrorCode = -20;
-int estimatorErrorCode = -20;
-int integratorErrorCode = -20;
-int integratorGyroErrorCode = -20;
-int derivativeErrorCode = -20;
-
 Buffer imuBuffer(3,5, getValues);
 float ** data;
 float* test;
@@ -61,8 +54,8 @@ void setup() {
   }
   //---
   // Serial.print("Set up comms...");
-  comms.init();
-  comms.registerTrajSDLoadAction(loadSD);
+  //comms.init();
+  //comms.registerTrajSDLoadAction(loadSD);
   // Serial.println("Done");
 
   //IMU SETUP
@@ -105,7 +98,7 @@ void led() {
 }
 
 void loop() {
-  comms.spin();
+  //comms.spin();
   // comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
   // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
   lastTime = totalTimeElapsed;
