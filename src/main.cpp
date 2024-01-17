@@ -107,6 +107,10 @@ void loop() {
   updateController();
 
   controllerInputU; //the vector to access for outputs
+  for (int i = 0; i < controllerInputU.size(); i++) {
+    Serial.print(" ");
+    Serial.print(controllerInputU(i));
+  }
 
   //turns led on and off
   led();
