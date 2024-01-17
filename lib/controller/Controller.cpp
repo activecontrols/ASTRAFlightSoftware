@@ -148,8 +148,9 @@ int controlLaw() {
 
     //if comms
     //else {
-    controlMode(&estimatedStateX, &xRef);
+    //controlMode(&estimatedStateX, &xRef);
     //}
+    controlLawRegulate();
 
 }
 
