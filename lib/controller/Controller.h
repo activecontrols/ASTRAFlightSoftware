@@ -69,6 +69,7 @@ extern int updateController();
 
 int getDeltaX(Eigen::VectorXd*, Eigen::VectorXd*);
 int controlLaw();
+int controlLawRegulate();
 int saturation();
 int controlServos();
 double minMax(double value, double min, double max);

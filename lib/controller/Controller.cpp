@@ -151,6 +151,7 @@ int controlLaw() {
     //controlMode(&estimatedStateX, &xRef);
     //}
     controlLawRegulate();
+    return NO_ERROR_CODE;
 
 }
 
