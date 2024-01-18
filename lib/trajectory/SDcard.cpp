@@ -11,7 +11,7 @@
 
 #include <SPI.h>
 #include <SD.h>
-#include <./SDcard.h>
+#include <SDcard.h>
 
 // reading from binary SD card file, will return 0 if successful
 namespace traj {
@@ -21,6 +21,7 @@ namespace traj {
   float *t;
 }
 
+// traj::decode takes in the name of the file to decode and returns an error if any
 int traj::decode(char* inFile) {
   // TODO: error out if the amount of bytes asked for is not the same as the amount of bytes read
   // open file
@@ -203,7 +204,7 @@ void setup() {
 
   Serial.print("Initializing SD card...");
 
-  if (!SD.begin(4)) {
+  if (!SD.begin(BUILTIN_SDCARD)) {
     Serial.println("initialization failed!");
     while (1);
   }

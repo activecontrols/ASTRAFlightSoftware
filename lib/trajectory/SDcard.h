@@ -34,6 +34,7 @@ namespace traj {
 
   // int encode(char *inFile, char *outFile); // runs on the ground station
 
+	// traj::decode takes in the name of the file to decode and returns an error if any
     int decode(char *inFile);
 }
 
