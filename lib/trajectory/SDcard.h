@@ -19,7 +19,7 @@ namespace traj {
   // we don't want to use a 1d array with size k*m*n because we want to be able to access it like a 3d array (faster)
   // we also want to it to be stored as a contiguous block of memory which is faster and also allows a single fread
   // using pointers to VLAs on the heap is the best way to accomplish all of this.
-  // see SDcard.cpp -> clearAllData() for an example of how to cast and access the data
+  // see trajectory/example.cpp -> clearAllData() for an example of how to cast and access the data
   // ask ishan for help if needed
 
     extern void *vgainM; // cast to float (*gainM)[m][n + N]. Access like you would gainM[p][m][n + N]
@@ -34,7 +34,9 @@ namespace traj {
 
   // int encode(char *inFile, char *outFile); // runs on the ground station
 
-	// traj::decode takes in the name of the file to decode and returns an error if any
+	// traj::decode takes in the name of the file to decode and returns an error if any.
+	// data read from the file is decoded into the variables defined in the traj namespace.
+	// see clearAllData() in trajectory/example.cpp for an example of how to cast and use the variables.
     int decode(char *inFile);
 }
 
