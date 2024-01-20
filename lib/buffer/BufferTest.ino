@@ -59,6 +59,7 @@ void addData(){
     data[top][i] = temp;
   }
   free(add);
+  add = NULL;
 }
 
 void printData(){
