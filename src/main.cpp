@@ -11,6 +11,8 @@
 #include <Servo.h>
 //#include <ArduinoEigenDense.h>
 
+#define USE_ENCODER (false)
+
 /*
 main.cpp 
 Description: Currently used to run tests for the entire flight software
@@ -49,13 +51,15 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH); 
 
   //ENCODER SETUP
+#if USE_ENCODER
   while (!encoderSetup(1, 2)) {
     Serial.println("Connecting to encoder...");
   }
+#endif
   //---
   // Serial.print("Set up comms...");
-  comms.init();
-  comms.registerTrajSDLoadAction(loadSD);
+  //comms.init();
+  //comms.registerTrajSDLoadAction(loadSD);
   // Serial.println("Done");
 
   //IMU SETUP
@@ -75,9 +79,6 @@ void setup() {
 
 //turns the LED on and off every 3 seconds 
 void led() {
-
-  getAngleEncoder1();
-  getAngleEncoder2();
   
   if (ledTime >= 3000) {
 
@@ -98,7 +99,7 @@ void led() {
 }
 
 void loop() {
-  comms.spin();
+  //comms.spin();
   // comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
   // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
   lastTime = totalTimeElapsed;
@@ -107,6 +108,11 @@ void loop() {
   updateController();
 
   controllerInputU; //the vector to access for outputs
+  for (int i = 0; i < controllerInputU.size(); i++) {
+    Serial.print(" ");
+    Serial.print(controllerInputU(i));
+  }
+  Serial.println();
 
   //turns led on and off
   led();

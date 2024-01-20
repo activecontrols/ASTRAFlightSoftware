@@ -12,7 +12,7 @@ Author: Vincent Palmerio
 
 Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
 double* k = (double *)malloc(K_ARRAY_LENGTH * sizeof(double));
-Eigen::MatrixXd kGain(K_ROW_LENGTH, K_COLUMN_LENGTH);
+Eigen::MatrixXd kGain(U_ROW_LENGTH, X_VECTOR_LENGTH);
 
 Eigen::VectorXd deltaX(X_VECTOR_LENGTH);
 Eigen::VectorXd xRef{{0,0,0,0,0,0,0}};
@@ -52,7 +52,7 @@ int initializeController() {
     // for (unsigned int i = 0; i < U_ROW_LENGTH; i++) {
     //     controllerInputU(i) = 1;
     // }
-    controllerInputU.setConstant(1);
+    controllerInputU.setZero();
 
     // for (unsigned int i = 0; i < K_ROW_LENGTH*K_COLUMN_LENGTH; i++) {
     //     kGain(i) = 1;
@@ -148,8 +148,10 @@ int controlLaw() {
 
     //if comms
     //else {
-    controlMode(&estimatedStateX, &xRef);
+    //controlMode(&estimatedStateX, &xRef);
     //}
+    controlLawRegulate();
+    return NO_ERROR_CODE;
 
 }
 

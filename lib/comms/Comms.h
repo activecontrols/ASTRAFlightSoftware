@@ -16,14 +16,10 @@ void fmav_serial_write_char(char c);
 #include "../message_lib/pscom/pscom.h"
 #include <ArduinoEigenDense.h>
 #include <stdint.h>
+#include "../controller/Controller.h"
 
 /* Define serial interface to use at compile time */
 #define MAVLinkSerial Serial
-
-/* Define dimensions of vectors/matrices used in controller */
-#define U_ARRAY_LENGTH 12
-#define MODE_ARRAY_LENGTH 12
-#define K_ARRAY_LENGTH 10
 
 /* Define telemetry frequencies */
 #define TELEM_HZ 5
