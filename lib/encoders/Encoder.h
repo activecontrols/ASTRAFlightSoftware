@@ -25,14 +25,22 @@ extern bool encoderSetup(int pin1, int pin2)
     return a && b;
 }
 
+/*
+ * You must free the pointer and set it to NULL after using the pointer!
+ */
 extern float* getAngleEncoder1() {
-    float arr[] = {magEncoder1.readAngle()};
-    return arr;
+    float* angle = (float*)malloc(1 * sizeof(float));
+    angle[0] = (float) magEncoder1.readAngle();
+    return angle;
 }
 
+/*
+ * You must free the pointer and set it to NULL after using the pointer!
+ */
 extern float* getAngleEncoder2() {
-    float arr[] = {magEncoder1.readAngle()};
-    return arr;
+    float* angle = (float*)malloc(1 * sizeof(float));
+    angle[0] = (float) magEncoder1.readAngle();
+    return angle;
 }
 
 #endif
