@@ -14,12 +14,10 @@ Author: Vincent Palmerio
 #define MODE_ARRAY_LENGTH (12)
 #define K_ARRAY_LENGTH (10)
 
-//dimensions of deltaX matrix
 #define X_VECTOR_LENGTH (7)
 
-//dimensions of controllerInputU matrix
+//dimensions of controllerInputU
 #define U_ROW_LENGTH (4)
-//#define U_COLUMN_LENGTH 12
 
 //dimensions of kGain matrix
 #define K_ROW_LENGTH (12)
@@ -61,8 +59,6 @@ enum K_GAIN {
 
 extern Eigen::VectorXd xRef;
 
-//malloc's global variables in this header file, 
-    //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
 extern int initializeController();
 
 extern int updateController();
@@ -73,8 +69,6 @@ int controlLawRegulate();
 int saturation();
 int controlServos();
 double minMax(double value, double min, double max);
-
-int controlLaw(Eigen::Matrix4Xd* uRef);
 
 int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
 
