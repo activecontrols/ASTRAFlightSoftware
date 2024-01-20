@@ -25,12 +25,14 @@ extern bool encoderSetup(int pin1, int pin2)
     return a && b;
 }
 
-extern int getAngleEncoder1() {
-    return magEncoder1.readAngle();
+extern float* getAngleEncoder1() {
+    float arr[] = {magEncoder1.readAngle()};
+    return arr;
 }
 
-extern int getAngleEncoder2() {
-    return magEncoder2.readAngle();
+extern float* getAngleEncoder2() {
+    float arr[] = {magEncoder1.readAngle()};
+    return arr;
 }
 
 #endif
