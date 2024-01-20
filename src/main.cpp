@@ -11,6 +11,8 @@
 #include <Servo.h>
 //#include <ArduinoEigenDense.h>
 
+#define USE_ENCODER (false)
+
 /*
 main.cpp 
 Description: Currently used to run tests for the entire flight software
@@ -49,9 +51,11 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH); 
 
   //ENCODER SETUP
+#if USE_ENCODER
   while (!encoderSetup(1, 2)) {
     Serial.println("Connecting to encoder...");
   }
+#endif
   //---
   // Serial.print("Set up comms...");
   //comms.init();
@@ -75,9 +79,6 @@ void setup() {
 
 //turns the LED on and off every 3 seconds 
 void led() {
-
-  getAngleEncoder1();
-  getAngleEncoder2();
   
   if (ledTime >= 3000) {
 
@@ -111,6 +112,7 @@ void loop() {
     Serial.print(" ");
     Serial.print(controllerInputU(i));
   }
+  Serial.println();
 
   //turns led on and off
   led();
