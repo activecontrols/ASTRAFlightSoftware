@@ -33,6 +33,10 @@ Buffer imuBuffer(3,5, getValues);
 float ** data;
 float* test;
 
+Servo innerGimbal;
+Servo outerGimbal;
+int gimbal_saturation = 8;
+
 fmav_traj_ack_t loadSD(int number) {
     comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
 
@@ -72,8 +76,11 @@ void setup() {
   }
   //---
 
-  initializeEstimator();
-  initializeController();
+  // initializeEstimator();
+  // initializeController();
+
+  innerGimbal.attach(1);
+  outerGimbal.attach(1);
   
 }
 
@@ -104,16 +111,35 @@ void loop() {
   // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
   lastTime = totalTimeElapsed;
 
-  updateEstimator();
-  updateController();
+  // updateEstimator();
+  // updateController();
 
-  controllerInputU; //the vector to access for outputs
-  for (int i = 0; i < controllerInputU.size(); i++) {
-    Serial.print(" ");
-    Serial.print(controllerInputU(i));
+  // controllerInputU; //the vector to access for outputs
+  // for (int i = 0; i < controllerInputU.size(); i++) {
+  //   Serial.print(" ");
+  //   Serial.print(controllerInputU(i));
+  // }
+  // Serial.println();
+
+  roll, pitch, yaw;
+  
+  if (roll > gimbal_saturation) {
+    roll = 8;
+  } else if (roll < -gimbal_saturation) {
+    roll = -8;
   }
-  Serial.println();
 
+  if (pitch > gimbal_saturation) {
+    pitch = 8;
+  } else if (pitch < -gimbal_saturation) {
+    pitch = -8;
+  }
+
+  innerGimbal.write(pitch + INNER_GIMBAL_INITIAL_SETTING);
+  outerGimbal.write(roll + OUTER_GIMBAL_INITIAL_SETTING);
+
+  delayMicroseconds(100);
+  
   //turns led on and off
   led();
 }
