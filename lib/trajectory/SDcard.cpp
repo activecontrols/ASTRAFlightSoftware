@@ -15,17 +15,20 @@
 
 // reading from binary SD card file, will return 0 if successful
 namespace traj {
-  int FILE_READ_ERR = -1, FILE_WRITE_ERR = -2, NO_DATA_POINTS = -3;
+  enum errorStatus{
+    FILE_READ_ERR = -1, 
+    FILE_WRITE_ERR = -2, 
+    NO_DATA_POINTS = -3,
+    SUCCESS = 0;
+  }
   int k, p, m, n, N;
   void *vgainM, *vqsm, *vx, *vu;
   float *t;
 }
-
 // traj::decode takes in the name of the file to decode and returns an error if any.
 // data read from the file is decoded into the variables defined in the traj namespace.
 // see clearAllData() in trajectory/example.cpp for an example of how to cast and use the variables.
-int traj::decode(char* inFile) {
-  // TODO: error out if the amount of bytes asked for is not the same as the amount of bytes read
+traj::errorStatus traj::decode(char* inFile) {
   // open file
   File file = SD.open(inFile, FILE_READ);
   if (!file) return FILE_READ_ERR;
@@ -41,7 +44,6 @@ int traj::decode(char* inFile) {
   float (*gainM)[m][n + N] = (float (*)[m][n + N]) extmem_malloc(
     p * sizeof(*gainM)); // extmem means PSRAM. malloc slightly faster than calloc
   file.read(gainM, sizeof(*gainM) * p);
-  // printf("%ld\n", sizeof(*gainM) * p);
   vgainM = gainM;
   // read quick stabilization matrices. currently 3 qsm, may change later
   float (*qsm)[m][n] = (float (*)[m][n]) extmem_malloc(3 * sizeof(*qsm));
@@ -61,15 +63,15 @@ int traj::decode(char* inFile) {
   file.read(t, sizeof(*t) * k);
 
   file.close();
-  return 0;
+  return SUCCESS;
 }
 
 // reading from inFile, will return 0 if successful
-int encode(char* inFile,
+errorStatus encode(char* inFile,
            char* outFile) {
   // this function doesn't run on the teensy: it generates the file to be flashed to the SD card
   FILE* filePointer = fopen(inFile, "rb");
-  if (filePointer == nullptr) return traj::FILE_READ_ERR;
+  if (filePointer == nullptr) return FILE_READ_ERR;
   // reading header
   int k, p, m, n, N;
   // k = p = m = n = N = 0;
@@ -78,7 +80,7 @@ int encode(char* inFile,
   if ((next == 0) || (next == EOF)) {
     fclose(filePointer);
     filePointer = nullptr;
-    return traj::NO_DATA_POINTS;
+    return NO_DATA_POINTS;
   }
   // reading gain matrices
   float (*gainM)[m][n + N] = (float (*)[m][n + N]) calloc(p, sizeof *gainM);
@@ -114,7 +116,7 @@ int encode(char* inFile,
   if (outFilePtr == nullptr) {
     fclose(filePointer);
     filePointer = nullptr;
-    return traj::FILE_WRITE_ERR;
+    return FILE_WRITE_ERR;
   }
   // write header
   traj::Header header = {k, p, m, n, N};
@@ -132,80 +134,5 @@ int encode(char* inFile,
   outFilePtr = nullptr;
   fclose(filePointer);
   filePointer = nullptr;
-  return 0;
-}
-
-/*
-  SD card read/write
-
-  This example shows how to read and write data to and from an SD card file
-  The circuit:
-   SD card attached to SPI bus as follows:
- ** MOSI - pin 11
- ** MISO - pin 12
- ** CLK - pin 13
- ** CS - pin 4 (for MKRZero SD: SDCARD_SS_PIN)
-
-  created   Nov 2010
-  by David A. Mellis
-  modified 9 Apr 2012
-  by Tom Igoe
-
-  This example code is in the public domain.
-
-*/
-
-File myFile;
-
-void setup() {
-  // Open serial communications and wait for port to open:
-  Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
-
-
-  Serial.print("Initializing SD card...");
-
-  if (!SD.begin(BUILTIN_SDCARD)) {
-    Serial.println("initialization failed!");
-    while (1);
-  }
-  Serial.println("initialization done.");
-
-  // open the file. note that only one file can be open at a time,
-  // so you have to close this one before opening another.
-  myFile = SD.open("test.txt", FILE_WRITE);
-
-  // if the file opened okay, write to it:
-  if (myFile) {
-    Serial.print("Writing to test.txt...");
-    myFile.println("testing 1, 2, 3.");
-    // close the file:
-    myFile.close();
-    Serial.println("done.");
-  } else {
-    // if the file didn't open, print an error:
-    Serial.println("error opening test.txt");
-  }
-
-  // re-open the file for reading:
-  myFile = SD.open("test.txt");
-  if (myFile) {
-    Serial.println("test.txt:");
-
-    // read from the file until there's nothing else in it:
-    while (myFile.available()) {
-      Serial.write(myFile.read());
-    }
-    // close the file:
-    myFile.close();
-  } else {
-    // if the file didn't open, print an error:
-    Serial.println("error opening test.txt");
-  }
-}
-
-void loop() {
-  // nothing happens after setup
+  return SUCCESS;
 }
