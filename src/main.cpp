@@ -111,6 +111,7 @@ void loop() {
   // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
   lastTime = totalTimeElapsed;
 
+  updateIMU();
   // updateEstimator();
   // updateController();
 
