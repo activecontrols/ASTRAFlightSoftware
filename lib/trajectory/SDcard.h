@@ -9,7 +9,7 @@
 #define TRAJ_H
 
 namespace traj {
-    extern int FILE_READ_ERR, FILE_WRITE_ERR, NO_DATA_POINTS;
+    extern enum errorStatus;
 
   // what do all these vars mean?? refer to the PSRAM structure diagram
     extern int k, p, m, n, N;
