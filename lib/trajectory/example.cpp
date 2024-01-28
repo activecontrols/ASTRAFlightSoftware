@@ -1,9 +1,10 @@
+#include <SDcard.h>
+
 // This is just an example for how to cast and access/set the decoded data
 // (if you actually want to clear data, you can free the pointers and set to a
 // newly allocated array)
 void clearAllData() {
   // convert void* back to the actual type
-  // TODO: check if static cast still works
   float (*gainM)[traj::m][traj::n + traj::N] = (float (*)[traj::m][traj::n + traj::N]) traj::vgainM;
   float (*qsm)[traj::m][traj::n] = (float (*)[traj::m][traj::n]) traj::vqsm;
   float (*x)[traj::n] = (float (*)[traj::n]) traj::vx;

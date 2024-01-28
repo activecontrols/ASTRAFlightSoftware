@@ -15,20 +15,17 @@
 
 // reading from binary SD card file, will return 0 if successful
 namespace traj {
-  enum errorStatus{
-    FILE_READ_ERR = -1, 
-    FILE_WRITE_ERR = -2, 
-    NO_DATA_POINTS = -3,
-    SUCCESS = 0;
-  }
+  int FILE_READ_ERR = -1, FILE_WRITE_ERR = -2, NO_DATA_POINTS = -3;
   int k, p, m, n, N;
   void *vgainM, *vqsm, *vx, *vu;
   float *t;
 }
+
 // traj::decode takes in the name of the file to decode and returns an error if any.
 // data read from the file is decoded into the variables defined in the traj namespace.
 // see clearAllData() in trajectory/example.cpp for an example of how to cast and use the variables.
-traj::errorStatus traj::decode(char* inFile) {
+int traj::decode(char* inFile) {
+  // TODO: error out if the amount of bytes asked for is not the same as the amount of bytes read
   // open file
   File file = SD.open(inFile, FILE_READ);
   if (!file) return FILE_READ_ERR;
@@ -63,15 +60,15 @@ traj::errorStatus traj::decode(char* inFile) {
   file.read(t, sizeof(*t) * k);
 
   file.close();
-  return SUCCESS;
+  return 0;
 }
 
 // reading from inFile, will return 0 if successful
-errorStatus encode(char* inFile,
+int encode(char* inFile,
            char* outFile) {
   // this function doesn't run on the teensy: it generates the file to be flashed to the SD card
   FILE* filePointer = fopen(inFile, "rb");
-  if (filePointer == nullptr) return FILE_READ_ERR;
+  if (filePointer == nullptr) return traj::FILE_READ_ERR;
   // reading header
   int k, p, m, n, N;
   // k = p = m = n = N = 0;
@@ -80,7 +77,7 @@ errorStatus encode(char* inFile,
   if ((next == 0) || (next == EOF)) {
     fclose(filePointer);
     filePointer = nullptr;
-    return NO_DATA_POINTS;
+    return traj::NO_DATA_POINTS;
   }
   // reading gain matrices
   float (*gainM)[m][n + N] = (float (*)[m][n + N]) calloc(p, sizeof *gainM);
@@ -116,7 +113,7 @@ errorStatus encode(char* inFile,
   if (outFilePtr == nullptr) {
     fclose(filePointer);
     filePointer = nullptr;
-    return FILE_WRITE_ERR;
+    return traj::FILE_WRITE_ERR;
   }
   // write header
   traj::Header header = {k, p, m, n, N};
@@ -134,5 +131,5 @@ errorStatus encode(char* inFile,
   outFilePtr = nullptr;
   fclose(filePointer);
   filePointer = nullptr;
-  return SUCCESS;
+  return 0;
 }
