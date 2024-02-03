@@ -16,7 +16,6 @@ void fmav_serial_write_char(char c);
 #include "../message_lib/pscom/pscom.h"
 #include <ArduinoEigenDense.h>
 #include <stdint.h>
-#include "../controller/Controller.h"
 
 /* Define serial interface to use at compile time */
 #define MAVLinkSerial Serial

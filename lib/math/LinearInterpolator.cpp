@@ -1,5 +1,5 @@
 #include "LinearInterpolator.h"
-#include "../error/Error.h"
+#include "Error.h"
 
 
 Interpolator::Interpolator(int paramYSize) {

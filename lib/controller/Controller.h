@@ -8,7 +8,7 @@ Author: Vincent Palmerio
 #define CONTROLLER_H
 
 #include <ArduinoEigenDense.h>
-#include "../math/Integrator.h"
+#include "Integrator.h"
 
 
 #define MODE_ARRAY_LENGTH (12)

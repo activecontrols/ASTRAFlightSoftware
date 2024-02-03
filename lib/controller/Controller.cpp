@@ -1,9 +1,9 @@
 #include "Controller.h"
 #include "Error.h"
-#include "../estimator/Estimator.h"
-#include "../trajectory/SDcard.h"
-#include "../math/LinearInterpolator.h"
-#include "../timer/timer.h"
+#include "Estimator.h"
+#include "SDcard.h"
+#include "LinearInterpolator.h"
+#include "timer.h"
 #include <Arduino.h>
 #include <Servo.h>
 

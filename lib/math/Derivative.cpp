@@ -5,7 +5,7 @@ Author: Vincent Palmerio
 */
 
 #include "Derivative.h"
-#include "../error/Error.h"
+#include "Error.h"
 
 
 Eigen::VectorXd derivative(0);
