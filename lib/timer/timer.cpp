@@ -2,6 +2,13 @@
 #include "Error.h"
 #include "timer.h"
 
+/*
+Timer.cpp
+Description: Defines functions for the global timer
+Author: Vincent Palmerio
+*/
+
+
 elapsedMicros missionTimer;
 
 bool g_missionStarted = false;

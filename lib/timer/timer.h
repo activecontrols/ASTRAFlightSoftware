@@ -5,6 +5,12 @@
 #include <elapsedMillis.h>
 #include "Error.h"
 
+/*
+Timer.h
+Description: Global timer for the mission
+Author: Vincent Palmerio
+*/
+
 #define MICROSECONDS_IN_A_SECOND (1000000)
 
 

@@ -1,6 +1,11 @@
 #include "LinearInterpolator.h"
 #include "Error.h"
 
+/*
+LinearInterpolator.cpp
+Description: Defines all functions for the linear interpolator
+Author: Vincent Palmerio
+*/
 
 Interpolator::Interpolator(int paramYSize) {
 

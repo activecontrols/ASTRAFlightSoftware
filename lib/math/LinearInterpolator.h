@@ -4,6 +4,12 @@
 #include <ArduinoEigenDense.h>
 
 /*
+LinearInterpolator.h
+Description: LinearInterpolator based on linear equation y-y1 = m(x-x1)
+Author: Vincent Palmerio
+*/
+
+/*
  * Estimates curve based on linear equation y-y1 = m(x-x1)
  */
 
