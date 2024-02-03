@@ -1,13 +1,14 @@
 #include <Arduino.h>
 #include <Adafruit_LSM6DSOX.h>
-#include "../lib/buffer/Buffer.h"
-#include "../lib/estimator/Estimator.h"
-#include "../lib/controller/Controller.h"
-#include "../lib/math/Integrator.h"
-#include "../lib/math/Derivative.h"
-#include "../lib/comms/Comms.h"
-#include "../lib/drivers/ASTRA/IMU/src/IMU.h"
-#include "../lib/encoders/Encoder.h"
+#include "Buffer.h"
+#include "Estimator.h"
+#include "Controller.h"
+#include "Integrator.h"
+#include "Derivative.h"
+#include "Comms.h"
+#include "IMU.h"
+#include "Encoder.h"
+#include "timer.h"
 #include <Servo.h>
 //#include <ArduinoEigenDense.h>
 
@@ -74,6 +75,8 @@ void setup() {
 
   initializeEstimator();
   initializeController();
+
+  startMissionTimer();
   
 }
 
