@@ -1,15 +1,18 @@
 #include <Arduino.h>
 #include <Adafruit_LSM6DSOX.h>
-#include "../lib/buffer/Buffer.h"
-#include "../lib/estimator/Estimator.h"
-#include "../lib/controller/Controller.h"
-#include "../lib/math/Integrator.h"
-#include "../lib/math/Derivative.h"
-#include "../lib/comms/Comms.h"
-#include "../lib/drivers/ASTRA/IMU/src/IMU.h"
-#include "../lib/encoders/Encoder.h"
+#include "Buffer.h"
+#include "Estimator.h"
+#include "Controller.h"
+#include "Integrator.h"
+#include "Derivative.h"
+#include "Comms.h"
+#include "IMU.h"
+#include "Encoder.h"
+#include "timer.h"
 #include <Servo.h>
 //#include <ArduinoEigenDense.h>
+
+#define USE_ENCODER (false)
 
 /*
 main.cpp 
@@ -49,9 +52,11 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH); 
 
   //ENCODER SETUP
+#if USE_ENCODER
   while (!encoderSetup(1, 2)) {
     Serial.println("Connecting to encoder...");
   }
+#endif
   //---
   // Serial.print("Set up comms...");
   //comms.init();
@@ -70,14 +75,13 @@ void setup() {
 
   initializeEstimator();
   initializeController();
+
+  startMissionTimer();
   
 }
 
 //turns the LED on and off every 3 seconds 
 void led() {
-
-  getAngleEncoder1();
-  getAngleEncoder2();
   
   if (ledTime >= 3000) {
 
@@ -111,6 +115,7 @@ void loop() {
     Serial.print(" ");
     Serial.print(controllerInputU(i));
   }
+  Serial.println();
 
   //turns led on and off
   led();

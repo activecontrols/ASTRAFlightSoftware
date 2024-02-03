@@ -8,44 +8,44 @@ Author: Vincent Palmerio
 #define CONTROLLER_H
 
 #include <ArduinoEigenDense.h>
-#include "../math/Integrator.h"
+#include "Integrator.h"
 
 
-#define MODE_ARRAY_LENGTH 12
-#define K_ARRAY_LENGTH 10
+#define MODE_ARRAY_LENGTH (12)
+#define K_ARRAY_LENGTH (10)
 
-//dimensions of deltaX matrix
-#define X_VECTOR_LENGTH 7
+#define X_VECTOR_LENGTH (7)
+//integrated X_VECTOR that tells us our error
+#define ERROR_VECTOR_LENGTH (X_VECTOR_LENGTH)
 
-//dimensions of controllerInputU matrix
-#define U_ROW_LENGTH 4
-//#define U_COLUMN_LENGTH 12
+//dimensions of controllerInputU (vector for controlling servos and torque)
+#define U_ROW_LENGTH (4)
 
 //dimensions of kGain matrix
-#define K_ROW_LENGTH 12
-#define K_COLUMN_LENGTH 12
+#define K_ROW_LENGTH (12)
+#define K_COLUMN_LENGTH (12)
 
-#define BETA_MIN -8
-#define BETA_MAX 8
+#define BETA_MAX (8)
+#define BETA_MIN (-BETA_MAX)
 
-#define GAMMA_MIN -8
-#define GAMMA_MAX 8
+#define GAMMA_MAX (8)
+#define GAMMA_MIN (-GAMMA_MAX)
 
-#define THROTTLE_MIN 0
-#define THROTTLE_MAX 1
+#define THROTTLE_MIN (0)
+#define THROTTLE_MAX (1)
 
-#define ALPHA_MIN -8
-#define ALPHA_MAX 8
+#define ALPHA_MAX (8)
+#define ALPHA_MIN (-ALPHA_MAX)
 
-#define INNER_GIMBAL_PIN 0
-#define OUTER_GIMBAL_PIN 0
-#define LEFT_TORQUE_VANE_PIN 0
-#define RIGHT_TORQUE_VANE_PIN 0
+#define INNER_GIMBAL_PIN (0)
+#define OUTER_GIMBAL_PIN (0)
+#define LEFT_TORQUE_VANE_PIN (0)
+#define RIGHT_TORQUE_VANE_PIN (0)
 
-#define INNER_GIMBAL_INITIAL_SETTING 90
-#define OUTER_GIMBAL_INITIAL_SETTING 90
-#define LEFT_TORQUE_VANE_INITIAL_SETTING 90
-#define RIGHT_TORQUE_VANE_INITIAL_SETTING 90
+#define INNER_GIMBAL_INITIAL_SETTING (100)
+#define OUTER_GIMBAL_INITIAL_SETTING (100)
+#define LEFT_TORQUE_VANE_INITIAL_SETTING (145)
+#define RIGHT_TORQUE_VANE_INITIAL_SETTING (140)
 
 //Global variables
 extern Eigen::VectorXd controllerInputU;
@@ -63,8 +63,6 @@ enum K_GAIN {
 
 extern Eigen::VectorXd xRef;
 
-//malloc's global variables in this header file, 
-    //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
 extern int initializeController();
 
 extern int updateController();
@@ -75,9 +73,8 @@ int controlLawRegulate();
 int controlLawLand();
 int saturation();
 int controlServos();
+int loadTrajectoryPoint();
 double minMax(double value, double min, double max);
-
-int controlLaw(Eigen::Matrix4Xd* uRef);
 
 int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
 int controlModeUpdate(int controlModeIndicator);

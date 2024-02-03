@@ -1,7 +1,7 @@
 #include "Estimator.h"
-#include "../math/Integrator.h"
-#include "../error/Error.h"
-#include "../drivers/ASTRA/IMU/src/IMU.h"
+#include "Integrator.h"
+#include "Error.h"
+#include "IMU.h"
 #include <ArduinoEigenDense.h>
 
 /*

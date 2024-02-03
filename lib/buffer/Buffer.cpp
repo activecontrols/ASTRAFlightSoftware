@@ -1,9 +1,6 @@
 #include "Buffer.h"
 #include "../../src/debug.h"
-#if defined(ASTRA_BUFFER_DEBUG) or defined(ASTRA_FULL_DEBUG)
-    #include <Arduino.h>
-#endif
-
+#include <Arduino.h>
 /*
 Buffer.cpp 
 Description: defines functions declared in Buffer.h
@@ -53,6 +50,23 @@ void Buffer::addData(){
 #endif
        
     }
+    free(add);
+    add = NULL;
+}
+
+/*
+ * Computes average vector of all the vectors in buffer
+ * You must free the pointer returned after use
+ */
+float* Buffer::getAverage() {
+    float* avg = (float*) malloc(sizeof(float) * eleSize);
+    for(int i = 0; i < eleSize; i++){
+        for(int j = 0; j < numElements; j++){
+            avg[i] += data[i][j];
+        }
+        avg[i] = avg[i]/numElements;
+    }
+    return avg;
 }
 
 void Buffer::printData() {
