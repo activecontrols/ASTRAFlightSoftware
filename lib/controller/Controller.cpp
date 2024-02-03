@@ -18,6 +18,7 @@ Eigen::MatrixXd kGain(U_ROW_LENGTH, X_VECTOR_LENGTH + ERROR_VECTOR_LENGTH);
 Eigen::MatrixXd qsGain(U_ROW_LENGTH, X_VECTOR_LENGTH);
 
 Eigen::VectorXd deltaX(X_VECTOR_LENGTH);
+
 Eigen::VectorXd xRef{X_VECTOR_LENGTH};
 Eigen::VectorXd uRef{U_ROW_LENGTH};
 
@@ -37,16 +38,17 @@ Servo torqueVaneRight;
 
 elapsedMicros xSnapTimer;
 
+
+int controlModeIndicator = 0;
+
 //time offset after switching out of stability control mode
 //Must be in seconds!
 double timeOffset = 0;
 
 /* Trajectory */
-
 //Represents the index of the time that is the first point being linearly interpolated (x1)
 //x2 is traj::t[currentTimeIndex + 1]
 int currentTimeIndex = 0;
-
 
 int initializeController() {
 
@@ -122,6 +124,22 @@ int updateController() {
     controlLaw();
     saturation();
     controlServos();
+    switch (controlModeIndicator) {
+        case TRACK_K_GAIN:
+            controlLawTrack();
+            break;
+        case STABILIZE_K_GAIN:
+            controlLawStability();
+            break;
+        case LAND_K_GAIN:
+            controlLawLand();
+            break;
+        //case FINAL_APPROACH_K_GAIN:
+            // controlLawFinalApproach();
+            // break;
+        default:
+            break;
+    }
     return NO_ERROR_CODE;
 }
 
@@ -220,7 +238,6 @@ double minMax(double value, double min, double max) {
 //2. analysis of estimated state
 //   - Calls controlMode()
 int controlLaw() {
-
     //if comms
     //else {
     //controlMode(&estimatedStateX, &xRef);
@@ -261,6 +278,7 @@ int controlMode() {
 
     return NO_ERROR_CODE;
 }
+
 
 int controlLawRegulate() {
 
@@ -328,6 +346,11 @@ int controlLawStability() {
 
     controllerInputU = - (kGain * deltaXIntegratedX);
 
+    return NO_ERROR_CODE;
+}
+
+
+int controlLawLand() {
     return NO_ERROR_CODE;
 }
 
