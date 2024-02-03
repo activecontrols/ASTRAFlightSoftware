@@ -26,7 +26,6 @@ Eigen::VectorXd xSnap{X_VECTOR_LENGTH};
 Eigen::VectorXd deltaXSnap(X_VECTOR_LENGTH);
 
 Integrator zIntegrationObject;
-Integrator zSnapIntegrationObject;
 
 Interpolator xTrajInterpolator = *new Interpolator(X_VECTOR_LENGTH + ERROR_VECTOR_LENGTH);
 Interpolator uTrajInterpolator = *new Interpolator(U_ROW_LENGTH);
@@ -36,7 +35,7 @@ Servo outerGimbal;
 Servo torqueVaneLeft;
 Servo torqueVaneRight;
 
-elapsedMicros xSnapTimer;
+elapsedMillis xNonTrajTimer;
 
 
 int controlModeIndicator = 0;
@@ -120,26 +119,9 @@ int initializeController() {
 }
 
 int updateController() {
-    loadTrajectoryPoint();
     controlLaw();
     saturation();
     controlServos();
-    switch (controlModeIndicator) {
-        case TRACK_K_GAIN:
-            controlLawTrack();
-            break;
-        case STABILIZE_K_GAIN:
-            controlLawStability();
-            break;
-        case LAND_K_GAIN:
-            controlLawLand();
-            break;
-        //case FINAL_APPROACH_K_GAIN:
-            // controlLawFinalApproach();
-            // break;
-        default:
-            break;
-    }
     return NO_ERROR_CODE;
 }
 
@@ -242,6 +224,27 @@ int controlLaw() {
     //else {
     //controlMode(&estimatedStateX, &xRef);
     //}
+
+    switch (controlModeIndicator) {
+        case TRACK_MODE:
+            loadTrajectoryPoint();
+            controlLawTrack();
+            break;
+        case STABILIZE_MODE:
+            controlLawStability();
+            break;
+        case LAND_MODE:
+            controlLawLand();
+            break;
+        //case FINAL_APPROACH_MODE:
+            // controlLawFinalApproach();
+            // break;
+        default:
+            //something went really bad.. try to land safely
+            controlLawRegulate();
+            break;
+    }
+
     controlLawRegulate();
     return NO_ERROR_CODE;
 
@@ -250,16 +253,35 @@ int controlLaw() {
 int switchControlStability() {
     //Get snapshot of estimatedStateX with just position (everything else zero) (position not implemented yet)
     //set xSnap to that snapshot
-    //initialize xSnap integrator and set it to zSnapIntegrationObject
-    // zSnapIntegrationObject = *new Integrator();
-    // zSnapIntegrationObject.integratorSetup(&);
-    //start a new timer and set it to xSnapTimer
-    xSnapTimer = 0;
+    xSnap.setZero();
+    
+    //reset timer to determine how much time in this control mode
+    xNonTrajTimer = 0;
+    controlModeIndicator = STABILIZE_MODE;
+
+    return NO_ERROR_CODE;
 }
 
 int switchControlTraj() {
-    //if previous mode was Stability, set timeOffset to the timer xSnapTimer
-        //make sure to convert xSnapTimer to seconds!
+
+    if ((controlModeIndicator == STABILIZE_MODE) || (controlModeIndicator == LAND_MODE)) {
+        //convert xSnapTimer to seconds!
+        timeOffset = xNonTrajTimer / 1000;
+        zIntegrationObject = *new Integrator();
+        zIntegrationObject.integratorSetup(&deltaX);
+    }
+
+    controlModeIndicator = TRACK_MODE;
+    return NO_ERROR_CODE;
+}
+
+int switchControlReg() {
+
+    //reset timer to determine how much time in this control mode
+    xNonTrajTimer = 0;
+    controlModeIndicator = LAND_MODE;
+
+    return NO_ERROR_CODE;
 }
 
 int controlMode() {
@@ -267,15 +289,11 @@ int controlMode() {
     //estimatedStateX and xRef
 
     //if deltaX == some condition for controlLawStability
-    //Get snapshot of estimatedStateX with just position (everything else zero) (position not implemented yet)
-    //set xSnap to that snapshot
-    //initialize xSnap integrator and set it to zSnapIntegrationObject
-    //start a new timer and set it to xSnapTimer
+        //switchControlStability()
 
     //if deltaX == some condition for controlLawTrack
-    //if previously in controlLawStability,
-        //end timer, set timer value to offset
-
+        //switchControlTraj();
+    
     return NO_ERROR_CODE;
 }
 
@@ -326,7 +344,7 @@ int controlLawStability() {
     //the integrator is being updated here because this is the closest point
     //between the integration of the data and the usage of the data. 
     //we don't want there to be any gaps in time where the integrator is not updated
-    int errorCode = zSnapIntegrationObject.integratorUpdate();
+    int errorCode = zIntegrationObject.integratorUpdate();
 
     if (errorCode != 0) {
         return errorCode;
@@ -340,8 +358,8 @@ int controlLawStability() {
     }
 
     //integrated X in second row
-    for (int i = 0; i < zSnapIntegrationObject.integratedData.size(); i++) {
-        deltaXIntegratedX(0, i) = zSnapIntegrationObject.integratedData(i);
+    for (int i = 0; i < zIntegrationObject.integratedData.size(); i++) {
+        deltaXIntegratedX(0, i) = zIntegrationObject.integratedData(i);
     }
 
     controllerInputU = - (kGain * deltaXIntegratedX);
