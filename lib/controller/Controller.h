@@ -15,8 +15,10 @@ Author: Vincent Palmerio
 #define K_ARRAY_LENGTH (10)
 
 #define X_VECTOR_LENGTH (7)
+//integrated X_VECTOR that tells us our error
+#define ERROR_VECTOR_LENGTH (X_VECTOR_LENGTH)
 
-//dimensions of controllerInputU
+//dimensions of controllerInputU (vector for controlling servos and torque)
 #define U_ROW_LENGTH (4)
 
 //dimensions of kGain matrix
@@ -52,9 +54,9 @@ extern Eigen::MatrixXd kGain;
 extern Eigen::VectorXd deltaX;
 
 enum K_GAIN {
-    TRACK_K_GAIN = 1,
+    TRACK_K_GAIN = 0,
     STABALIZE_K_GAIN = 1,
-    LAND_K_GAIN = 1
+    LAND_K_GAIN = 2
 };
 
 extern Eigen::VectorXd xRef;
@@ -68,6 +70,7 @@ int controlLaw();
 int controlLawRegulate();
 int saturation();
 int controlServos();
+int loadTrajectoryPoint();
 double minMax(double value, double min, double max);
 
 int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
