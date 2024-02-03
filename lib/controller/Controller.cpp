@@ -16,6 +16,7 @@ Eigen::MatrixXd kGain(K_ROW_LENGTH, K_COLUMN_LENGTH);
 
 Eigen::VectorXd deltaX(X_VECTOR_LENGTH);
 Eigen::VectorXd xRef{{0,0,0,0,0,0,0}};
+Eigen::VectorXd uRef{U_ROW_LENGTH};
 
 Eigen::VectorXd xSnap{X_VECTOR_LENGTH};
 Eigen::VectorXd deltaXSnap(X_VECTOR_LENGTH);
@@ -31,6 +32,7 @@ Servo torqueVaneRight;
 elapsedMicros xSnapTimer;
 
 double offset = 0;
+int controlModeIndicator = 0;
 
 int initializeController() {
 
@@ -93,6 +95,22 @@ int updateController() {
     controlLaw();
     saturation();
     controlServos();
+    switch (controlModeIndicator) {
+        case TRACK_K_GAIN:
+            controlLawTrack();
+            break;
+        case STABILIZE_K_GAIN:
+            controlLawStability();
+            break;
+        case LAND_K_GAIN:
+            controlLawLand();
+            break;
+        //case FINAL_APPROACH_K_GAIN:
+            // controlLawFinalApproach();
+            // break;
+        default:
+            break;
+    }
     return NO_ERROR_CODE;
 }
 
@@ -145,7 +163,6 @@ double minMax(double value, double min, double max) {
 //2. analysis of estimated state
 //   - Calls controlMode()
 int controlLaw() {
-
     //if comms
     //else {
     //controlMode(&estimatedStateX, &xRef);
@@ -170,6 +187,7 @@ int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef) {
     return NO_ERROR_CODE;
 }
 
+
 int controlLawRegulate() {
 
     controllerInputU = -(kGain * estimatedStateX);
@@ -177,7 +195,7 @@ int controlLawRegulate() {
     return NO_ERROR_CODE;
 }
 
-int controlLawTrack(Eigen::Matrix4Xd* uRef) {
+int controlLawTrack() {
 
     getDeltaX(&estimatedStateX, &xRef);
 
@@ -203,7 +221,7 @@ int controlLawTrack(Eigen::Matrix4Xd* uRef) {
         deltaXIntegratedX(0, i) = zIntegrationObject.integratedData(i);
     }
 
-    controllerInputU = (*uRef) - (kGain * deltaXIntegratedX);
+    controllerInputU = (uRef) - (kGain * deltaXIntegratedX);
 
     return NO_ERROR_CODE;
 }
@@ -236,6 +254,11 @@ int controlLawStability() {
 
     controllerInputU = - (kGain * deltaXIntegratedX);
 
+    return NO_ERROR_CODE;
+}
+
+
+int controlLawLand() {
     return NO_ERROR_CODE;
 }
 

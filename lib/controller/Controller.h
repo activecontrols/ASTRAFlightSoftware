@@ -52,11 +52,13 @@ extern Eigen::VectorXd controllerInputU;
 extern double *k;
 extern Eigen::MatrixXd kGain;
 extern Eigen::VectorXd deltaX;
+extern int controlModeIndicator;
 
 enum K_GAIN {
     TRACK_K_GAIN = 1,
-    STABALIZE_K_GAIN = 1,
-    LAND_K_GAIN = 1
+    STABILIZE_K_GAIN = 2,
+    LAND_K_GAIN = 3,
+    FINAL_APPROACH_K_GAIN = 4
 };
 
 extern Eigen::VectorXd xRef;
@@ -70,6 +72,7 @@ extern int updateController();
 int getDeltaX(Eigen::VectorXd*, Eigen::VectorXd*);
 int controlLaw();
 int controlLawRegulate();
+int controlLawLand();
 int saturation();
 int controlServos();
 double minMax(double value, double min, double max);
@@ -77,6 +80,7 @@ double minMax(double value, double min, double max);
 int controlLaw(Eigen::Matrix4Xd* uRef);
 
 int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
+int controlModeUpdate(int controlModeIndicator);
 
 #endif
 
