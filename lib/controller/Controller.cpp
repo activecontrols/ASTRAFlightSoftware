@@ -40,13 +40,12 @@ elapsedMillis xNonTrajTimer;
 
 int controlModeIndicator = 0;
 
-//time offset after switching out of stability control mode
-//Must be in seconds!
-double timeOffset = 0;
+double timeOffset = 0; /* time offset after switching out of stability control mode, unit is in seconds!! */
 
-/* Trajectory */
-//Represents the index of the time that is the first point being linearly interpolated (x1)
-//x2 is traj::t[currentTimeIndex + 1]
+/*
+ * Represents the index of the time that is the first point being linearly interpolated (x1)
+ * x2 is traj::t[currentTimeIndex + 1] 
+ */
 int currentTimeIndex = 0;
 
 int initializeController() {
@@ -189,17 +188,13 @@ int getDeltaX(Eigen::VectorXd* x, Eigen::VectorXd* xRef) {
 
 int saturation() {
 
-    //beta
-    controllerInputU(0) = minMax(controllerInputU(0), BETA_MIN, BETA_MAX);
+    controllerInputU(0) = minMax(controllerInputU(0), BETA_MIN, BETA_MAX); /* saturate beta */
 
-    //gamma
-    controllerInputU(1) = minMax(controllerInputU(1), GAMMA_MIN, GAMMA_MAX);
+    controllerInputU(1) = minMax(controllerInputU(1), GAMMA_MIN, GAMMA_MAX); /* saturate gamma */
 
-    //throttle
-    controllerInputU(2) = minMax(controllerInputU(2), THROTTLE_MIN, THROTTLE_MAX);
-
-    //alpha
-    controllerInputU(3) = minMax(controllerInputU(3), ALPHA_MIN, ALPHA_MAX);
+    controllerInputU(2) = minMax(controllerInputU(2), THROTTLE_MIN, THROTTLE_MAX); /* saturate throttle */
+    
+    controllerInputU(3) = minMax(controllerInputU(3), ALPHA_MIN, ALPHA_MAX); /* saturate alpha */
 
     return NO_ERROR_CODE;
 }
