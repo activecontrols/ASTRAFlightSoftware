@@ -17,7 +17,7 @@
 #define USE_ENCODER (false)
 
 /*
-main.cpp 
+main.cpp
 Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
@@ -51,7 +51,7 @@ void setup() {
   //Sets up led
   pinMode(LED_BUILTIN, OUTPUT);
   //sets LED to on indefinitely so we know teensy is on if setup() fails
-  digitalWrite(LED_BUILTIN, HIGH); 
+  digitalWrite(LED_BUILTIN, HIGH);
 
   //ENCODER SETUP
 #if USE_ENCODER
@@ -79,12 +79,12 @@ void setup() {
   controller::initializeController();
 
   startMissionTimer();
-  
+
 }
 
-//turns the LED on and off every 3 seconds 
+//turns the LED on and off every 3 seconds
 void led() {
-  
+
   if (ledTime >= 3000) {
 
     //(HIGH and LOW are the voltage levels)
@@ -95,7 +95,7 @@ void led() {
       digitalWrite(LED_BUILTIN, HIGH);
       ledOn = true;
     }
-    
+
     // Serial.println("LED Time");
     // Serial.println(ledTime);
 

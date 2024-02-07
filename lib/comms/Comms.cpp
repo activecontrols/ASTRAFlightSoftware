@@ -138,29 +138,12 @@ void CommsManager::processMessage(fmav_message_t *msg) {
 void CommsManager::processCommand(uint8_t sysid, uint8_t compid, fmav_command_long_t *cmd) {
     // TODO: More generic method of registering handlers
     switch (cmd->command) {
-        case MAV_CMD_DO_PAUSE_CONTINUE: {
-            if (this->missionPauseCallback == NULL) {
-                this->rejectCommand(cmd->command, (String("IGNORE CMD: No callback to execute pause registered. cont=") + String((int)cmd->param1)).c_str());
+        case MAV_CMD_CONTROL_SET_MODE: {
+            if (this->setControlModeCallback == NULL) {
+                this->rejectCommand(cmd->command, (String("IGNORE CMD: No callback to execute control mode change registered. mode=") + String((int)cmd->param1)).c_str());
                 return;
             }
-            fmav_command_ack_t ack = this->missionPauseCallback((int)cmd->param1);
-            fmav_msg_command_ack_encode_to_serial(this->sysid, this->compid,
-                                              &ack, &(this->status));
-            break;
-        }
-        case MAV_CMD_NAV_LAND: {
-            if (this->missionLandCallback == NULL) {
-                this->rejectCommand(cmd->command, "IGNORE CMD: No callback to execute LAND registered.");
-                return;
-            }
-            break;
-        }
-        case MAV_CMD_MISSION_START: {
-            if (this->missionStartCallback == NULL) {
-                this->rejectCommand(cmd->command, "IGNORE CMD: No callback to execute mission start registered.");
-                return;
-            }
-            fmav_command_ack_t ack = this->missionStartCallback();
+            fmav_command_ack_t ack = this->setControlModeCallback((int)cmd->param1);
             fmav_msg_command_ack_encode_to_serial(this->sysid, this->compid,
                                               &ack, &(this->status));
             break;
@@ -211,19 +194,25 @@ void CommsManager::sendHealth() {
 }
 
 /**
+ * Send control mode update
+ */
+void CommsManager::sendUpdateControlMode(MAV_CONTROL_MODE mode) {
+    fmav_change_control_mode_t control_mode;
+    control_mode.mode = mode;
+    fmav_msg_change_control_mode_encode_to_serial(
+        this->sysid, this->compid,
+        &control_mode, &(this->status)
+    );
+}
+
+/**
  * Register handlers for certain command messages
  * These functions should be used with pointers to handling functions
  * to trigger actions on certain commands (e.g. comms.registerMissionStartAction(func)
  * will call func when the mission start command is received)
  */
-void CommsManager::registerMissionStartAction(fmav_command_ack_t (*callback) (void)) {
-    this->missionStartCallback = callback;
-}
-void CommsManager::registerMissionPauseAction(fmav_command_ack_t (*callback) (int)) {
-    this->missionPauseCallback = callback;
-}
-void CommsManager::registerLandAction(fmav_command_ack_t (*callback) (void)) {
-    this->missionLandCallback = callback;
+void CommsManager::registerSetControlModeAction(fmav_command_ack_t (*callback) (MAV_CONTROL_MODE mode)) {
+    this->setControlModeCallback = callback;
 }
 void CommsManager::registerTrajSDLoadAction(fmav_traj_ack_t (*callback) (int number)) {
     this->trajLoadSDCallback = callback;
@@ -239,24 +228,6 @@ void CommsManager::registerTrajSDLoadAction(fmav_traj_ack_t (*callback) (int num
 
 
 /**
- * Handle mission start command
- */
-void CommsManager::handleStartMission() {
-}
-
-/** 
- * Handle mission pause command
- */
-void CommsManager::handlePauseMission() {
-}
-
-/**
- * Handle mission land command
- */
-void CommsManager::handleLandMission() {
-}
-
-/** 
  * Send heartbeat message
  */
 void CommsManager::sendHeartbeat() {
@@ -294,7 +265,7 @@ void CommsManager::sendTrajPtReq(int n) {
 
 
 /**
- * Private 
+ * Private
  */
 
 /**

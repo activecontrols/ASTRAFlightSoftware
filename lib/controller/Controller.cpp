@@ -8,7 +8,7 @@
 #include <Servo.h>
 
 /*
-Controller.cpp  
+Controller.cpp
 Description: Defines all functions for the controller, including those declared in Controller.h
 Author: Vincent Palmerio
 */

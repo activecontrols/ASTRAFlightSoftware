@@ -5,8 +5,8 @@ Author: Vincent Wang, Teresa Wan
 Created: 2023-10-27
 */
 
-#ifndef COMMS_H 
-#define COMMS_H 
+#ifndef COMMS_H
+#define COMMS_H
 
 #define FASTMAVLINK_SERIAL_WRITE_CHAR 1
 #define FASTMAVLINK_IGNORE_WADDRESSOFPACKEDMEMBER
@@ -34,12 +34,11 @@ public:
     void updateTrajectoryProgress(fmav_controller_status_t fata); // Send telemetry info e.g. position, rotation, thrust
     void updateHealth(fmav_sys_status_t data); // Send telemetry health info e.g. battery
     void sendStatusText(MAV_SEVERITY severity, const char *text); // Send status text. ONLY USE SPARINGLY (high bandwidth usage).
+    void sendUpdateControlMode(MAV_CONTROL_MODE mode); // Send control mode update.
 
     // Register callbacks for mission control events
-    void registerMissionStartAction(fmav_command_ack_t (*callback) (void));
     void registerMissionNextSegmentAction(fmav_command_ack_t (*callback) (float* K, float* trajStart, uint16_t trajLen));
-    void registerMissionPauseAction(fmav_command_ack_t (*callback) (int));
-    void registerLandAction(fmav_command_ack_t (*callback) (void));
+    void registerSetControlModeAction(fmav_command_ack_t (*callback) (MAV_CONTROL_MODE mode));
 
     // Register callbacks for trajectory manager
     void registerTrajSDLoadAction(fmav_traj_ack_t (*trajLoadSDCallback) (int number));
@@ -53,22 +52,17 @@ private:
     // High-level microservice handlers
     // Parameter Protocol - currently unimplemented (figure out what to do about STL and maps)
 
-    // Mission Protocol
-    void handleStartMission();
-    void handlePauseMission();
-    void handleLandMission();
-
     // Low-level individual message abstractions
     void sendHeartbeat();              // Send heartbeat message so we know the system is alive
-    void sendHealth();            
-    void sendTelem();              
-    void sendTrajectoryStatus();   
+    void sendHealth();
+    void sendTelem();
+    void sendTrajectoryStatus();
     void sendTrajK1Req(int k);       // Send request for part 1 of a gain matrix K
     void sendTrajK2Req(int k);       // Send request for part 2 of a gain matrix K
     void sendTrajPtReq(int n);       // Send request for trajectory point
     void sendTrajAck();               // Send final message indicating end of mission upload
     void rejectCommand(uint16_t command, const char *reason); // Send ack with command cancelled with an error
-    
+
     // Timers for periodics
     int lastHeartbeat = 0;
     int lastTelem = 0;
@@ -89,10 +83,8 @@ private:
     fmav_status_t status;
     fmav_message_t message;
 
-    // Callback handling 
-    fmav_command_ack_t (*missionStartCallback) (void);
-    fmav_command_ack_t (*missionPauseCallback) (int); // pause = 0, continue = 1
-    fmav_command_ack_t (*missionLandCallback) (void);
+    // Callback handling
+    fmav_command_ack_t (*setControlModeCallback) (MAV_CONTROL_MODE mode);
     fmav_traj_ack_t (*trajLoadSDCallback) (int number);
 };
 

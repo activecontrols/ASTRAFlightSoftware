@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 #ifndef FASTMAVLINK_BUILD_DATE
-#define FASTMAVLINK_BUILD_DATE  "Wed Dec 06 2023"
+#define FASTMAVLINK_BUILD_DATE  "Tue Feb 06 2024"
 #endif
 
 #ifndef FASTMAVLINK_DIALECT_VERSION
@@ -65,6 +65,18 @@ typedef enum MAV_PARAM_TYPE {
     MAV_PARAM_TYPE_REAL64 = 10,  // 64-bit floating-point 
     MAV_PARAM_TYPE_ENUM_END = 11,  // end marker
 } MAV_PARAM_TYPE;
+#endif
+
+
+#ifndef FASTMAVLINK_HAS_ENUM_MAV_CONTROL_MODE
+#define FASTMAVLINK_HAS_ENUM_MAV_CONTROL_MODE
+typedef enum MAV_CONTROL_MODE {
+    MAV_CONTROL_MODE_TRACK = 1,  // 8-bit unsigned integer 
+    MAV_CONTROL_MODE_STABILIZE = 2,  // 8-bit signed integer 
+    MAV_CONTROL_MODE_LAND = 3,  // 16-bit unsigned integer 
+    MAV_CONTROL_MODE_FINAL_APPROACH = 4,  // 16-bit signed integer 
+    MAV_CONTROL_MODE_ENUM_END = 5,  // end marker
+} MAV_CONTROL_MODE;
 #endif
 
 
@@ -145,12 +157,10 @@ typedef enum MAV_SEVERITY {
 #ifndef FASTMAVLINK_HAS_ENUM_MAV_CMD
 #define FASTMAVLINK_HAS_ENUM_MAV_CMD
 typedef enum MAV_CMD {
-    MAV_CMD_NAV_LAND = 21,  // Land at current location. | Minimum target altitude if landing is aborted (0 = undefined/use system default). | (IGNORED) Precision land mode. | Empty. | Desired yaw angle. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). | (IGNORED) Latitude. | (IGNORED) Longitude. | Landing altitude (ground level in current frame).
-    MAV_CMD_DO_PAUSE_CONTINUE = 193,  // Hold the current position or continue. | 0: Pause current mission or reposition command, hold current position. 1: Continue mission. On pause, enter hover mode. | Reserved | Reserved | Reserved | Reserved | Reserved | Reserved
     MAV_CMD_DO_SET_MISSION_CURRENT = 224,  //           Start the trajectory segment specified by Number. Note that this should also be used for RTL, since ASTRA does not support RTL.         | Mission sequence value to set. -1 for the current mission item (use to reset mission without changing current mission item). | (CURRENTLY IGNORED) Resets mission. 1: true, 0: false. Resets jump counters to initial values and changes mission state "completed" to be "active" or "paused". | Empty | Empty | Empty | Empty | Empty
-    MAV_CMD_MISSION_START = 300,  // start running a mission | first_item: the first mission item to run | last_item:  the last mission item to run (after this item is run, the vehicle lands in place) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0)
     MAV_CMD_MISSION_LOAD_SD = 51801,  // Load a trajectory mission from the SD card (/missions/mission{number}.atf) into PSRAM. | the mission number to load | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0)
-    MAV_CMD_ENUM_END = 51802,  // end marker
+    MAV_CMD_CONTROL_SET_MODE = 51802,  // Set the mode (gains matrix) to use. | Control mode to use | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0) | Reserved (default:0)
+    MAV_CMD_ENUM_END = 51803,  // end marker
 } MAV_CMD;
 #endif
 
@@ -178,7 +188,7 @@ typedef enum MAV_CMD {
 #include "./mavlink_msg_param_set.h"
 #include "./mavlink_msg_statustext.h"
 #include "./mavlink_msg_controller_status.h"
-#include "./mavlink_msg_traj_load_sd_card.h"
+#include "./mavlink_msg_change_control_mode.h"
 #include "./mavlink_msg_traj_info.h"
 #include "./mavlink_msg_traj_req_k1.h"
 #include "./mavlink_msg_traj_k1.h"
