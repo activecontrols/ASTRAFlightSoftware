@@ -35,40 +35,39 @@ Author: Vincent Palmerio
 #define LEFT_TORQUE_VANE_INITIAL_SETTING (145)
 #define RIGHT_TORQUE_VANE_INITIAL_SETTING (140)
 
-/* Global variables */
+namespace controller {
+    extern int controlModeIndicator;
+    //extern Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
 
-extern Eigen::VectorXd controllerInputU;
-extern double *k;
-extern Eigen::MatrixXd kGain;
-extern Eigen::VectorXd deltaX;
-extern int controlModeIndicator;
+    enum CONTROL_MODE {
+        TRACK_MODE = 1,
+        STABILIZE_MODE = 2,
+        LAND_MODE = 3,
+        FINAL_APPROACH_MODE = 4
+    };
 
-enum CONTROL_MODE {
-    TRACK_MODE = 1,
-    STABILIZE_MODE = 2,
-    LAND_MODE = 3,
-    FINAL_APPROACH_MODE = 4
-};
+    extern int initializeController();
 
-extern Eigen::VectorXd xRef;
+    extern int updateController();
 
-extern int initializeController();
+    int getDeltaX(Eigen::VectorXd*, Eigen::VectorXd*);
+    int controlLaw();
+    int controlMode();
+    int controlLawRegulate();
+    int controlLawTrack();
+    int controlLawStability();
+    int controlLawLand();
+    int switchControlStability();
+    int switchControlTraj();
+    int switchControlReg();
+    int saturation();
+    int controlServos();
+    int loadTrajectoryPoint();
+    double minMax(double value, double min, double max);
 
-extern int updateController();
-
-int getDeltaX(Eigen::VectorXd*, Eigen::VectorXd*);
-int controlLaw();
-int controlLawRegulate();
-int controlLawTrack();
-int controlLawStability();
-int controlLawLand();
-int saturation();
-int controlServos();
-int loadTrajectoryPoint();
-double minMax(double value, double min, double max);
-
-int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
-int controlModeUpdate(int controlModeIndicator);
+    int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
+    int controlModeUpdate(int controlModeIndicator);
+}
 
 #endif
 

@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Adafruit_LSM6DSOX.h>
+
 #include "Buffer.h"
 #include "Estimator.h"
 #include "Controller.h"
@@ -9,6 +10,7 @@
 #include "IMU.h"
 #include "Encoder.h"
 #include "timer.h"
+
 #include <Servo.h>
 //#include <ArduinoEigenDense.h>
 
@@ -74,7 +76,7 @@ void setup() {
   //---
 
   initializeEstimator();
-  initializeController();
+  controller::initializeController();
 
   startMissionTimer();
   
@@ -108,14 +110,13 @@ void loop() {
   lastTime = totalTimeElapsed;
 
   updateEstimator();
-  updateController();
+  controller::updateController();
 
-  controllerInputU; //the vector to access for outputs
-  for (int i = 0; i < controllerInputU.size(); i++) {
-    Serial.print(" ");
-    Serial.print(controllerInputU(i));
-  }
-  Serial.println();
+  // for (int i = 0; i < controller::controllerInputU.size(); i++) {
+  //   Serial.print(" ");
+  //   Serial.print(controller::controllerInputU(i));
+  // }
+  // Serial.println();
 
   //turns led on and off
   led();
