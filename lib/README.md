@@ -1,56 +1,91 @@
-# VL53L4CX
-Arduino library to support the VL53L4CX Time-of-Flight high accuracy ranging sensor with multi target detection.
+# Lib
 
-## API
+All support libraries for the ASTRA system are stored under this directory. This includes
+the LQR controller and communications code.
 
-This sensor uses I2C to communicate. An I2C instance is required to access to the sensor.
-The APIs provide simple distance measure in both polling and interrupt modes.
+The MAVLink message definitions are also contained in this directory. To auto-generate HTML
+documentation for these, go to `../docs/`.
 
-## Examples
+For a comprehensive guide on using MAVLink and modifying the comms code, see the README under
+`comms/`.
 
-There are 3 examples with the VL53L4CX library.
+## Writing New Messages
 
-* VL53L4CX_Sat_HelloWorld: This example code is to show how to get proximity
-  values of the VL53L4CX satellite sensor in polling mode.
+Communications message definitions are located under message_definitions/1.0/pscom.xml. Enums and
+messages are defined in XML. You should be to get a good idea of how it works from the structure alone.
 
-* VL53L4CX_Sat_HelloWorld_Interrupt: This example code is to show how to get proximity
-  values of the VL53L4CX satellite sensor in interrupt mode.
+Before writing a new message, check if [a standard MAVLink message already suits your needs](https://mavlink.io/en/messages/common.html).
+The [common definitions](https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml) can be
+referenced both for an idea of how to write new messages and for copying in existing messages.
 
-    In order to use these examples you need to connect the VL53L4CX satellite sensor directly to the Nucleo board with wires as explained below:
-    - pin 1 (GND) of the VL53L4CX satellite connected to GND of the Nucleo board
-    - pin 2 (VDD) of the VL53L4CX satellite connected to 3V3 pin of the Nucleo board
-    - pin 3 (SCL) of the VL53L4CX satellite connected to pin D15 (SCL) of the Nucleo board
-    - pin 4 (SDA) of the VL53L4CX satellite connected to pin D14 (SDA) of the Nucleo board
-    - pin 5 (GPIO1) of the VL53L4CX satellite connected to pin A2 of the Nucleo board
-    - pin 6 (XSHUT) of the VL53L4CX satellite connected to pin A1 of the Nucleo board
+We do not base directly off common.xml because it contains a large message set, many of which are not related to
+ASTRA operation. 
 
+**However, if you feel this would be a good path, copy common.xml into the `message_definitions/1.0` path and change the <include /> in pscom.xml to use it.**
 
-* VL53L4CX_Sat_SerialGraphic: This example code is to show how to get proximity
-  values of the VL53L4CX satellite sensor in polling mode.
+Once you have edited the message definitions, you must regenerate the C library.
 
-     In order to use this example as written, you need to connect an Adafruit VL53L4CX Time of Flight Distance Sensor
-     to an Adafruit ESP32 board listed below with wires either directly to the exposed pins or the STEMMA QT connector
-     where available:
-     - Adafruit VL53L4CX ToF Sensor ------> VIN   GND   SCL      SDA      STEMMA QT           XSHUT
-     - Adafruit HUZZAH32 – ESP32 Feather    3.3v  gnd   SCL(22)  SDA(23)    n/a                ***
-     - Adafruit ESP32 Feather V2 ^          3.3v  gnd   SCL(20)  SDA(22)  SCL(20)  SDA(22)     ***
-     - Adafruit QT Py ESP32 Pico ^^         3.3v  gnd   SCL(33)  SDA( 4)  SCL1(19) SDA1(22)    ***
-     - Adafruit QT Py ESP32-S2   ^^         3.3v  gnd   SCL( 6)  SDA( 7)  SCL1(40) SDA1(41)    ***
-        *** XSHUT connected to the desired output GPIO pin, A1 used in the example.
-         ^  The Feather ESP32 V2 has a NEOPIXEL_I2C_POWER pin that must be pulled HIGH 
-            to enable power to the STEMMA QT port. Without it, the QT port will not work!
-         ^^ ESP32 boards with secondary I2c ports require that the secondary ports must be 
-            manually assigned their pins with setPins(), e.g. Wire1.setPins(SDA1, SCL1);
-   
-     This example looks for the ToF device on either I2c port when two ports are known to exist.
-     By default, it will display valid results "graphically" through the serial terminal.
-     Display of details, as displayed in example VL53L4CX_Sat_HelloWorld, is optional by 
-     changing the value of a parameter.
+### (Re)Generating Messages
 
-## Documentation
+To generate a new C library based on the XML message definition:
+1. `pip3 install -r ../requirements.txt`
+2. `python3 fastmavlink/fmav_gui.py`
+3. In the resulting GUI, for Message Definitions navigate to the aforementioned pscom.xml.
+4. For output, name it to `message_lib` (there should already be one, you can name it to the same to replace). Make sure it is in this directory and **not** inside `fastmavlink/`.
+5. Click "Generate".
 
-You can find the source files at  
-https://github.com/stm32duino/VL53L4CX
+### Using the generated message library
 
-The VL53L4CX datasheet is available at  
-https://www.st.com/en/imaging-and-photonics-solutions/vl53l4cx.html
+Using is pretty simple. Here's an example:
+```c
+#include "message_lib/pscom/pscom.h"
+
+```
+
+## Original PlatformIO Content
+
+This directory is intended for project specific (private) libraries.
+PlatformIO will compile them to static libraries and link into executable file.
+
+The source code of each library should be placed in a an own separate directory
+("lib/your_library_name/[here are source files]").
+
+For example, see a structure of the following two libraries `Foo` and `Bar`:
+
+|--lib
+|  |
+|  |--Bar
+|  |  |--docs
+|  |  |--examples
+|  |  |--src
+|  |     |- Bar.c
+|  |     |- Bar.h
+|  |  |- library.json (optional, custom build options, etc) https://docs.platformio.org/page/librarymanager/config.html
+|  |
+|  |--Foo
+|  |  |- Foo.c
+|  |  |- Foo.h
+|  |
+|  |- README --> THIS FILE
+|
+|- platformio.ini
+|--src
+   |- main.c
+
+and a contents of `src/main.c`:
+```
+#include <Foo.h>
+#include <Bar.h>
+
+int main (void)
+{
+  ...
+}
+
+```
+
+PlatformIO Library Dependency Finder will find automatically dependent
+libraries scanning project source files.
+
+More information about PlatformIO Library Dependency Finder
+- https://docs.platformio.org/page/librarymanager/ldf.html
