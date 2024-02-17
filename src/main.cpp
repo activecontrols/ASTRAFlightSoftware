@@ -1,29 +1,26 @@
 #include <Arduino.h>
 #include <Adafruit_LSM6DSOX.h>
-#include "../lib/buffer/Buffer.h"
-#include "../lib/estimator/Estimator.h"
-#include "../lib/controller/Controller.h"
-#include "../lib/math/Integrator.h"
-#include "../lib/math/Derivative.h"
-#include "../lib/comms/Comms.h"
-#include "../lib/drivers/ASTRA/IMU/src/IMU.h"
-#include "../lib/encoders/Encoder.h"
+
+#include "Buffer.h"
+#include "Estimator.h"
+#include "Controller.h"
+#include "Integrator.h"
+#include "Derivative.h"
+#include "Comms.h"
+#include "IMU.h"
+#include "Encoder.h"
+#include "timer.h"
+
 #include <Servo.h>
 //#include <ArduinoEigenDense.h>
+
+#define USE_ENCODER (false)
 
 /*
 main.cpp 
 Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
-
-Eigen::MatrixXd m(24, 24);
-Eigen::VectorXd v(24);
-
-Eigen::VectorXd integrateAndDeriveTest(3);
-
-Integrator gyroIntegrator;
-Eigen::VectorXd gyroVector(3);
 
 elapsedMillis ledTime;
 
@@ -34,17 +31,6 @@ bool ledOn = false;
 
 // COMMS
 CommsManager comms;
-
-//ERROR CODES
-int controllerErrorCode = -20;
-int estimatorErrorCode = -20;
-int integratorErrorCode = -20;
-int integratorGyroErrorCode = -20;
-int derivativeErrorCode = -20;
-
-//SERVOS
-Servo beta;
-Servo alpha;
 
 Buffer imuBuffer(3,5, getValues);
 float ** data;
@@ -68,38 +54,36 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH); 
 
   //ENCODER SETUP
+#if USE_ENCODER
   while (!encoderSetup(1, 2)) {
     Serial.println("Connecting to encoder...");
   }
+#endif
   //---
   // Serial.print("Set up comms...");
-  comms.init();
-  comms.registerTrajSDLoadAction(loadSD);
+  //comms.init();
+  //comms.registerTrajSDLoadAction(loadSD);
   // Serial.println("Done");
 
   //IMU SETUP
   int errorCode = initializeIMU();
-  Serial.println(errorCode);
-  //---
-
-  //SERVO SETUP
-  beta.attach(2);
-  alpha.attach(3);
-
-  beta.write(90);
-  alpha.write(90);
+  while(errorCode != 0) {
+    Serial.print("Failed to initialize IMU, error code: ");
+    Serial.print(errorCode);
+    Serial.println(". Retrying...");
+    errorCode = initializeIMU();
+  }
   //---
 
   initializeEstimator();
-  initializeController();
+  controller::initializeController();
+
+  startMissionTimer();
   
 }
 
 //turns the LED on and off every 3 seconds 
 void led() {
-
-  getAngleEncoder1();
-  getAngleEncoder2();
   
   if (ledTime >= 3000) {
 
@@ -120,15 +104,19 @@ void led() {
 }
 
 void loop() {
-  comms.spin();
+  //comms.spin();
   // comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
   // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
   lastTime = totalTimeElapsed;
 
   updateEstimator();
-  updateController();
+  controller::updateController();
 
-  controllerInputU; //the vector to access for outputs
+  // for (int i = 0; i < controller::controllerInputU.size(); i++) {
+  //   Serial.print(" ");
+  //   Serial.print(controller::controllerInputU(i));
+  // }
+  // Serial.println();
 
   //turns led on and off
   led();

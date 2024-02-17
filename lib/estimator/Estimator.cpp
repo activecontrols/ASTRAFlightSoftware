@@ -1,7 +1,8 @@
 #include "Estimator.h"
-#include "../math/Integrator.h"
-#include "../error/Error.h"
-#include "../drivers/ASTRA/IMU/src/IMU.h"
+#include "Integrator.h"
+#include "Error.h"
+#include "IMU.h"
+
 #include <ArduinoEigenDense.h>
 
 /*
@@ -10,12 +11,16 @@ Description:  Defines all functions for the estimator, including those declared 
 Author: Vincent Palmerio
 */
 
-Eigen::VectorXd estimatedStateX(STATE_DIMENSION);
+Eigen::VectorXd estimatedStateX(ESTIMATED_STATE_DIMENSION);
 Integrator linearAccelIntegrator;
 
+/*
+ * Initializes estimation library, including malloc'ing global variables
+ * returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
+ */
 int initializeEstimator() {
 
-    for (unsigned int i = 0; i < STATE_DIMENSION; i++) {
+    for (unsigned int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
         estimatedStateX[i] = 0;
     }
 

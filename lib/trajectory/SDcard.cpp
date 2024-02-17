@@ -132,4 +132,5 @@ int encode(char* inFile,
   fclose(filePointer);
   filePointer = nullptr;
   return 0;
+
 }

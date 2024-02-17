@@ -21,6 +21,8 @@ public:
 
     void printData();
 
+    float* getAverage();
+
     float** getData();
 
 private:
