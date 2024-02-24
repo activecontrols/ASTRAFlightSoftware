@@ -66,7 +66,7 @@ int initializeEstimator() {
 }
 
 int updateEstimator() {
-    // updateIMU();
+    updateIMU();
     // TOF_buffer.addData();
     // float* d_m_star = TOF_buffer.getAverage();
 

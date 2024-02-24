@@ -8,6 +8,7 @@
 #include "IMU.h"
 #include "Encoder.h"
 #include "timer.h"
+#include "log.h"
 
 #include <Servo.h>
 #include <ArduinoEigen.h>
@@ -116,22 +117,27 @@ void loop() {
   // Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
   lastTime = totalTimeElapsed;
 
-  // logger::Data data;
-  // data.t = totalTimeElapsed / 1000.0;
-  // data.battVoltage = 3.3 + sin(totalTimeElapsed / 100000.0);
-  // for (int i = 0; i < 6; i++) {
-  //   data.x[i] = 10.0 + i;
-  // }
-  // for (int i = 0; i < 9; i++) {
-  //   data.y[i] = 20.0 + i;
-  // }
-  // for (int i = 0; i < 4; i++) {
-  //   data.u[i] = 30.0 + i;
-  // }
-  // logger::write(&data);
+  Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
+  controllerInputU = controller::getControlInputs();
 
   updateEstimator();
   controller::updateController();
+
+  logger::Data data;
+  data.t = totalTimeElapsed / 1000.0;
+  data.battVoltage = analogRead(21); /* if the values are inaccurate, try analogReadAveraging() */
+  for (int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
+    data.x[i] = estimatedStateX(i);
+  }
+  for (int i = 0; i < MEASUREMENT_DIMENSION; i++) {
+    data.y[i] = measurementVectorY(i);
+  }
+  for (int i = 0; i < U_ROW_LENGTH; i++) {
+    data.u[i] = controllerInputU(i);
+  }
+  logger::write(&data);
+
+  
 
   // controllerInputU; //the vector to access for outputs
   // for (int i = 0; i < controllerInputU.size(); i++) {
@@ -140,8 +146,6 @@ void loop() {
   // }
   // Serial.println();
 
-  Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
-  controllerInputU = controller::getControlInputs();
   Serial.print(millis()/1000.0, 3); Serial.print(", ");
   for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
     Serial.print(estimatedStateX(i), 3); Serial.print(", ");
