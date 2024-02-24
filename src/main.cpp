@@ -5,6 +5,7 @@
 #include "../lib/controller/Controller.h"
 #include "../lib/math/Integrator.h"
 #include "../lib/math/Derivative.h"
+#include "../lib/trajectory/log.h"
 #include "../lib/comms/Comms.h"
 #include "../lib/drivers/ASTRA/IMU/src/IMU.h"
 #include "../lib/encoders/Encoder.h"
@@ -69,18 +70,20 @@ void setup() {
     Serial.print(errorCode);
     Serial.println(". Retrying...");
     errorCode = initializeIMU();
+    break; // TODO: remove. this is just for testing
   }
-  //---
-
+  //- --
+  Serial.println("Hello");
   initializeEstimator();
   initializeController();
-  
+
+  logger::open("log.bin");
 }
 
 //turns the LED on and off every 3 seconds 
 void led() {
   
-  if (ledTime >= 3000) {
+  if (ledTime >= 1000) {
 
     //(HIGH and LOW are the voltage levels)
     if (ledOn == true) {
@@ -99,20 +102,34 @@ void led() {
 }
 
 void loop() {
+
+  if (logger::write_count > 1000) {
+    logger::close();
+    return;
+  }
+
   //comms.spin();
   // comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
   // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
+  Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
   lastTime = totalTimeElapsed;
 
-  updateEstimator();
-  updateController();
 
-  controllerInputU; //the vector to access for outputs
-  for (int i = 0; i < controllerInputU.size(); i++) {
-    Serial.print(" ");
-    Serial.print(controllerInputU(i));
-  }
-  Serial.println();
+  delay(2); // simulate imu delay
+
+  logger::Data data;
+  data.c = 'b';
+  logger::write(&data);
+
+  // updateEstimator();
+  // updateController();
+
+  // controllerInputU; //the vector to access for outputs
+  // for (int i = 0; i < controllerInputU.size(); i++) {
+  //   Serial.print(" ");
+  //   Serial.print(controllerInputU(i));
+  // }
+  // Serial.println();
 
   //turns led on and off
   led();
