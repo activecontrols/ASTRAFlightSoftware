@@ -1,7 +1,7 @@
 #include <Encoder.h>
 
-AS5600 magEncoder1(&Wire);
-AS5600 magEncoder2(&Wire1);
+AS5600 magEncoder1(&Wire); /* outer gimbal */
+AS5600 magEncoder2(&Wire1); /* inner gimbal */
 
 bool encoderSetup()
 {
@@ -24,7 +24,7 @@ float* getAngleEncoder1() {
 
 float* getAngleEncoder2() {
     float* angle = (float*)malloc(1 * sizeof(float));
-    angle[0] = (float) magEncoder1.readAngle();
+    angle[0] = (float) magEncoder2.readAngle();
     return angle;
 }
 
