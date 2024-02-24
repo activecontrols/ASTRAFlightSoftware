@@ -8,7 +8,9 @@ Author: Vincent Palmerio
 #define CONTROLLER_H
 
 #include <ArduinoEigenDense.h>
+#include "../message_lib/pscom/pscom.h"
 
+#include "Comms.h"
 #include "Integrator.h"
 
 #define MODE_ARRAY_LENGTH (12)
@@ -51,6 +53,8 @@ namespace controller {
     extern int updateController();
 
     int getDeltaX(Eigen::VectorXd*, Eigen::VectorXd*);
+    fmav_command_ack_t handleControlModeChange(int mode);
+    int init(CommsManager* comms);
     int controlLaw();
     int controlMode();
     int controlLawRegulate();

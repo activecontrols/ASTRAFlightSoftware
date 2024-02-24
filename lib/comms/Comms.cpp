@@ -144,6 +144,9 @@ void CommsManager::processCommand(uint8_t sysid, uint8_t compid, fmav_command_lo
                 return;
             }
             fmav_command_ack_t ack = this->setControlModeCallback((int)cmd->param1);
+            ack.command = cmd->command;
+            ack.target_system = sysid;
+            ack.target_component = compid;
             fmav_msg_command_ack_encode_to_serial(this->sysid, this->compid,
                                               &ack, &(this->status));
             break;

@@ -6,6 +6,7 @@
 #include "timer.h"
 #include <Arduino.h>
 #include <Servo.h>
+#include "../message_lib/pscom/pscom.h"
 
 /*
 Controller.cpp
@@ -13,6 +14,8 @@ Description: Defines all functions for the controller, including those declared 
 Author: Vincent Palmerio
 */
 namespace controller {
+    CommsManager* commsManager;
+
     Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
     Eigen::MatrixXd kGain(U_ROW_LENGTH, X_VECTOR_LENGTH + ERROR_VECTOR_LENGTH);
     Eigen::MatrixXd qsGain(U_ROW_LENGTH, X_VECTOR_LENGTH);
@@ -43,9 +46,38 @@ namespace controller {
 
     /*
      * Represents the index of the time that is the first point being linearly interpolated (x1)
-     * x2 is traj::t[currentTimeIndex + 1] 
+     * x2 is traj::t[currentTimeIndex + 1]
      */
     int currentTimeIndex = 0;
+}
+
+fmav_command_ack_t controller::handleControlModeChange(int mode) {
+    switch (mode) {
+        case MAV_CONTROL_MODE_TRACK:
+            switchControlTraj();
+            break;
+        case MAV_CONTROL_MODE_STABILIZE:
+            switchControlStability();
+            break;
+        case MAV_CONTROL_MODE_LAND:
+            switchControlReg();
+            break;
+        //case FINAL_APPROACH_MODE:
+            // controlLawFinalApproach();
+            // break;
+        default:
+            switchControlStability();
+            commsManager->sendStatusText(MAV_SEVERITY_WARNING, (String("Invalid control mode. Switching to stability. Mode sent: ") + mode).c_str());
+            break;
+    }
+    fmav_command_ack_t ack;
+    ack.result = MAV_RESULT_ACCEPTED;
+    return ack;
+}
+
+int controller::init(CommsManager *comms) {
+    commsManager = comms;
+    commsManager->registerSetControlModeAction(handleControlModeChange);
 }
 
 
@@ -167,7 +199,7 @@ int controller::loadTrajectoryPoint() {
 
     uTrajInterpolator.calculatePoint(currentTime);
     uRef = uTrajInterpolator.resultY;
-    
+
     return NO_ERROR_CODE;
 }
 
@@ -194,7 +226,7 @@ int controller::saturation() {
     controllerInputU(1) = minMax(controllerInputU(1), GAMMA_MIN, GAMMA_MAX); /* saturate gamma */
 
     controllerInputU(2) = minMax(controllerInputU(2), THROTTLE_MIN, THROTTLE_MAX); /* saturate throttle */
-    
+
     controllerInputU(3) = minMax(controllerInputU(3), ALPHA_MIN, ALPHA_MAX); /* saturate alpha */
 
     return NO_ERROR_CODE;
@@ -250,7 +282,7 @@ int controller::switchControlStability() {
     //Get snapshot of estimatedStateX with just position (everything else zero) (position not implemented yet)
     //set xSnap to that snapshot
     xSnap.setZero();
-    
+
     //reset timer to determine how much time in this control mode
     xNonTrajTimer = 0;
     controlModeIndicator = STABILIZE_MODE;
@@ -281,7 +313,7 @@ int controller::switchControlReg() {
 }
 
 int controller::controlMode() {
-    
+
     //estimatedStateX and xRef
 
     //if deltaX == some condition for controlLawStability
@@ -289,7 +321,7 @@ int controller::controlMode() {
 
     //if deltaX == some condition for controlLawTrack
         //switchControlTraj();
-    
+
     return NO_ERROR_CODE;
 }
 
@@ -307,16 +339,16 @@ int controller::controlLawTrack() {
 
     //update the integrator now that a new deltaX has been set
     //the integrator is being updated here because this is the closest point
-    //between the integration of the data and the usage of the data. 
+    //between the integration of the data and the usage of the data.
     //we don't want there to be any gaps in time where the integrator is not updated
     int errorCode = zIntegrationObject.integratorUpdate();
 
     if (errorCode != 0) {
         return errorCode;
     }
-    
+
     Eigen::Matrix2Xd deltaXIntegratedX;
-    
+
     //deltaX in first row
     for (int i = 0; i < deltaX.size(); i++) {
         deltaXIntegratedX(0, i) = deltaX(i);
@@ -338,16 +370,16 @@ int controller::controlLawStability() {
 
     //update the integrator now that a new deltaX has been set
     //the integrator is being updated here because this is the closest point
-    //between the integration of the data and the usage of the data. 
+    //between the integration of the data and the usage of the data.
     //we don't want there to be any gaps in time where the integrator is not updated
     int errorCode = zIntegrationObject.integratorUpdate();
 
     if (errorCode != 0) {
         return errorCode;
     }
-    
+
     Eigen::Matrix2Xd deltaXIntegratedX;
-    
+
     //deltaX in first row
     for (int i = 0; i < deltaX.size(); i++) {
         deltaXIntegratedX(0, i) = deltaX(i);
