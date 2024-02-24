@@ -5,13 +5,16 @@
 #ifndef LOG_H
 #define LOG_H
 
+#include "Estimator.h"
+#include "Controller.h"
+
 namespace logger {
     typedef struct {
         float t; // time
         float battVoltage; // battery voltage
-        float x[6]; // state
-        float y[9]; // measurement
-        float u[4]; // control
+        float x[ESTIMATED_STATE_DIMENSION]; // state
+        float y[MEASUREMENT_DIMENSION]; // measurement
+        float u[U_ROW_LENGTH]; // control
     } Data;
 
     extern int FILE_WRITE_ERR, FILE_OPEN_ERR;
