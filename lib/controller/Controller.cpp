@@ -75,13 +75,10 @@ fmav_command_ack_t controller::handleControlModeChange(int mode) {
     return ack;
 }
 
-int controller::init(CommsManager *comms) {
+int controller::initializeController(CommsManager *comms) {
     commsManager = comms;
     commsManager->registerSetControlModeAction(handleControlModeChange);
-}
-
-
-int controller::initializeController() {
+    commsManager->updateControlMode(MAV_CONTROL_MODE_STABILIZE);
 
     zIntegrationObject = *new Integrator();
 
@@ -253,6 +250,7 @@ int controller::controlLaw() {
     //controlMode(&estimatedStateX, &xRef);
     //}
 
+    commsManager->updateControlMode(controlModeIndicator);
     switch (controlModeIndicator) {
         case TRACK_MODE:
             loadTrajectoryPoint();

@@ -76,7 +76,7 @@ void setup() {
   //---
 
   initializeEstimator();
-  controller::initializeController();
+  controller::initializeController(&comms);
 
   startMissionTimer();
 

@@ -36,6 +36,7 @@ void CommsManager::spin() {
 
     if (millis() - lastTelem > (1000 / TELEM_HZ)) {
         this->sendTelem();
+        this->sendUpdateControlMode();
         this->lastTelem = millis();
     }
 
@@ -199,12 +200,14 @@ void CommsManager::sendHealth() {
 /**
  * Send control mode update
  */
-void CommsManager::sendUpdateControlMode(MAV_CONTROL_MODE mode) {
-    fmav_change_control_mode_t control_mode;
-    control_mode.mode = mode;
+void CommsManager::updateControlMode(MAV_CONTROL_MODE mode) {
+    this->control_mode.mode = mode;
+}
+
+void CommsManager::sendUpdateControlMode() {
     fmav_msg_change_control_mode_encode_to_serial(
         this->sysid, this->compid,
-        &control_mode, &(this->status)
+        &(this->control_mode), &(this->status)
     );
 }
 

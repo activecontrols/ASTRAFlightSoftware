@@ -54,7 +54,6 @@ namespace controller {
 
     int getDeltaX(Eigen::VectorXd*, Eigen::VectorXd*);
     fmav_command_ack_t handleControlModeChange(int mode);
-    int init(CommsManager* comms);
     int controlLaw();
     int controlMode();
     int controlLawRegulate();

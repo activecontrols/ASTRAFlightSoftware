@@ -34,7 +34,7 @@ public:
     void updateTrajectoryProgress(fmav_controller_status_t fata); // Send telemetry info e.g. position, rotation, thrust
     void updateHealth(fmav_sys_status_t data); // Send telemetry health info e.g. battery
     void sendStatusText(MAV_SEVERITY severity, const char *text); // Send status text. ONLY USE SPARINGLY (high bandwidth usage).
-    void sendUpdateControlMode(MAV_CONTROL_MODE mode); // Send control mode update.
+    void updateControlMode(MAV_CONTROL_MODE mode);
 
     // Register callbacks for mission control events
     void registerMissionNextSegmentAction(fmav_command_ack_t (*callback) (float* K, float* trajStart, uint16_t trajLen));
@@ -56,6 +56,7 @@ private:
     void sendHeartbeat();              // Send heartbeat message so we know the system is alive
     void sendHealth();
     void sendTelem();
+    void sendUpdateControlMode(); // Send control mode update.
     void sendTrajectoryStatus();
     void sendTrajK1Req(int k);       // Send request for part 1 of a gain matrix K
     void sendTrajK2Req(int k);       // Send request for part 2 of a gain matrix K
@@ -75,6 +76,7 @@ private:
     fmav_control_system_state_t state;
     fmav_controller_status_t trajectoryStatus;
     fmav_sys_status_t health;
+    fmav_change_control_mode_t control_mode;
 
     // Internal Data
     Stream *serial;
