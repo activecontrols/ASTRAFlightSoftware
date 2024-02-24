@@ -1,18 +1,19 @@
 #include <Arduino.h>
-#include <Adafruit_LSM6DSOX.h>
-#include "../lib/buffer/Buffer.h"
-#include "../lib/estimator/Estimator.h"
-#include "../lib/controller/Controller.h"
-#include "../lib/math/Integrator.h"
-#include "../lib/math/Derivative.h"
-#include "../lib/trajectory/log.h"
-#include "../lib/comms/Comms.h"
-#include "../lib/drivers/ASTRA/IMU/src/IMU.h"
-#include "../lib/encoders/Encoder.h"
-#include <Servo.h>
-//#include <ArduinoEigenDense.h>
+#include "Buffer.h"
+#include "Estimator.h"
+#include "Controller.h"
+#include "Integrator.h"
+#include "Derivative.h"
+// #include "Comms.h"
+#include "IMU.h"
+#include "Encoder.h"
+#include "timer.h"
 
-#define USE_ENCODER (false)
+#include <Servo.h>
+#include <ArduinoEigen.h>
+#include <stdexcept>
+
+#define ASTRA_FULL_DEBUG
 
 /*
 main.cpp 
@@ -28,24 +29,25 @@ int lastTime = 0;
 bool ledOn = false;
 
 // COMMS
-CommsManager comms;
+// CommsManager comms;
 
-Buffer imuBuffer(3,5, getValues);
+// Buffer imuBuffer(3,5, getValues);
 float ** data;
 float* test;
 
-fmav_traj_ack_t loadSD(int number) {
-    comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
+// fmav_traj_ack_t loadSD(int number) {
+//     comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
 
-    // Return example affirmative
-    fmav_traj_ack_t ack;
-    ack.result = MAV_RESULT_ACCEPTED;
-    ack.points_loaded = 592; // I made up a number
-    return ack;
-}
+//     // Return example affirmative
+//     fmav_traj_ack_t ack;
+//     ack.result = MAV_RESULT_ACCEPTED;
+//     ack.points_loaded = 592; // I made up a number
+//     return ack;
+// }
 
 void setup() {
-
+  Serial.begin(9600);
+  
   //Sets up led
   pinMode(LED_BUILTIN, OUTPUT);
   //sets LED to on indefinitely so we know teensy is on if setup() fails
@@ -53,7 +55,7 @@ void setup() {
 
   //ENCODER SETUP
 #if USE_ENCODER
-  while (!encoderSetup(1, 2)) {
+  while (!encoderSetup()) {
     Serial.println("Connecting to encoder...");
   }
 #endif
@@ -70,15 +72,14 @@ void setup() {
     Serial.print(errorCode);
     Serial.println(". Retrying...");
     errorCode = initializeIMU();
-    break; // TODO: remove. this is just for testing
   }
   //- --
-  Serial.println("Hello");
-  initializeEstimator();
-  initializeController();
-  initializeSD();
 
-  logger::open("log.bin");
+  initializeEstimator();
+  controller::initializeController();
+
+  startMissionTimer();
+  
 }
 
 //turns the LED on and off every 3 seconds 
@@ -112,28 +113,25 @@ void loop() {
   //comms.spin();
   // comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
   // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
-  Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
+  // Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
   lastTime = totalTimeElapsed;
 
+  // logger::Data data;
+  // data.t = totalTimeElapsed / 1000.0;
+  // data.battVoltage = 3.3 + sin(totalTimeElapsed / 100000.0);
+  // for (int i = 0; i < 6; i++) {
+  //   data.x[i] = 10.0 + i;
+  // }
+  // for (int i = 0; i < 9; i++) {
+  //   data.y[i] = 20.0 + i;
+  // }
+  // for (int i = 0; i < 4; i++) {
+  //   data.u[i] = 30.0 + i;
+  // }
+  // logger::write(&data);
 
-  delay(2); // simulate imu delay
-
-  logger::Data data;
-  data.t = totalTimeElapsed / 1000.0;
-  data.battVoltage = 3.3 + sin(totalTimeElapsed / 100000.0);
-  for (int i = 0; i < 6; i++) {
-    data.x[i] = 10.0 + i;
-  }
-  for (int i = 0; i < 9; i++) {
-    data.y[i] = 20.0 + i;
-  }
-  for (int i = 0; i < 4; i++) {
-    data.u[i] = 30.0 + i;
-  }
-  logger::write(&data);
-
-  // updateEstimator();
-  // updateController();
+  updateEstimator();
+  controller::updateController();
 
   // controllerInputU; //the vector to access for outputs
   // for (int i = 0; i < controllerInputU.size(); i++) {
@@ -142,6 +140,18 @@ void loop() {
   // }
   // Serial.println();
 
+  Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
+  controllerInputU = controller::getControlInputs();
+  Serial.print(millis()/1000.0, 3); Serial.print(", ");
+  for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
+    Serial.print(estimatedStateX(i), 3); Serial.print(", ");
+  }
+  for (byte i = 0; i < U_ROW_LENGTH; i++) {
+    Serial.print(controllerInputU(i), 3);
+    if (i != U_ROW_LENGTH) Serial.print(", ");
+  }
+  Serial.println();
+  // delay(1);
   //turns led on and off
   led();
 }

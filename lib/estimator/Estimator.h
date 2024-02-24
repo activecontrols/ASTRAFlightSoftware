@@ -7,16 +7,20 @@ Author: Vincent Palmerio
 #ifndef ESTIMATOR_H
 #define ESTIMATOR_H
 
-#include <ArduinoEigenDense.h>
+#include <ArduinoEigen.h>
+// #include <TOF.h>
 
-#define MEASUREMENT_INPUT_LENGTH 9 
-#define STATE_DIMENSION 7
+#define ESTIMATED_STATE_DIMENSION (6)
+#define MEASUREMENT_DIMENSION (9)
 
-//malloc's global variables in this header file
-    //returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
 extern int initializeEstimator(); 
 
 extern Eigen::VectorXd estimatedStateX;
+extern Eigen::VectorXd measurementVectorY;
+extern Eigen::VectorXd initialQuaternion;
+extern Eigen::VectorXd initialAcceleration;
+extern Eigen::VectorXd earthFrameAcceleration;
+extern Eigen::VectorXd velocityBodyFrame;
 
 int updateEstimator(); 
 

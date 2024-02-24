@@ -7,8 +7,7 @@ Author: Vincent Palmerio
 #include "Derivative.h"
 #include "../error/Error.h"
 
-
-Eigen::VectorXd derivative(0);
+Eigen::VectorXd derivative(1);
 
 int Derivative::derivativeSetup(Eigen::VectorXd* pointerToData, Eigen::VectorXd startingData)
 {
