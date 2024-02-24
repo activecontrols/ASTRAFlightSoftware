@@ -33,8 +33,12 @@ bool ledOn = false;
 // CommsManager comms;
 
 // Buffer imuBuffer(3,5, getValues);
-float ** data;
+//float ** data;
 float* test;
+
+#define USE_ENCODER (true)
+
+logger::Data data;
 
 // fmav_traj_ack_t loadSD(int number) {
 //     comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
@@ -77,7 +81,10 @@ void setup() {
   //- --
 
   initializeEstimator();
-  controller::initializeController();
+  Serial.print(controller::initializeController());
+  delay(4000);
+  // initializeSD();
+  // logger::open("log.bin");
 
   startMissionTimer();
   
@@ -106,9 +113,9 @@ void led() {
 
 void loop() {
 
-  // if (logger::write_count > 1000) {
+  // if (logger::write_count % 100) {
   //   logger::close();
-  //   return;
+  //   while (true);
   // }
 
   //comms.spin();
@@ -123,19 +130,20 @@ void loop() {
   updateEstimator();
   controller::updateController();
 
-  logger::Data data;
-  data.t = totalTimeElapsed / 1000.0;
-  data.battVoltage = analogRead(21); /* if the values are inaccurate, try analogReadAveraging() */
-  for (int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
-    data.x[i] = estimatedStateX(i);
-  }
-  for (int i = 0; i < MEASUREMENT_DIMENSION; i++) {
-    data.y[i] = measurementVectorY(i);
-  }
-  for (int i = 0; i < U_ROW_LENGTH; i++) {
-    data.u[i] = controllerInputU(i);
-  }
-  logger::write(&data);
+  
+  // data.t = getMissionTimeSeconds();
+  // data.battVoltage = analogRead(21); /* if the values are inaccurate, try analogReadAveraging() */
+  // for (int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
+  //   data.x[i] = estimatedStateX(i);
+  // }
+  // for (int i = 0; i < MEASUREMENT_DIMENSION; i++) {
+  //   data.y[i] = measurementVectorY(i);
+  // }
+  // for (int i = 0; i < U_ROW_LENGTH; i++) {
+  //   data.u[i] = controllerInputU(i);
+  // }
+  // logger::write(&data);
+  
 
   
 
@@ -155,7 +163,7 @@ void loop() {
     if (i != U_ROW_LENGTH) Serial.print(", ");
   }
   Serial.println();
-  // delay(1);
+   delay(1);
   //turns led on and off
   led();
 }
