@@ -76,6 +76,7 @@ void setup() {
   Serial.println("Hello");
   initializeEstimator();
   initializeController();
+  initializeSD();
 
   logger::open("log.bin");
 }
@@ -103,10 +104,10 @@ void led() {
 
 void loop() {
 
-  if (logger::write_count > 1000) {
-    logger::close();
-    return;
-  }
+  // if (logger::write_count > 1000) {
+  //   logger::close();
+  //   return;
+  // }
 
   //comms.spin();
   // comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
@@ -118,7 +119,17 @@ void loop() {
   delay(2); // simulate imu delay
 
   logger::Data data;
-  data.c = 'b';
+  data.t = totalTimeElapsed / 1000.0;
+  data.battVoltage = 3.3 + sin(totalTimeElapsed / 100000.0);
+  for (int i = 0; i < 6; i++) {
+    data.x[i] = 10.0 + i;
+  }
+  for (int i = 0; i < 9; i++) {
+    data.y[i] = 20.0 + i;
+  }
+  for (int i = 0; i < 4; i++) {
+    data.u[i] = 30.0 + i;
+  }
   logger::write(&data);
 
   // updateEstimator();

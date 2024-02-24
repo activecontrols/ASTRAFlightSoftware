@@ -13,6 +13,15 @@ namespace logger {
     File file;
 }
 
+void initializeSD() {
+    Serial.print("Initializing SD card...");
+    if (!SD.begin(BUILTIN_SDCARD)) {
+        Serial.println("SD initialization failed!");
+        while (true);
+    }
+    Serial.println("SD initialization done.");
+}
+
 
 void logger::close() {
     file.flush();
@@ -33,15 +42,6 @@ void logger::write(Data* data) {
 }
 
 int logger::open(const char* filename) {
-
-    Serial.print("Initializing SD card...");
-
-    if (!SD.begin(BUILTIN_SDCARD)) {
-        Serial.println("initialization failed!");
-        while (true);
-    }
-    Serial.println("initialization done.");
-
     file = SD.open(filename, FILE_WRITE | O_TRUNC);
     if (!file) return FILE_OPEN_ERR;
     return 0;
