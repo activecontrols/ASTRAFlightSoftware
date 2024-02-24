@@ -91,10 +91,10 @@ namespace controller {
         //     }
         // }
 
-        controller::innerGimbal.attach(INNER_GIMBAL_PIN);
-        controller::outerGimbal.attach(OUTER_GIMBAL_PIN);
-        controller::torqueVaneLeft.attach(LEFT_TORQUE_VANE_PIN);
-        controller::torqueVaneRight.attach(RIGHT_TORQUE_VANE_PIN);
+        innerGimbal.attach(INNER_GIMBAL_PIN);
+        outerGimbal.attach(OUTER_GIMBAL_PIN);
+        torqueVaneLeft.attach(LEFT_TORQUE_VANE_PIN);
+        torqueVaneRight.attach(RIGHT_TORQUE_VANE_PIN);
 
         if (!innerGimbal.attached()) {
             return INNER_GIMBAL_NOT_ATTACHED;
@@ -132,6 +132,8 @@ namespace controller {
 
         innerGimbal.write(controllerInputU(1) + INNER_GIMBAL_INITIAL_SETTING); //write gamma to inner gimbal
         outerGimbal.write(controllerInputU(0) + OUTER_GIMBAL_INITIAL_SETTING); //write beta to outer gimbal
+        // innerGimbal.write(0 + INNER_GIMBAL_INITIAL_SETTING); //write gamma to inner gimbal
+        // outerGimbal.write(OUTER_GIMBAL_INITIAL_SETTING); //write beta to outer gimbal
         torqueVaneLeft.write(controllerInputU(3) + LEFT_TORQUE_VANE_INITIAL_SETTING); //write alpha to left torque vane
         torqueVaneRight.write(-controllerInputU(3) + RIGHT_TORQUE_VANE_INITIAL_SETTING); //write -alpha to right torque vane
 
@@ -218,6 +220,9 @@ namespace controller {
 
         float beta_dot = magEncoder1.getAngularSpeed();
         float gamma_dot = magEncoder2.getAngularSpeed();
+        Serial.println(beta_dot, 4);
+        Serial.println(gamma_dot, 4);
+        
         controllerInputU(0) = controllerInputU(0) + BETA_DAMPENING_CONSTANT*beta_dot;
         controllerInputU(1) = controllerInputU(1) + GAMMA_DAMPENING_CONSTANT*gamma_dot;
 
@@ -278,8 +283,12 @@ namespace controller {
     int controlLawRegulate() {
 
         controllerInputU = -(kGain * estimatedStateX);
-        controllerInputU(0) = 180.0*controllerInputU(0)/PI;
+        controllerInputU(0) = 180.0*controllerInputU(0)/PI + 39;
+        Serial.println("Controller:");
+        Serial.println(controllerInputU(0), 3);
         controllerInputU(1) = 180.0*controllerInputU(1)/PI;
+        Serial.println("Controller 1:");
+        Serial.println(controllerInputU(1), 3);
 
         return NO_ERROR_CODE;
     }
