@@ -1,9 +1,8 @@
 #include <stdio.h>
-#include <stdint.h>
 
-#define ESTIMATED_STATE_DIMENSION 6 
-#define MEASUREMENT_DIMENSION 9      
-#define U_ROW_LENGTH 4         
+#define ESTIMATED_STATE_DIMENSION 6
+#define MEASUREMENT_DIMENSION 9
+#define U_ROW_LENGTH 4
 
 typedef struct {
     float t;                               // time
@@ -14,60 +13,44 @@ typedef struct {
 } Data;
 
 int main() {
-    //FILE *file = fopen("/Volumes/Untitled/log.bin", "rb");
-    FILE *file = fopen("./log.bin", "rb");
-    if (file == NULL) {
+    // read in file:
+    FILE *inFilePtr = fopen("./LOG.BIN", "rb");
+    if (inFilePtr == NULL) {
         perror("Error opening file");
         return 1;
     }
+    // write csv
+    FILE *outFilePtr = fopen("log.csv", "w");
 
-    // Determine the size of the file
-    fseek(file, 0, SEEK_END);
-    long amount = ftell(file)/sizeof(Data);
-    rewind(file);
-
-    printf("Amount: %ld", amount);
-
-    for (int i = 0; i < amount; i++) {
-        // Read the binary data into a buffer
-        uint8_t buffer[sizeof(Data)];
-        //Data data;
-        fread(buffer, sizeof(uint8_t), sizeof(Data), file);
-        
-
-        // Cast the buffer to the structure type
-        Data *data_ptr = (Data *)buffer;
-
-        // Access the members of the structure
-        printf("Time: %f\n", data_ptr->t);
-        printf("Battery Voltage: %f\n", data_ptr->battVoltage);
-        // Accessing array members
-        for (int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
-            printf("x[%d]: %f\n", i, data_ptr->x[i]);
-        }
-        for (int i = 0; i < MEASUREMENT_DIMENSION; i++) {
-            printf("y[%d]: %f\n", i, data_ptr->y[i]);
-        }
-        for (int i = 0; i < U_ROW_LENGTH; i++) {
-            printf("u[%d]: %f\n", i, data_ptr->u[i]);
-        }
-
-        // // Access the members of the structure
-        // printf("Time: %f\n", data.t);
-        // printf("Battery Voltage: %f\n", data.battVoltage);
-        // // Accessing array members
-        // for (int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
-        //     printf("x[%d]: %f\n", i, data.x[i]);
-        // }
-        // for (int i = 0; i < MEASUREMENT_DIMENSION; i++) {
-        //     printf("y[%d]: %f\n", i, data.y[i]);
-        // }
-        // for (int i = 0; i < U_ROW_LENGTH; i++) {
-        //     printf("u[%d]: %f\n", i, data.u[i]);
-        // }
+    if (inFilePtr == NULL) {
+        fclose(inFilePtr);
+        inFilePtr = NULL;
+        return -1;
     }
 
-    fclose(file);
+    int count = 0;
 
-    return 0;
+    char* header = "t,battVoltage,x0,x1,x2,x3,x4,x5,y0,y1,y2,y3,y4,y5,y6,y7,y8,u0,u1,u2,u3\n"; // remember to change if data changes
+    fprintf(outFilePtr, "%s", header);
+    while (1) {
+        Data d;
+        int bytesRead = fread(&d, sizeof(Data), 1, inFilePtr);
+        if (bytesRead != 1) {
+            fclose(inFilePtr);
+            fflush(outFilePtr);
+            fclose(outFilePtr);
+            printf("Done writing. Wrote %d data points.\n", count);
+            break;
+        }
+        count++;
+        fprintf(outFilePtr, "%f,%f," // ideally this would be generated according to the defined constants but we could really lose perf on that.
+        "%f,%f,%f,%f,%f,%f,"
+        "%f,%f,%f,%f,%f,%f,%f,%f,%f,"
+        "%f,%f,%f,%f\n",
+        d.t, d.battVoltage,
+        d.x[0], d.x[1], d.x[2], d.x[3], d.x[4], d.x[5],
+        d.y[0], d.y[1], d.y[2], d.y[3], d.y[4], d.y[5], d.y[6], d.y[7], d.y[8],
+        d.u[0], d.u[1], d.u[2], d.u[3]);
+    }
 }
+
