@@ -63,73 +63,73 @@ int traj::decode(char* inFile) {
   return 0;
 }
 
-// reading from inFile, will return 0 if successful
-int encode(char* inFile,
-           char* outFile) {
-  // this function doesn't run on the teensy: it generates the file to be flashed to the SD card
-  FILE* filePointer = fopen(inFile, "rb");
-  if (filePointer == nullptr) return traj::FILE_READ_ERR;
-  // reading header
-  int k, p, m, n, N;
-  // k = p = m = n = N = 0;
-  // update format strings depending on input format, may or may not change
-  int next = fscanf(filePointer, "%d,%d,%d,%d,%d\n", &k, &p, &m, &n, &N);
-  if ((next == 0) || (next == EOF)) {
-    fclose(filePointer);
-    filePointer = nullptr;
-    return traj::NO_DATA_POINTS;
-  }
-  // reading gain matrices
-  float (*gainM)[m][n + N] = (float (*)[m][n + N]) calloc(p, sizeof *gainM);
-  for (int i = 0; i < p; i++)
-    for (int j = 0; j < m; j++)
-      for (int K = 0; K < (n + N); K++) // avoid shadowing
-        fscanf(filePointer, "%f,", &gainM[i][j][K]);
-
-  // reading quick stabilization matrices
-  // currently 3 qsm, may change later
-  float (*qsm)[m][n] = (float (*)[m][n]) calloc(3, sizeof *qsm);
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < m; j++)
-      for (int K = 0; K < n; K++)
-        fscanf(filePointer, "%f,", &qsm[i][j][K]);
-
-  // read trajectory points
-  float (*x)[n] = (float (*)[n]) calloc(k, sizeof *x);
-  for (int i = 0; i < k; i++)
-    for (int j = 0; j < n; j++)
-      fscanf(filePointer, "%f,", &x[i][j]);
-
-  float (*u)[m] = (float (*)[m]) calloc(k, sizeof *u);
-  for (int i = 0; i < k; i++)
-    for (int j = 0; j < m; j++)
-      fscanf(filePointer, "%f,", &u[i][j]);
-
-  float (*t) = (float *) calloc(k, sizeof *t);
-  for (int i = 0; i < k; i++)
-    fscanf(filePointer, "%f,", &t[i]);
-  // write out binary format
-  FILE* outFilePtr = fopen(outFile, "wb");
-  if (outFilePtr == nullptr) {
-    fclose(filePointer);
-    filePointer = nullptr;
-    return traj::FILE_WRITE_ERR;
-  }
-  // write header
-  traj::Header header = {k, p, m, n, N};
-  fwrite(&header, sizeof(header), 1, outFilePtr);
-  // write gain matrices
-  fwrite(gainM, sizeof(*gainM), p, outFilePtr);
-  // write quick stabilization matrices
-  fwrite(qsm, sizeof(*qsm), 3, outFilePtr);
-  // write trajectory points
-  fwrite(x, sizeof(*x), k, outFilePtr);
-  fwrite(u, sizeof(*u), k, outFilePtr);
-  fwrite(t, sizeof(*t), k, outFilePtr);
-  // close files
-  fclose(outFilePtr);
-  outFilePtr = nullptr;
-  fclose(filePointer);
-  filePointer = nullptr;
-  return 0;
-}
+// // reading from inFile, will return 0 if successful
+// int encode(char* inFile,
+//            char* outFile) {
+//   // this function doesn't run on the teensy: it generates the file to be flashed to the SD card
+//   FILE* filePointer = fopen(inFile, "rb");
+//   if (filePointer == nullptr) return traj::FILE_READ_ERR;
+//   // reading header
+//   int k, p, m, n, N;
+//   // k = p = m = n = N = 0;
+//   // update format strings depending on input format, may or may not change
+//   int next = fscanf(filePointer, "%d,%d,%d,%d,%d\n", &k, &p, &m, &n, &N);
+//   if ((next == 0) || (next == EOF)) {
+//     fclose(filePointer);
+//     filePointer = nullptr;
+//     return traj::NO_DATA_POINTS;
+//   }
+//   // reading gain matrices
+//   float (*gainM)[m][n + N] = (float (*)[m][n + N]) calloc(p, sizeof *gainM);
+//   for (int i = 0; i < p; i++)
+//     for (int j = 0; j < m; j++)
+//       for (int K = 0; K < (n + N); K++) // avoid shadowing
+//         fscanf(filePointer, "%f,", &gainM[i][j][K]);
+//
+//   // reading quick stabilization matrices
+//   // currently 3 qsm, may change later
+//   float (*qsm)[m][n] = (float (*)[m][n]) calloc(3, sizeof *qsm);
+//   for (int i = 0; i < 3; i++)
+//     for (int j = 0; j < m; j++)
+//       for (int K = 0; K < n; K++)
+//         fscanf(filePointer, "%f,", &qsm[i][j][K]);
+//
+//   // read trajectory points
+//   float (*x)[n] = (float (*)[n]) calloc(k, sizeof *x);
+//   for (int i = 0; i < k; i++)
+//     for (int j = 0; j < n; j++)
+//       fscanf(filePointer, "%f,", &x[i][j]);
+//
+//   float (*u)[m] = (float (*)[m]) calloc(k, sizeof *u);
+//   for (int i = 0; i < k; i++)
+//     for (int j = 0; j < m; j++)
+//       fscanf(filePointer, "%f,", &u[i][j]);
+//
+//   float (*t) = (float *) calloc(k, sizeof *t);
+//   for (int i = 0; i < k; i++)
+//     fscanf(filePointer, "%f,", &t[i]);
+//   // write out binary format
+//   FILE* outFilePtr = fopen(outFile, "wb");
+//   if (outFilePtr == nullptr) {
+//     fclose(filePointer);
+//     filePointer = nullptr;
+//     return traj::FILE_WRITE_ERR;
+//   }
+//   // write header
+//   traj::Header header = {k, p, m, n, N};
+//   fwrite(&header, sizeof(header), 1, outFilePtr);
+//   // write gain matrices
+//   fwrite(gainM, sizeof(*gainM), p, outFilePtr);
+//   // write quick stabilization matrices
+//   fwrite(qsm, sizeof(*qsm), 3, outFilePtr);
+//   // write trajectory points
+//   fwrite(x, sizeof(*x), k, outFilePtr);
+//   fwrite(u, sizeof(*u), k, outFilePtr);
+//   fwrite(t, sizeof(*t), k, outFilePtr);
+//   // close files
+//   fclose(outFilePtr);
+//   outFilePtr = nullptr;
+//   fclose(filePointer);
+//   filePointer = nullptr;
+//   return 0;
+// }
