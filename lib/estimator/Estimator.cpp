@@ -104,8 +104,8 @@ int updateEstimator() {
     estimatedStateX(1) = measuredQuaternion(2);
     estimatedStateX(2) = measuredQuaternion(3);
 
-    estimatedStateX(3) = gx;
-    estimatedStateX(4) = gy;
+    estimatedStateX(3) = gy;
+    estimatedStateX(4) = gx;
     estimatedStateX(5) = gz;
 
     measurementVectorY << linearAccelVector, gyroscopeVector, magnetometerVector;
