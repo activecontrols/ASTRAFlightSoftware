@@ -3,9 +3,11 @@
 #include "settings.h"
 #include "Estimator.h"
 #include "Encoder.h"
+#include "Integrator.h"
+#include "timer.h"
 #if !REGULATE_ONLY
     #include "SDcard.h"
-    #include "timer.h"
+    #include "LinearInterpolator.h"
 #endif
 
 #include <Arduino.h>
@@ -32,9 +34,11 @@ namespace controller {
 
     Integrator zIntegrationObject;
     Integrator zSnapIntegrationObject;
-  
+
+#if !REGULATE_ONLY  
     Interpolator xTrajInterpolator = *new Interpolator(X_VECTOR_LENGTH + ERROR_VECTOR_LENGTH);
     Interpolator uTrajInterpolator = *new Interpolator(U_ROW_LENGTH);
+#endif
 
     Servo innerGimbal;
     Servo outerGimbal;
@@ -427,7 +431,7 @@ namespace controller {
     }
 #endif
 
-    int controller::controlLawLand() {
+    int controlLawLand() {
         return NO_ERROR_CODE;
     }
   

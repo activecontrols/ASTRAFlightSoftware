@@ -43,7 +43,7 @@ int initializeEstimator() {
     //     errorCode = initializeIMU();
     // }
 
-    estimatedStatex.setZero();
+    estimatedStateX.setZero();
 
     for (byte i = 0; i < 100; i++) {
         updateIMU();
