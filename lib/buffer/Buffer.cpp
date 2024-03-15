@@ -1,5 +1,6 @@
 #include "Buffer.h"
-#include "../../src/debug.h"
+
+#include <debug.h>
 #include <Arduino.h>
 /*
 Buffer.cpp 
