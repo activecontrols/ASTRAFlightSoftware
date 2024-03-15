@@ -3,7 +3,7 @@
 #include "Error.h"
 #include "IMU.h"
 #include "MathFunctions.h"
-
+#include "TOF.h"
 #include <ArduinoEigenDense.h>
 
 /*
@@ -21,6 +21,10 @@ Eigen::VectorXd velocityBodyFrame(3);
 Integrator linearAccelIntegrator;
 Integrator bodyFrameVelocityIntegrator;
 
+float piOverFour = sqrt(2)/2;
+Eigen::Vector4d rotationQuaternion = {0, piOverFour, 0, piOverFour};
+Eigen::Vector4d rotationConjugate = quaternionConjugate(rotationQuaternion);
+
 int initializeEstimator() {
     // //IMU SETUP
     // int errorCode = initializeIMU();
@@ -31,11 +35,13 @@ int initializeEstimator() {
     //     errorCode = initializeIMU();
     // }
 
-    // for (byte i = 0; i < 100; i++) {
-    //     updateIMU();
-    // }
+    for (byte i = 0; i < 100; i++) {
+        updateIMU();
+    }
     initialAcceleration << linearAccelVector;
     initialQuaternion << qw, qx, qy, qz;
+
+    rotationConjugate = quaternionConjugate(initialQuaternion);
 
     calculateCBI(initialQuaternion);
 
@@ -43,14 +49,16 @@ int initializeEstimator() {
 
     earthFrameAcceleration << (CBI * linearAccelVector) - initialAcceleration;
 
-    // //TOF SETUP
-    // errorCode = setupTOFSensor(TOF_INTERRUPT_PIN, TOF_XSHUT_PIN);
-    // while (errorCode != 0) {
-    //     Serial.print("Failed to initialize TOF Sensor, error code: ");
-    //     Serial.print(errorCode);
-    //     Serial.println(". Retrying...");
-    //     errorCode = setupTOFSensor(TOF_INTERRUPT_PIN, TOF_XSHUT_PIN);
-    // }
+    //TOF SETUP
+#if (USE_TOF_SENSOR)
+    int tofErrorCode = setupTOFSensor(TOF_INTERRUPT_PIN, TOF_XSHUT_PIN);
+    while (tofErrorCode != 0) {
+        Serial.print("Failed to initialize TOF Sensor, error code: ");
+        Serial.print(tofErrorCode);
+        Serial.println(". Retrying...");
+        tofErrorCode = setupTOFSensor(TOF_INTERRUPT_PIN, TOF_XSHUT_PIN);
+    }
+#endif
 
     for (unsigned int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
         estimatedStateX(i) = 0;
@@ -67,7 +75,11 @@ int initializeEstimator() {
 
 int updateEstimator() {
     updateIMU();
-    // TOF_buffer.addData();
+
+#if USE_TOF_SENSOR
+    TOF_buffer.addData();
+#endif
+
     // float* d_m_star = TOF_buffer.getAverage();
 
     // Eigen::VectorXd TOFDist(1);
@@ -78,7 +90,7 @@ int updateEstimator() {
     // free(d_m_star);
     // d_m_star = NULL;
 
-    Eigen::VectorXd measuredQuaternion(4);
+    Eigen::Vector4d measuredQuaternion(4);
     measuredQuaternion << qw, qx, qy, qz;
     // Eigen::VectorXd currentQuaternion(4);
     // currentQuaternion << quaternionProduct(quaternionConjugate(initialQuaternion), measuredQuaternion);
@@ -100,9 +112,19 @@ int updateEstimator() {
     // estimatedStateX(1) = linearAccelIntegrator.integratedData(1);
     // estimatedStateX(2) = linearAccelIntegrator.integratedData(2);
 
-    estimatedStateX(0) = measuredQuaternion(1);
-    estimatedStateX(1) = measuredQuaternion(2);
-    estimatedStateX(2) = measuredQuaternion(3);
+    Eigen::Vector4d realQuaternion(4);
+    realQuaternion = quaternionProduct(measuredQuaternion, rotationConjugate);
+    Serial.println("Quaternion: ");
+    Serial.print(realQuaternion(1), 5);
+    Serial.print(", ");
+    Serial.print(realQuaternion(2), 5);
+    Serial.print(", ");
+    Serial.print(realQuaternion(3), 5);
+    Serial.println();
+
+    estimatedStateX(0) = realQuaternion(1);
+    estimatedStateX(1) = realQuaternion(2);
+    estimatedStateX(2) = realQuaternion(3);
 
     estimatedStateX(3) = gy;
     estimatedStateX(4) = gx;
