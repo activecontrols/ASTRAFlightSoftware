@@ -220,11 +220,9 @@ namespace controller {
 
         float beta_dot = magEncoder1.getAngularSpeed();
         float gamma_dot = magEncoder2.getAngularSpeed();
-        Serial.println(beta_dot, 4);
-        Serial.println(gamma_dot, 4);
         
-        controllerInputU(0) = controllerInputU(0) + BETA_DAMPENING_CONSTANT*beta_dot;
-        controllerInputU(1) = controllerInputU(1) + GAMMA_DAMPENING_CONSTANT*gamma_dot;
+        controllerInputU(1) = controllerInputU(1) + BETA_DAMPENING_CONSTANT*beta_dot;
+        controllerInputU(0) = controllerInputU(0) + GAMMA_DAMPENING_CONSTANT*gamma_dot;
 
         return NO_ERROR_CODE;
 
@@ -283,11 +281,23 @@ namespace controller {
     int controlLawRegulate() {
 
         controllerInputU = -(kGain * estimatedStateX);
-        controllerInputU(0) = 180.0*controllerInputU(0)/PI + 39;
-        Serial.println("Controller:");
+        Serial.print("Controller Multiplication: ");
+        for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
+            Serial.print( -(kGain(0, i) * estimatedStateX(i)), 5);
+            Serial.print(", ");
+        }
+        
+        Serial.println();
+        Serial.print(kGain(0, 2));
+        Serial.print(estimatedStateX(2));
+        Serial.println();
+
+        controllerInputU(0) = 180.0*controllerInputU(0)/PI;
+        Serial.print("Controller Gamma: ");
         Serial.println(controllerInputU(0), 3);
+
         controllerInputU(1) = 180.0*controllerInputU(1)/PI;
-        Serial.println("Controller 1:");
+        Serial.print("Controller Beta: ");
         Serial.println(controllerInputU(1), 3);
 
         return NO_ERROR_CODE;
