@@ -33,6 +33,8 @@ public:
     //returns error code
     int integratorUpdate(); 
 
+    int reset(Eigen::VectorXd*);
+
 private:
 // We now use Simpson's rule for integration. Here's a comparison of its accuracy against other common techniques:
 // https://cplayground.com/?p=salmon-cat-turkey. (Simpson's is orders of magnitude better)
@@ -46,6 +48,7 @@ private:
     elapsedMicros time;
     double dt;
     double dtPrev;
+    bool ready_for_simpson;
 
     Eigen::VectorXd simpson_nonuniform_cumulative(
         Eigen::VectorXd prev2_f, Eigen::VectorXd prev_f, Eigen::VectorXd new_f,

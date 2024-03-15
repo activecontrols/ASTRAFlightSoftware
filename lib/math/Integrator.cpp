@@ -9,6 +9,17 @@ Last updated: 01/10/2024 by Ishan Goel <goeli@purdue.edu>
 #include "Integrator.h"
 #include "Error.h"
 
+// This function needs testing
+int Integrator::reset(Eigen::VectorXd* vector)
+{
+    ready_for_simpson = false;
+    prevValue = *vector;
+    integratedData = *vector;
+    time = 0;
+
+    return NO_ERROR_CODE;
+}
+
 int Integrator::integratorSetup(Eigen::VectorXd* pointerToData, unsigned int vectorSize)
 {
     if (vectorSize == 0) {
