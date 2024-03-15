@@ -1,11 +1,16 @@
 #include "Controller.h"
-//#include "../estimator/Estimator.h"
-#include "../error/Error.h"
-#include "../estimator/Estimator.h"
-#include "../timer/timer.h"
+#include "Error.h"
+#include "settings.h"
+#include "Estimator.h"
+#include "Encoder.h"
+#if !REGULATE_ONLY
+    #include "SDcard.h"
+    #include "timer.h"
+#endif
+
 #include <Arduino.h>
 #include <Servo.h>
-#include <Encoder.h>
+
 
 /*
 Controller.cpp  
@@ -17,7 +22,7 @@ namespace controller {
 
     Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
     double* k = (double *)malloc(K_ARRAY_LENGTH * sizeof(double));
-    Eigen::MatrixXd kGain(U_ROW_LENGTH, X_VECTOR_LENGTH);
+    Eigen::MatrixXd qsGain(U_ROW_LENGTH, X_VECTOR_LENGTH);
 
     Eigen::VectorXd deltaX(X_VECTOR_LENGTH);
     Eigen::VectorXd xRef{{0,0,0,0,0,0,0}};
@@ -33,7 +38,17 @@ namespace controller {
     Servo torqueVaneLeft;
     Servo torqueVaneRight;
 
-    elapsedMicros xSnapTimer;
+    elapsedMillis xNonTrajTimer;
+
+    int controlModeIndicator = 0;
+
+    double timeOffset = 0; /* time offset after switching out of stability control mode, unit is in seconds!! */
+
+    /*
+     * Represents the index of the time that is the first point being linearly interpolated (x1)
+     * x2 is traj::t[currentTimeIndex + 1] 
+     */
+    int currentTimeIndex = 0;
 
     double offset = 0;
 
@@ -49,48 +64,43 @@ namespace controller {
             return MEMORY_ALLOCATION_ERROR_CODE; //Memory Allocation Error Code
         }
 
-        // for (unsigned int i = 0; i < X_VECTOR_LENGTH; i++) {
-        //     deltaX(i) = 0;
-        // }
         deltaX.setZero();
 
-        // for (unsigned int i = 0; i < U_ROW_LENGTH; i++) {
-        //     controllerInputU(i) = 1;
-        // }
         controllerInputU.setZero();
-        // kGain.setConstant(1);
-        kGain << 0.010175896789397, -0.999948223723789, -0.000031563385498, 0.010270474752111, -1.009237389930116, -0.000033700327955, 
+        
+        qsGain << 0.010175896789397, -0.999948223723789, -0.000031563385498, 0.010270474752111, -1.009237389930116, -0.000033700327955, 
                 -0.006293635967089, -0.000032482311507, -0.999980194349455, -0.006350485144209, -0.000034619292106, -1.009010144715387, 
                 0.000000000000000, 0.000000000000001, -0.000000000000003, 0.000000000000000, -0.000000000000000, 0.000000000000004, 
                 99.992841807351638, 1.017589389543643, -0.629364064139043, 99.992889040319923, 1.017583962544098, -0.629360802065534;
 
-        // if (traj::m != U_ROW_LENGTH) {
-        //     return ROW_KGAIN_MISMATCH;
-        // }
+#if !REGULATE_ONLY
+        if (traj::m != U_ROW_LENGTH) {
+            return ROW_KGAIN_MISMATCH;
+        }
 
-        // if ((traj::n + traj::N) != X_VECTOR_LENGTH + ERROR_VECTOR_LENGTH) {
-        //     return COLUMN_KGAIN_MISMATCH;
-        // }
+        if ((traj::n + traj::N) != X_VECTOR_LENGTH + ERROR_VECTOR_LENGTH) {
+            return COLUMN_KGAIN_MISMATCH;
+        }
 
-        // if (traj::n != X_VECTOR_LENGTH) {
-        //     return COLUMN_QSM_MISMATCH;
-        // }
+        if (traj::n != X_VECTOR_LENGTH) {
+            return COLUMN_QSM_MISMATCH;
+        }
 
-        // float (*kGainMatrix)[traj::m][traj::n + traj::N] = (float (*)[traj::m][traj::n + traj::N]) traj::vgainM;
-        // float (*quickStabilizationMatrix)[traj::m][traj::n] = (float (*)[traj::m][traj::n]) traj::vqsm;
+        float (*trajectoryGainMatrix)[traj::m][traj::n + traj::N] = (float (*)[traj::m][traj::n + traj::N]) traj::vgainM;
+        float (*quickStabilizationMatrix)[traj::m][traj::n] = (float (*)[traj::m][traj::n]) traj::vqsm;
 
-        // for (int i = 0; i < U_ROW_LENGTH; i++) {
-        //     for (int j = 0; j < X_VECTOR_LENGTH + ERROR_VECTOR_LENGTH; j++) {
-        //         kGain(i, j) = *kGainMatrix[i][j];
-        //     }
-        // }
+        for (int i = 0; i < U_ROW_LENGTH; i++) {
+            for (int j = 0; j < X_VECTOR_LENGTH + ERROR_VECTOR_LENGTH; j++) {
+                trajectoryGain(i, j) = *trajectoryGainMatrix[i][j];
+            }
+        }
 
-        // for (int i = 0; i < U_ROW_LENGTH; i++) {
-        //     for (int j = 0; j < X_VECTOR_LENGTH; j++) {
-        //         controller::qsGain(i, j) = *quickStabilizationMatrix[i][j];
-        //     }
-        // }
-
+        for (int i = 0; i < U_ROW_LENGTH; i++) {
+            for (int j = 0; j < X_VECTOR_LENGTH; j++) {
+                qsGain(i, j) = *quickStabilizationMatrix[i][j];
+            }
+        }
+#endif
         innerGimbal.attach(INNER_GIMBAL_PIN);
         outerGimbal.attach(OUTER_GIMBAL_PIN);
         torqueVaneLeft.attach(LEFT_TORQUE_VANE_PIN);
@@ -121,7 +131,9 @@ namespace controller {
     }
 
     int updateController() {
-        //getDeltaX(&estimatedStateX, &xRef);
+#if !REGULATE_ONLY
+        getDeltaX(&estimatedStateX, &xRef);
+#endif
         controlLaw();
         saturation();
         controlServos();
@@ -132,8 +144,7 @@ namespace controller {
 
         innerGimbal.write(controllerInputU(0) + INNER_GIMBAL_INITIAL_SETTING); //write gamma to inner gimbal
         outerGimbal.write(controllerInputU(1) + OUTER_GIMBAL_INITIAL_SETTING); //write beta to outer gimbal
-        // innerGimbal.write(0 + INNER_GIMBAL_INITIAL_SETTING); //write gamma to inner gimbal
-        // outerGimbal.write(OUTER_GIMBAL_INITIAL_SETTING); //write beta to outer gimbal
+        
         torqueVaneLeft.write(controllerInputU(3) + LEFT_TORQUE_VANE_INITIAL_SETTING); //write alpha to left torque vane
         torqueVaneRight.write(-controllerInputU(3) + RIGHT_TORQUE_VANE_INITIAL_SETTING); //write -alpha to right torque vane
 
@@ -185,27 +196,29 @@ namespace controller {
         //controlMode(&estimatedStateX, &xRef);
         //}
 
-        // switch (controlModeIndicator) {
-        //     case TRACK_MODE:
-        //         loadTrajectoryPoint();
-        //         controlLawTrack();
-        //         break;
-        //     case STABILIZE_MODE:
-        //         controlLawStability();
-        //         break;
-        //     case LAND_MODE:
-        //         controlLawLand();
-        //         break;
-        //     //case FINAL_APPROACH_MODE:
-        //         // controlLawFinalApproach();
-        //         // break;
-        //     default:
-        //         //something went really bad.. try to land safely
-        //         controlLawRegulate();
-        //         break;
-        // }
-
+#if !REGULATE_ONLY
+        switch (controlModeIndicator) {
+            case TRACK_MODE:
+                loadTrajectoryPoint();
+                controlLawTrack();
+                break;
+            case STABILIZE_MODE:
+                controlLawStability();
+                break;
+            case LAND_MODE:
+                controlLawLand();
+                break;
+            //case FINAL_APPROACH_MODE:
+                // controlLawFinalApproach();
+                // break;
+            default:
+                //something went really bad.. try to land safely
+                controlLawRegulate();
+                break;
+        }
+#else
         controlLawRegulate();
+#endif
 
         float currentTime = getMissionTimeSeconds();
         if (currentTime < 1.5) {
@@ -228,67 +241,17 @@ namespace controller {
 
     }
 
-    // int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef) {
-        
-    //     //if deltaX == some condition for controlLawStability
-    //     //Get snapshot of estimatedStateX with just position (everything else zero) (position not implemented yet)
-    //     //set xSnap to that snapshot
-    //     xSnap.setZero();
-        
-    //     //reset timer to determine how much time in this control mode
-    //     xNonTrajTimer = 0;
-    //     controlModeIndicator = STABILIZE_MODE;
-
-    //     return NO_ERROR_CODE;
-    // }
-
-    // int switchControlTraj() {
-
-    //     if ((controlModeIndicator == STABILIZE_MODE) || (controlModeIndicator == LAND_MODE)) {
-    //         //convert xSnapTimer to seconds!
-    //         timeOffset = xNonTrajTimer / 1000;
-    //         zIntegrationObject = *new Integrator();
-    //         zIntegrationObject.integratorSetup(&deltaX, X_VECTOR_LENGTH);
-    //     }
-
-    //     controlModeIndicator = TRACK_MODE;
-    //     return NO_ERROR_CODE;
-    // }
-
-    // int switchControlReg() {
-
-    //     //reset timer to determine how much time in this control mode
-    //     xNonTrajTimer = 0;
-    //     controlModeIndicator = LAND_MODE;
-
-    //     return NO_ERROR_CODE;
-    // }
-
-    // int controlMode() {
-        
-    //     //estimatedStateX and xRef
-
-    //     //if deltaX == some condition for controlLawStability
-    //         //switchControlStability()
-
-    //     //if deltaX == some condition for controlLawTrack
-    //     //if previously in controlLawStability,
-    //         //end timer, set timer value to offset
-
-    //     return NO_ERROR_CODE;
-    // }
-
     int controlLawRegulate() {
 
-        controllerInputU = -(kGain * estimatedStateX);
+        controllerInputU = -(qsGain * estimatedStateX);
         Serial.print("Controller Multiplication: ");
         for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
-            Serial.print( -(kGain(0, i) * estimatedStateX(i)), 5);
+            Serial.print( -(qsGain(0, i) * estimatedStateX(i)), 5);
             Serial.print(", ");
         }
         
         Serial.println();
-        Serial.print(kGain(0, 2));
+        Serial.print(qsGain(0, 2));
         Serial.print(estimatedStateX(2));
         Serial.println();
 
@@ -299,6 +262,57 @@ namespace controller {
         controllerInputU(1) = 180.0*controllerInputU(1)/PI;
         Serial.print("Controller Beta: ");
         Serial.println(controllerInputU(1), 3);
+
+        return NO_ERROR_CODE;
+    }
+
+#if !REGULATE_ONLY
+    int switchControlStability(Eigen::VectorXd* x, Eigen::VectorXd* xRef) {
+        
+        //if deltaX == some condition for controlLawStability
+        //Get snapshot of estimatedStateX with just position (everything else zero) (position not implemented yet)
+        //set xSnap to that snapshot
+        xSnap.setZero();
+        
+        //reset timer to determine how much time in this control mode
+        xNonTrajTimer = 0;
+        controlModeIndicator = STABILIZE_MODE;
+
+        return NO_ERROR_CODE;
+    }
+
+    int switchControlTraj() {
+
+        if ((controlModeIndicator == STABILIZE_MODE) || (controlModeIndicator == LAND_MODE)) {
+            //convert xSnapTimer to seconds!
+            timeOffset = xNonTrajTimer / 1000;
+            zIntegrationObject = *new Integrator();
+            zIntegrationObject.integratorSetup(&deltaX, X_VECTOR_LENGTH);
+        }
+
+        controlModeIndicator = TRACK_MODE;
+        return NO_ERROR_CODE;
+    }
+
+    int switchControlReg() {
+
+        //reset timer to determine how much time in this control mode
+        xNonTrajTimer = 0;
+        controlModeIndicator = LAND_MODE;
+
+        return NO_ERROR_CODE;
+    }
+
+    int controlMode() {
+        
+        //estimatedStateX and xRef
+
+        //if deltaX == some condition for controlLawStability
+            //switchControlStability()
+
+        //if deltaX == some condition for controlLawTrack
+        //if previously in controlLawStability,
+            //end timer, set timer value to offset
 
         return NO_ERROR_CODE;
     }
@@ -329,7 +343,7 @@ namespace controller {
             deltaXIntegratedX(0, i) = zIntegrationObject.integratedData(i);
         }
 
-        controllerInputU = (*uRef) - (kGain * deltaXIntegratedX);
+        controllerInputU = (*uRef) - (qsGain * deltaXIntegratedX);
 
         return NO_ERROR_CODE;
     }
@@ -360,10 +374,11 @@ namespace controller {
             deltaXIntegratedX(0, i) = zSnapIntegrationObject.integratedData(i);
         }
 
-        controllerInputU = - (kGain * deltaXIntegratedX);
+        controllerInputU = - (qsGain * deltaXIntegratedX);
 
         return NO_ERROR_CODE;
     }
+#endif
 
     Eigen::VectorXd getControlInputs() {
         return controllerInputU;
@@ -410,43 +425,3 @@ namespace controller {
 
 //     return NO_ERROR_CODE;
 // }
-
-//UNUSED
-//-----------------------------------------------------------------------------------------
-// Eigen::Quaterniond getConstrainedQuaternion(Eigen::Matrix4Xd* v) {
-//     //magnitude constraint of quaternion
-//     //prone to precision float errors
-//     double constraint = std::sqrt(
-//         1-
-//         (*v)(2,0)*(*v)(2,0)-
-//         (*v)(2,1)*(*v)(2,1)-
-//         (*v)(2,2)*(*v)(2,2)
-//     );
-
-//     Eigen::Quaterniond e(
-//         constraint,
-//         v[2](0),
-//         v[2](1),
-//         v[2](0)
-//     );
-//     return e;
-// }
-
-// int controller::getDeltaX(Eigen::Matrix4Xd* x, Eigen::Matrix4Xd* xRef) {
-
-//     //magnitude of vector in first row
-//     deltaX(0) = ((*x).row(0) - (*xRef).row(0)).norm();
-
-//     //magnitude of vector in second row
-//     deltaX(1) = ((*x).row(1) - (*xRef).row(1)).norm();
-
-//     Eigen::Quaterniond e = getConstrainedQuaternion(x) * getConstrainedQuaternion(xRef);
-//     //theta (vector of length 1)
-//     deltaX(2) = 2*std::acos(e.w());
-
-//     //magnitude of vector in fourth row
-//     deltaX(3) = ((*x).row(3) - (*xRef).row(3)).norm();
-
-//     return NO_ERROR_CODE;
-// }
-
