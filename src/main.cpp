@@ -59,7 +59,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   //sets LED to on indefinitely so we know teensy is on if setup() fails
   digitalWrite(LED_BUILTIN, HIGH); 
-  //TwoWire::endTransmission(true);
+  
   //ENCODER SETUP
 #if USE_ENCODER
   while (!encoderSetup()) {
@@ -122,10 +122,13 @@ void loop() {
   //   while (true);
   // }
 
-  //comms.spin();
-  // comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
-  // comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
-  // Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
+#if USE_COMMS
+  comms.spin();
+  comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
+  comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
+  Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
+#endif
+
   lastTime = totalTimeElapsed;
 
   Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
