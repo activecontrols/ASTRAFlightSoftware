@@ -55,8 +55,12 @@ void Buffer::addData(){
     add = NULL;
 }
 
+/*
+ * Computes average vector of all the vectors in buffer
+ * You must free the pointer returned after use
+ */
 float* Buffer::getAverage() {
-    float avg[eleSize];
+    float* avg = (float*) malloc(sizeof(float) * eleSize);
     for(int i = 0; i < eleSize; i++){
         for(int j = 0; j < numElements; j++){
             avg[i] += data[i][j];

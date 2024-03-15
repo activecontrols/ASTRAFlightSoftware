@@ -1,4 +1,3 @@
-
 #include "Buffer.h"
 #include "Estimator.h"
 #include "Controller.h"
@@ -9,7 +8,6 @@
 #include "timer.h"
 #include "settings.h"
 
-#include <Arduino.h>
 #include <Servo.h>
 #include <ArduinoEigen.h>
 
@@ -85,7 +83,8 @@ void setup() {
   //- --
 
   initializeEstimator();
-  Serial.print(controller::initializeController());
+
+  controller::initializeController();
   delay(4000);
 
 #if LOG_DATA
@@ -94,7 +93,6 @@ void setup() {
 #endif
 
   startMissionTimer();
-  
 }
 
 //turns the LED on and off every 3 seconds 

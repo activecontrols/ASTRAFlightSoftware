@@ -15,11 +15,13 @@ Author: Vincent Palmerio
 */
 
 Eigen::VectorXd estimatedStateX(ESTIMATED_STATE_DIMENSION);
+
 Eigen::VectorXd measurementVectorY(MEASUREMENT_DIMENSION);
 Eigen::VectorXd initialQuaternion(4);
 Eigen::VectorXd initialAcceleration(3);
 Eigen::VectorXd earthFrameAcceleration(3);
 Eigen::VectorXd velocityBodyFrame(3);
+
 Integrator linearAccelIntegrator;
 Integrator bodyFrameVelocityIntegrator;
 
@@ -27,6 +29,10 @@ float piOverFour = sqrt(2)/2;
 Eigen::Vector4d rotationQuaternion = {0, piOverFour, 0, piOverFour};
 Eigen::Vector4d rotationConjugate = quaternionConjugate(rotationQuaternion);
 
+/*
+ * Initializes estimation library, including malloc'ing global variables
+ * returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
+ */
 int initializeEstimator() {
     // //IMU SETUP
     // int errorCode = initializeIMU();
@@ -37,9 +43,12 @@ int initializeEstimator() {
     //     errorCode = initializeIMU();
     // }
 
+    estimatedStatex.setZero();
+
     for (byte i = 0; i < 100; i++) {
         updateIMU();
     }
+  
     initialAcceleration << linearAccelVector;
     initialQuaternion << qw, qx, qy, qz;
 

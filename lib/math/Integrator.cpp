@@ -3,11 +3,11 @@ Integrator.cpp - Integrator CPP file
 Description: defines functions and variales in Integrator.h
 Author: Ishan Goel, Vincent Palmerio
 Created: 10/20/2023
-Last updated: 01/10/2024 by Ishan Goel
+Last updated: 01/10/2024 by Ishan Goel <goeli@purdue.edu>
 */
 
 #include "Integrator.h"
-#include "../error/Error.h"
+#include "Error.h"
 
 int Integrator::integratorSetup(Eigen::VectorXd* pointerToData, unsigned int vectorSize)
 {

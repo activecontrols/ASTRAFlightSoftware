@@ -8,7 +8,6 @@ Author: Vincent Palmerio
 #define ESTIMATOR_H
 
 #include <ArduinoEigen.h>
-// #include <TOF.h>
 
 #define ESTIMATED_STATE_DIMENSION (6)
 #define MEASUREMENT_DIMENSION (9)

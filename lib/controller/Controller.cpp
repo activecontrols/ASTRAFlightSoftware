@@ -21,17 +21,20 @@ Author: Vincent Palmerio
 namespace controller {
 
     Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
-    double* k = (double *)malloc(K_ARRAY_LENGTH * sizeof(double));
+    Eigen::MatrixXd trajectoryGain(U_ROW_LENGTH, X_VECTOR_LENGTH + ERROR_VECTOR_LENGTH);
     Eigen::MatrixXd qsGain(U_ROW_LENGTH, X_VECTOR_LENGTH);
 
     Eigen::VectorXd deltaX(X_VECTOR_LENGTH);
-    Eigen::VectorXd xRef{{0,0,0,0,0,0,0}};
+    Eigen::VectorXd xRef(X_VECTOR_LENGTH);
 
     Eigen::VectorXd xSnap{X_VECTOR_LENGTH};
     Eigen::VectorXd deltaXSnap(X_VECTOR_LENGTH);
 
     Integrator zIntegrationObject;
     Integrator zSnapIntegrationObject;
+  
+    Interpolator xTrajInterpolator = *new Interpolator(X_VECTOR_LENGTH + ERROR_VECTOR_LENGTH);
+    Interpolator uTrajInterpolator = *new Interpolator(U_ROW_LENGTH);
 
     Servo innerGimbal;
     Servo outerGimbal;
@@ -58,14 +61,8 @@ namespace controller {
 
         zIntegrationObject.integratorSetup(&deltaX, X_VECTOR_LENGTH);
 
-        //Check if memory allocation was successful
-        if (k == NULL) {
-            
-            return MEMORY_ALLOCATION_ERROR_CODE; //Memory Allocation Error Code
-        }
-
         deltaX.setZero();
-
+        
         controllerInputU.setZero();
         
         qsGain << 0.010175896789397, -0.999948223723789, -0.000031563385498, 0.010270474752111, -1.009237389930116, -0.000033700327955, 
@@ -74,6 +71,8 @@ namespace controller {
                 99.992841807351638, 1.017589389543643, -0.629364064139043, 99.992889040319923, 1.017583962544098, -0.629360802065534;
 
 #if !REGULATE_ONLY
+        xRef.setZero();
+        trajectoryGain.setZero();
         if (traj::m != U_ROW_LENGTH) {
             return ROW_KGAIN_MISMATCH;
         }
@@ -267,7 +266,55 @@ namespace controller {
     }
 
 #if !REGULATE_ONLY
-    int switchControlStability(Eigen::VectorXd* x, Eigen::VectorXd* xRef) {
+  
+  /*
+   * Loads trajectory point the rocket should be at based current mission time
+   * x is loaded into xRef and u is loaded into uRef
+   */
+  int controller::loadTrajectoryPoint() {
+      float currentTime = getMissionTimeSeconds() - timeOffset;
+
+      if (currentTimeIndex == (traj::k-1)) {
+          //set mode to Regulation and Landing
+          //return error or other code??
+      }
+
+      //The linear interpolation happens within a range: the time at currentTimeIndex and time at currentTimeIndex + 1
+      //This variable represents the end of this range
+      float endTimePeriod = traj::t[currentTimeIndex + 1];
+
+      //if our time is greater than the time at currentTimeIndex + 1, find rhe next time range and linearly interpolate
+      if (currentTime > endTimePeriod) {
+          while (currentTime > endTimePeriod) {
+              currentTimeIndex++;
+              endTimePeriod = traj::t[currentTimeIndex + 1];
+          }
+
+          float (*x)[traj::n] = (float (*)[traj::n]) traj::vx;
+          float* y1 = x[currentTimeIndex];
+          float* y2 = x[currentTimeIndex + 1];
+
+          xTrajInterpolator.rebuildLine(y1, y2, traj::t[currentTimeIndex], endTimePeriod);
+
+          float (*u)[traj::m] = (float (*)[traj::m]) traj::vu;
+          float* u1 = u[currentTimeIndex];
+          float* u2 = u[currentTimeIndex + 1];
+
+          uTrajInterpolator.rebuildLine(u1, u2, traj::t[currentTimeIndex], endTimePeriod);
+
+      }
+
+      xTrajInterpolator.calculatePoint(currentTime);
+      xRef = xTrajInterpolator.resultY;
+
+      uTrajInterpolator.calculatePoint(currentTime);
+      uRef = uTrajInterpolator.resultY;
+
+      return NO_ERROR_CODE;
+  }
+
+  
+    int switchControlStability() {
         
         //if deltaX == some condition for controlLawStability
         //Get snapshot of estimatedStateX with just position (everything else zero) (position not implemented yet)
@@ -317,7 +364,7 @@ namespace controller {
         return NO_ERROR_CODE;
     }
 
-    int controlLawTrack(Eigen::Matrix4Xd* uRef) {
+    int controlLawTrack() {
 
         getDeltaX(&estimatedStateX, &xRef);
 
@@ -343,7 +390,7 @@ namespace controller {
             deltaXIntegratedX(0, i) = zIntegrationObject.integratedData(i);
         }
 
-        controllerInputU = (*uRef) - (qsGain * deltaXIntegratedX);
+        controllerInputU = (uRef) - (qsGain * deltaXIntegratedX);
 
         return NO_ERROR_CODE;
     }
@@ -380,6 +427,10 @@ namespace controller {
     }
 #endif
 
+    int controller::controlLawLand() {
+        return NO_ERROR_CODE;
+    }
+  
     Eigen::VectorXd getControlInputs() {
         return controllerInputU;
     }
