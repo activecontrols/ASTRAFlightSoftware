@@ -7,14 +7,19 @@ Author: Vincent Palmerio
 #ifndef ESTIMATOR_H
 #define ESTIMATOR_H
 
-#include <ArduinoEigenDense.h>
+#include <ArduinoEigen.h>
 
-#define ESTIMATED_STATE_DIMENSION (7)
-
+#define ESTIMATED_STATE_DIMENSION (6)
+#define MEASUREMENT_DIMENSION (9)
 
 extern int initializeEstimator(); 
 
 extern Eigen::VectorXd estimatedStateX;
+extern Eigen::VectorXd measurementVectorY;
+extern Eigen::VectorXd initialQuaternion;
+extern Eigen::VectorXd initialAcceleration;
+extern Eigen::VectorXd earthFrameAcceleration;
+extern Eigen::VectorXd velocityBodyFrame;
 
 int updateEstimator(); 
 

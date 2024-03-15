@@ -9,11 +9,9 @@ Author: Vincent Palmerio
 
 #include <ArduinoEigenDense.h>
 
-#include "Integrator.h"
-
 #define MODE_ARRAY_LENGTH (12)
 #define K_ARRAY_LENGTH (10)
-#define X_VECTOR_LENGTH (7)
+#define X_VECTOR_LENGTH (6)
 #define ERROR_VECTOR_LENGTH (X_VECTOR_LENGTH) /* integrated X_VECTOR that tells us our error */
 #define U_ROW_LENGTH (4) /* dimensions of controllerInputU (vector for controlling servos and torque) */
 #define K_ROW_LENGTH (12) /* row dimension of kGain (tracking) matrix */
@@ -26,18 +24,24 @@ Author: Vincent Palmerio
 #define THROTTLE_MAX (1)
 #define ALPHA_MAX (8) /* left and right torque vane max */
 #define ALPHA_MIN (-ALPHA_MAX) /* left and right torque vane min */
-#define INNER_GIMBAL_PIN (0)
-#define OUTER_GIMBAL_PIN (0)
-#define LEFT_TORQUE_VANE_PIN (0)
-#define RIGHT_TORQUE_VANE_PIN (0)
-#define INNER_GIMBAL_INITIAL_SETTING (100)
-#define OUTER_GIMBAL_INITIAL_SETTING (100)
+#define INNER_GIMBAL_PIN (29)
+#define OUTER_GIMBAL_PIN (36)
+#define LEFT_TORQUE_VANE_PIN (33)
+#define RIGHT_TORQUE_VANE_PIN (28)
+#define INNER_GIMBAL_INITIAL_SETTING (82)
+#define OUTER_GIMBAL_INITIAL_SETTING (110)
 #define LEFT_TORQUE_VANE_INITIAL_SETTING (145)
 #define RIGHT_TORQUE_VANE_INITIAL_SETTING (140)
+#define BETA_DAMPENING_CONSTANT (0.03)
+#define GAMMA_DAMPENING_CONSTANT (0.02)
 
 namespace controller {
+    //Global variables
     extern int controlModeIndicator;
-    //extern Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
+    extern Eigen::VectorXd controllerInputU;
+    extern Eigen::MatrixXd qsGain;
+    extern Eigen::MatrixXd trajectoryGain;
+    extern Eigen::VectorXd deltaX;
 
     enum CONTROL_MODE {
         TRACK_MODE = 1,
@@ -64,9 +68,9 @@ namespace controller {
     int controlServos();
     int loadTrajectoryPoint();
     double minMax(double value, double min, double max);
-
-    int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
+    Eigen::VectorXd getControlInputs();
     int controlModeUpdate(int controlModeIndicator);
+    int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
 }
 
 #endif

@@ -9,15 +9,28 @@ Last updated: 01/10/2024 by Ishan Goel <goeli@purdue.edu>
 #include "Integrator.h"
 #include "Error.h"
 
-int Integrator::integratorSetup(Eigen::VectorXd* pointerToData)
+// This function needs testing
+int Integrator::reset(Eigen::VectorXd* vector)
 {
+    ready_for_simpson = false;
+    prevValue = *vector;
+    integratedData = *vector;
+    time = 0;
+
+    return NO_ERROR_CODE;
+}
+
+int Integrator::integratorSetup(Eigen::VectorXd* pointerToData, unsigned int vectorSize)
+{
+    if (vectorSize == 0) {
+        return VECTOR_INIT_ZERO_SIZE_ERROR;
+    }
+
     dataToIntegrate = pointerToData;
 
     if (dataToIntegrate == nullptr) {
         return MEMORY_ALLOCATION_ERROR_CODE;
     }
-
-    int vectorSize = pointerToData->size();
 
     Eigen::VectorXd v(vectorSize);
     // for (int i = 0; i < vectorSize; i++) {
@@ -28,10 +41,6 @@ int Integrator::integratorSetup(Eigen::VectorXd* pointerToData)
     integratedData = v;
 
     prevValue = *dataToIntegrate; // initialize previousValue to the first value of dataToIntegrate
-
-    if (integratedData.size() == 0) {
-        return VECTOR_INIT_ZERO_SIZE_ERROR;
-    }
 
     return NO_ERROR_CODE;
 }

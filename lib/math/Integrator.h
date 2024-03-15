@@ -27,11 +27,13 @@ public:
     //assigns pointer to dataToIntegrate, initializes integratedData
     //returns error code
     //we aren't using a constructor because constructors can't return error codes
-    int integratorSetup(Eigen::VectorXd*); 
+    int integratorSetup(Eigen::VectorXd*, unsigned int); 
 
     //updates integratedData with the integration of dataToIntegrate
     //returns error code
     int integratorUpdate(); 
+
+    int reset(Eigen::VectorXd*);
 
 private:
 // We now use Simpson's rule for integration. Here's a comparison of its accuracy against other common techniques:
@@ -46,6 +48,7 @@ private:
     elapsedMicros time;
     double dt;
     double dtPrev;
+    bool ready_for_simpson;
 
     Eigen::VectorXd simpson_nonuniform_cumulative(
         Eigen::VectorXd prev2_f, Eigen::VectorXd prev_f, Eigen::VectorXd new_f,
