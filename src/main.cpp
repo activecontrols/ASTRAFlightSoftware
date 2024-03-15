@@ -4,7 +4,9 @@
 #include "Controller.h"
 #include "Integrator.h"
 #include "Derivative.h"
-// #include "Comms.h"
+#if USE_COMMS
+#include "Comms.h"
+#endif
 #include "IMU.h"
 #include "Encoder.h"
 #include "timer.h"
@@ -12,15 +14,16 @@
 
 #include <Servo.h>
 #include <ArduinoEigen.h>
-#include <stdexcept>
-
-#define ASTRA_FULL_DEBUG
 
 /*
 main.cpp 
 Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
+
+#define USE_ENCODER (false)
+#define USE_TOF_SENSOR (false)
+#define USE_COMMS (false)
 
 elapsedMillis ledTime;
 
@@ -29,26 +32,25 @@ int lastTime = 0;
 
 bool ledOn = false;
 
+#if USE_COMMS
 // COMMS
-// CommsManager comms;
+CommsManager comms;
+#endif
 
-// Buffer imuBuffer(3,5, getValues);
-//float ** data;
-float* test;
-
-#define USE_ENCODER (true)
 
 logger::Data data;
 
-// fmav_traj_ack_t loadSD(int number) {
-//     comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
+#if USE_COMMS
+fmav_traj_ack_t loadSD(int number) {
+    comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
 
-//     // Return example affirmative
-//     fmav_traj_ack_t ack;
-//     ack.result = MAV_RESULT_ACCEPTED;
-//     ack.points_loaded = 592; // I made up a number
-//     return ack;
-// }
+    // Return example affirmative
+    fmav_traj_ack_t ack;
+    ack.result = MAV_RESULT_ACCEPTED;
+    ack.points_loaded = 592; // I made up a number
+    return ack;
+}
+#endif
 
 void setup() {
   Serial.begin(9600);
@@ -57,18 +59,20 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   //sets LED to on indefinitely so we know teensy is on if setup() fails
   digitalWrite(LED_BUILTIN, HIGH); 
-
+  //TwoWire::endTransmission(true);
   //ENCODER SETUP
 #if USE_ENCODER
   while (!encoderSetup()) {
     Serial.println("Connecting to encoder...");
   }
 #endif
-  //---
-  // Serial.print("Set up comms...");
-  //comms.init();
-  //comms.registerTrajSDLoadAction(loadSD);
-  // Serial.println("Done");
+
+#if USE_COMMS
+  Serial.print("Set up comms...");
+  comms.init();
+  comms.registerTrajSDLoadAction(loadSD);
+  Serial.println("Done");
+#endif
 
   //IMU SETUP
   int errorCode = initializeIMU();
@@ -159,12 +163,13 @@ void loop() {
     Serial.print(estimatedStateX(i), 3);
     if (i != ESTIMATED_STATE_DIMENSION - 1) Serial.print(", ");
   }
+  Serial.println();
   for (byte i = 0; i < U_ROW_LENGTH; i++) {
     Serial.print(controllerInputU(i), 3);
     if (i != U_ROW_LENGTH - 1) Serial.print(", ");
   }
   Serial.println();
-   delay(1);
+  
   //turns led on and off
   led();
 }
