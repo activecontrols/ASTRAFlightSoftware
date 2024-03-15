@@ -5,13 +5,14 @@
 #include "Integrator.h"
 #include "Derivative.h"
 #if USE_COMMS
-#include "Comms.h"
+  #include "Comms.h"
 #endif
 #include "IMU.h"
 #include "Encoder.h"
 #include "timer.h"
-#include "log.h"
-
+#if LOG_DATA
+  #include "log.h"
+#endif
 #include <Servo.h>
 #include <ArduinoEigen.h>
 
@@ -24,6 +25,7 @@ Author: Vincent Palmerio
 #define USE_ENCODER (false)
 #define USE_TOF_SENSOR (false)
 #define USE_COMMS (false)
+#define LOG_DATA (false)
 
 elapsedMillis ledTime;
 
@@ -32,15 +34,13 @@ int lastTime = 0;
 
 bool ledOn = false;
 
-#if USE_COMMS
-// COMMS
-CommsManager comms;
+#if LOG_DATA
+logger::Data data;
 #endif
 
-
-logger::Data data;
-
 #if USE_COMMS
+CommsManager comms;
+
 fmav_traj_ack_t loadSD(int number) {
     comms.sendStatusText(MAV_SEVERITY_INFO, (String("DEBUG: Loading Mission #") + String(number)).c_str());
 
@@ -87,8 +87,11 @@ void setup() {
   initializeEstimator();
   Serial.print(controller::initializeController());
   delay(4000);
-  // initializeSD();
-  // logger::open("log.bin");
+
+#if LOG_DATA
+  initializeSD();
+  logger::open("log.bin");
+#endif
 
   startMissionTimer();
   
@@ -108,26 +111,11 @@ void led() {
       ledOn = true;
     }
     
-    // Serial.println("LED Time");
-    // Serial.println(ledTime);
-
     ledTime = 0;
   }
 }
 
 void loop() {
-
-  // if (logger::write_count % 100) {
-  //   logger::close();
-  //   while (true);
-  // }
-
-#if USE_COMMS
-  comms.spin();
-  comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
-  comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
-  Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
-#endif
 
   lastTime = totalTimeElapsed;
 
@@ -137,20 +125,27 @@ void loop() {
   updateEstimator();
   controller::updateController();
 
-  
-  // data.t = getMissionTimeSeconds();
-  // data.battVoltage = analogRead(21); /* if the values are inaccurate, try analogReadAveraging() */
-  // for (int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
-  //   data.x[i] = estimatedStateX(i);
-  // }
-  // for (int i = 0; i < MEASUREMENT_DIMENSION; i++) {
-  //   data.y[i] = measurementVectorY(i);
-  // }
-  // for (int i = 0; i < U_ROW_LENGTH; i++) {
-  //   data.u[i] = controllerInputU(i);
-  // }
-  // logger::write(&data);
-  
+#if USE_COMMS
+  comms.spin();
+  comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
+  comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
+  Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
+#endif
+
+#if LOG_DATA
+  data.t = getMissionTimeSeconds();
+  data.battVoltage = analogRead(21); /* if the values are inaccurate, try analogReadAveraging() */
+  for (int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
+    data.x[i] = estimatedStateX(i);
+  }
+  for (int i = 0; i < MEASUREMENT_DIMENSION; i++) {
+    data.y[i] = measurementVectorY(i);
+  }
+  for (int i = 0; i < U_ROW_LENGTH; i++) {
+    data.u[i] = controllerInputU(i);
+  }
+  logger::write(&data);
+#endif
 
   
 
