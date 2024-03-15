@@ -4,6 +4,8 @@
 #include "IMU.h"
 #include "MathFunctions.h"
 #include "TOF.h"
+#include "settings.h"
+
 #include <ArduinoEigenDense.h>
 
 /*
@@ -78,17 +80,18 @@ int updateEstimator() {
 
 #if USE_TOF_SENSOR
     TOF_buffer.addData();
+    float* d_m_star = TOF_buffer.getAverage();
+
+    Eigen::VectorXd TOFDist(1);
+
+    TOFDist << d_m_star[0];
+    TOFDist << 0;
+
+    free(d_m_star);
+    d_m_star = NULL;
 #endif
 
-    // float* d_m_star = TOF_buffer.getAverage();
-
-    // Eigen::VectorXd TOFDist(1);
-
-    // TOFDist << d_m_star[0];
-    // TOFDist << 0;
-
-    // free(d_m_star);
-    // d_m_star = NULL;
+    
 
     Eigen::Vector4d measuredQuaternion(4);
     measuredQuaternion << qw, qx, qy, qz;

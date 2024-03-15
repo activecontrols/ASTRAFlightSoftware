@@ -1,18 +1,15 @@
-#include <Arduino.h>
+
 #include "Buffer.h"
 #include "Estimator.h"
 #include "Controller.h"
 #include "Integrator.h"
 #include "Derivative.h"
-#if USE_COMMS
-  #include "Comms.h"
-#endif
 #include "IMU.h"
 #include "Encoder.h"
 #include "timer.h"
-#if LOG_DATA
-  #include "log.h"
-#endif
+#include "settings.h"
+
+#include <Arduino.h>
 #include <Servo.h>
 #include <ArduinoEigen.h>
 
@@ -22,10 +19,13 @@ Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
 
-#define USE_ENCODER (false)
-#define USE_TOF_SENSOR (false)
-#define USE_COMMS (false)
-#define LOG_DATA (false)
+
+#if USE_COMMS
+  #include "Comms.h"
+#endif
+#if LOG_DATA
+  #include "log.h"
+#endif
 
 elapsedMillis ledTime;
 
@@ -129,7 +129,6 @@ void loop() {
   comms.spin();
   comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
   comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
-  Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
 #endif
 
 #if LOG_DATA
@@ -145,6 +144,7 @@ void loop() {
     data.u[i] = controllerInputU(i);
   }
   logger::write(&data);
+  Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
 #endif
 
   
