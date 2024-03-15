@@ -42,13 +42,15 @@ namespace controller {
     //Global variables
     extern Eigen::VectorXd controllerInputU;
     extern double *k;
-    extern Eigen::MatrixXd kGain;
+    extern Eigen::MatrixXd qsGain;
+    extern Eigen::MatrixXd trajectoryGain;
     extern Eigen::VectorXd deltaX;
 
-    enum K_GAIN {
-        TRACK_K_GAIN = 1,
-        STABALIZE_K_GAIN = 1,
-        LAND_K_GAIN = 1
+    enum CONTROL_MODE {
+        TRACK_MODE = 1,
+        STABILIZE_MODE = 2,
+        LAND_MODE = 3,
+        FINAL_APPROACH_MODE = 4
     };
 
     extern Eigen::VectorXd xRef;
