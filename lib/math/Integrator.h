@@ -27,7 +27,7 @@ public:
     //assigns pointer to dataToIntegrate, initializes integratedData
     //returns error code
     //we aren't using a constructor because constructors can't return error codes
-    int integratorSetup(Eigen::VectorXd*); 
+    int integratorSetup(Eigen::VectorXd*, unsigned int); 
 
     //updates integratedData with the integration of dataToIntegrate
     //returns error code
