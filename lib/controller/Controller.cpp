@@ -236,8 +236,8 @@ namespace controller {
             controllerInputU(2) = 0;
         }
 
-        float beta_dot = magEncoder1.getAngularSpeed();
-        float gamma_dot = magEncoder2.getAngularSpeed();
+        float beta_dot = encoder::magEncoder1.getAngularSpeed();
+        float gamma_dot = encoder::magEncoder2.getAngularSpeed();
         
         controllerInputU(1) = controllerInputU(1) + BETA_DAMPENING_CONSTANT*beta_dot;
         controllerInputU(0) = controllerInputU(0) + GAMMA_DAMPENING_CONSTANT*gamma_dot;
