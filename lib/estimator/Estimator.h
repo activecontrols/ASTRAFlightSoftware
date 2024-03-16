@@ -12,17 +12,19 @@ Author: Vincent Palmerio
 #define ESTIMATED_STATE_DIMENSION (6)
 #define MEASUREMENT_DIMENSION (9)
 
-extern int initializeEstimator(); 
+namespace estimator {
+    extern int initializeEstimator(); 
 
-extern Eigen::VectorXd estimatedStateX;
-extern Eigen::VectorXd measurementVectorY;
-extern Eigen::VectorXd initialQuaternion;
-extern Eigen::VectorXd initialAcceleration;
-extern Eigen::VectorXd earthFrameAcceleration;
-extern Eigen::VectorXd velocityBodyFrame;
+    extern Eigen::VectorXd estimatedStateX;
+    extern Eigen::VectorXd measurementVectorY;
+    extern Eigen::VectorXd initialQuaternion;
+    extern Eigen::VectorXd initialAcceleration;
+    extern Eigen::VectorXd earthFrameAcceleration;
+    extern Eigen::VectorXd velocityBodyFrame;
 
-int updateEstimator(); 
+    int updateEstimator(); 
 
-float kalmanFilter();
+    float kalmanFilter();
+}
 
 #endif
