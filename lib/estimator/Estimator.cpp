@@ -26,9 +26,7 @@ namespace estimator {
     Integrator linearAccelIntegrator;
     Integrator bodyFrameVelocityIntegrator;
 
-    float piOverFour = sqrt(2)/2;
-    Eigen::Vector4d rotationQuaternion = {0, piOverFour, 0, piOverFour};
-    Eigen::Vector4d rotationConjugate = quaternionConjugate(rotationQuaternion);
+    Eigen::Vector4d rotationConjugate(4);
 
     /*
     * Initializes estimation library, including malloc'ing global variables
@@ -45,7 +43,7 @@ namespace estimator {
         // }
 
         estimatedStateX.setZero();
-
+        
         for (byte i = 0; i < 100; i++) {
             updateIMU();
         }
@@ -53,13 +51,13 @@ namespace estimator {
         initialAcceleration << linearAccelVector;
         initialQuaternion << qw, qx, qy, qz;
 
-        rotationConjugate = quaternionConjugate(initialQuaternion);
+        rotationConjugate = math_functions::quaternionConjugate(initialQuaternion);
 
-        calculateCBI(initialQuaternion);
+        math_functions::calculateCBI(initialQuaternion);
 
-        initialAcceleration << CBI * initialAcceleration;
+        initialAcceleration << math_functions::CBI * initialAcceleration;
 
-        earthFrameAcceleration << (CBI * linearAccelVector) - initialAcceleration;
+        earthFrameAcceleration << (math_functions::CBI * linearAccelVector) - initialAcceleration;
 
         //TOF SETUP
     #if (USE_TOF_SENSOR)
@@ -126,7 +124,7 @@ namespace estimator {
         // estimatedStateX(2) = linearAccelIntegrator.integratedData(2);
 
         Eigen::Vector4d realQuaternion(4);
-        realQuaternion = quaternionProduct(measuredQuaternion, rotationConjugate);
+        realQuaternion = math_functions::quaternionProduct(measuredQuaternion, rotationConjugate);
         Serial.println("Quaternion: ");
         Serial.print(realQuaternion(1), 5);
         Serial.print(", ");
