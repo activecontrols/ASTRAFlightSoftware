@@ -137,7 +137,7 @@ namespace controller {
 
     int updateController() {
 #if !REGULATE_ONLY
-        getDeltaX(&estimatedStateX, &xRef);
+        getDeltaX(&estimator::estimatedStateX, &xRef);
 #endif
         controlLaw();
         saturation();
@@ -198,7 +198,7 @@ namespace controller {
 
         //if comms
         //else {
-        //controlMode(&estimatedStateX, &xRef);
+        //controlMode(&estimator::estimatedStateX, &xRef);
         //}
 
 #if !REGULATE_ONLY
@@ -248,16 +248,16 @@ namespace controller {
 
     int controlLawRegulate() {
 
-        controllerInputU = -(qsGain * estimatedStateX);
+        controllerInputU = -(qsGain * estimator::estimatedStateX);
         Serial.print("Controller Multiplication: ");
         for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
-            Serial.print( -(qsGain(0, i) * estimatedStateX(i)), 5);
+            Serial.print( -(qsGain(0, i) * estimator::estimatedStateX(i)), 5);
             Serial.print(", ");
         }
         
         Serial.println();
         Serial.print(qsGain(0, 2));
-        Serial.print(estimatedStateX(2));
+        Serial.print(estimator::estimatedStateX(2));
         Serial.println();
 
         controllerInputU(0) = 180.0*controllerInputU(0)/PI;
@@ -372,7 +372,7 @@ namespace controller {
 
     int controlLawTrack() {
 
-        getDeltaX(&estimatedStateX, &xRef);
+        getDeltaX(&estimator::estimatedStateX, &xRef);
 
         //update the integrator now that a new deltaX has been set
         //the integrator is being updated here because this is the closest point
@@ -403,7 +403,7 @@ namespace controller {
 
     int controlLawStability() {
 
-        getDeltaX(&estimatedStateX, &xSnap);
+        getDeltaX(&estimator::estimatedStateX, &xSnap);
 
         //update the integrator now that a new deltaX has been set
         //the integrator is being updated here because this is the closest point
