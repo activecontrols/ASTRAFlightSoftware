@@ -92,7 +92,7 @@ void setup() {
   logger::open("log.bin");
 #endif
 
-  startMissionTimer();
+  timer::startMissionTimer();
 }
 
 //turns the LED on and off every 3 seconds 

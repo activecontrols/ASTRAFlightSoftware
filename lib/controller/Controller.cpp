@@ -225,7 +225,7 @@ namespace controller {
         controlLawRegulate();
 #endif
 
-        float currentTime = getMissionTimeSeconds();
+        float currentTime = timer::getMissionTimeSeconds();
         if (currentTime < 1.5) {
             controllerInputU(2) = 100;
         } else if (currentTime < 100) {
@@ -278,7 +278,7 @@ namespace controller {
    * x is loaded into xRef and u is loaded into uRef
    */
   int loadTrajectoryPoint() {
-      float currentTime = getMissionTimeSeconds() - timeOffset;
+      float currentTime = timer::getMissionTimeSeconds() - timeOffset;
 
       if (currentTimeIndex == (traj::k-1)) {
           //set mode to Regulation and Landing
