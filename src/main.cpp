@@ -58,12 +58,6 @@ void setup() {
   //sets LED to on indefinitely so we know teensy is on if setup() fails
   digitalWrite(LED_BUILTIN, HIGH); 
   
-  //ENCODER SETUP
-#if USE_ENCODER
-  while (!encoderSetup()) {
-    Serial.println("Connecting to encoder...");
-  }
-#endif
 
 #if USE_COMMS
   Serial.print("Set up comms...");
@@ -72,17 +66,8 @@ void setup() {
   Serial.println("Done");
 #endif
 
-  //IMU SETUP
-  int errorCode = initializeIMU();
-  while(errorCode != 0) {
-    Serial.print("Failed to initialize IMU, error code: ");
-    Serial.print(errorCode);
-    Serial.println(". Retrying...");
-    errorCode = initializeIMU();
-  }
-  //- --
 
-  initializeEstimator();
+  estimator::initializeEstimator();
 
   controller::initializeController();
   delay(4000);
@@ -92,7 +77,7 @@ void setup() {
   logger::open("log.bin");
 #endif
 
-  startMissionTimer();
+  timer::startMissionTimer();
 }
 
 //turns the LED on and off every 3 seconds 
@@ -120,7 +105,7 @@ void loop() {
   Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
   controllerInputU = controller::getControlInputs();
 
-  updateEstimator();
+  estimator::updateEstimator();
   controller::updateController();
 
 #if USE_COMMS
@@ -130,13 +115,13 @@ void loop() {
 #endif
 
 #if LOG_DATA
-  data.t = getMissionTimeSeconds();
+  data.t = timer::getMissionTimeSeconds();
   data.battVoltage = analogRead(21); /* if the values are inaccurate, try analogReadAveraging() */
   for (int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
-    data.x[i] = estimatedStateX(i);
+    data.x[i] = estimator::estimatedStateX(i);
   }
   for (int i = 0; i < MEASUREMENT_DIMENSION; i++) {
-    data.y[i] = measurementVectorY(i);
+    data.y[i] = estimator::measurementVectorY(i);
   }
   for (int i = 0; i < U_ROW_LENGTH; i++) {
     data.u[i] = controllerInputU(i);
@@ -156,7 +141,7 @@ void loop() {
 
   Serial.print(millis()/1000.0, 3); Serial.print(", ");
   for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
-    Serial.print(estimatedStateX(i), 3);
+    Serial.print(estimator::estimatedStateX(i), 3);
     if (i != ESTIMATED_STATE_DIMENSION - 1) Serial.print(", ");
   }
   Serial.println();

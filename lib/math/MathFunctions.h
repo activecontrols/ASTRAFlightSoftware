@@ -9,10 +9,12 @@ Author: Ani Gokhale
 
 #include <ArduinoEigen.h>
 
-extern Eigen::MatrixXd CBI;
+namespace math_functions {
+    extern Eigen::MatrixXd CBI;
 
-void calculateCBI(Eigen::VectorXd q);
-Eigen::VectorXd quaternionProduct(Eigen::VectorXd q1, Eigen::VectorXd q2);
-Eigen::VectorXd quaternionConjugate(Eigen::VectorXd q);
+    void calculateCBI(Eigen::VectorXd q);
+    Eigen::VectorXd quaternionProduct(Eigen::VectorXd q1, Eigen::VectorXd q2);
+    Eigen::VectorXd quaternionConjugate(Eigen::VectorXd q);
+}
 
 #endif

@@ -27,15 +27,17 @@ Last updated: 2/21/2024
 #define TOF_XSHUT_PIN 22
 #define NUM_TOF_MEASUREMENTS 10
 
-extern VL53L4CX sensor_vl53l4cx_sat;
+namespace tof {
+    extern VL53L4CX sensor_vl53l4cx_sat;
 
-extern volatile int interruptCount;
+    extern volatile int interruptCount;
 
-extern float* latestData;
+    extern float* latestData;
 
-extern float* updateTOFDistance();
-extern void measure();
-extern int setupTOFSensor(unsigned int interruptPin, unsigned int XSHUTPin);
-extern Buffer TOF_buffer;
+    extern float* updateTOFDistance();
+    extern void measure();
+    extern int setupTOFSensor(unsigned int interruptPin, unsigned int XSHUTPin);
+    extern Buffer TOF_buffer;
+}
 
 #endif
