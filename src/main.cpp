@@ -60,7 +60,7 @@ void setup() {
   
   //ENCODER SETUP
 #if USE_ENCODER
-  while (!encoderSetup()) {
+  while (!encoder::encoderSetup()) {
     Serial.println("Connecting to encoder...");
   }
 #endif
@@ -130,7 +130,7 @@ void loop() {
 #endif
 
 #if LOG_DATA
-  data.t = getMissionTimeSeconds();
+  data.t = timer::getMissionTimeSeconds();
   data.battVoltage = analogRead(21); /* if the values are inaccurate, try analogReadAveraging() */
   for (int i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
     data.x[i] = estimator::estimatedStateX(i);
