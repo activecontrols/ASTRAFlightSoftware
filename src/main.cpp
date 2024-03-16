@@ -72,15 +72,6 @@ void setup() {
   Serial.println("Done");
 #endif
 
-  //IMU SETUP
-  int errorCode = initializeIMU();
-  while(errorCode != 0) {
-    Serial.print("Failed to initialize IMU, error code: ");
-    Serial.print(errorCode);
-    Serial.println(". Retrying...");
-    errorCode = initializeIMU();
-  }
-  //- --
 
   initializeEstimator();
 

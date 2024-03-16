@@ -34,14 +34,16 @@ Eigen::Vector4d rotationConjugate = quaternionConjugate(rotationQuaternion);
  * returns error code as int (NO_ERROR_CODE, GENERAL_ERROR_CODE, MEMORY_ALLOCATION_ERROR_CODE)
  */
 int initializeEstimator() {
-    // //IMU SETUP
-    // int errorCode = initializeIMU();
-    // while(errorCode != 0) { 
-    //     Serial.print("Failed to initialize IMU, error code: ");
-    //     Serial.print(errorCode);
-    //     Serial.println(". Retrying...");
-    //     errorCode = initializeIMU();
-    // }
+
+    //IMU SETUP
+    int errorCode = initializeIMU();
+    while(errorCode != 0) {
+        Serial.print("Failed to initialize IMU, error code: ");
+        Serial.print(errorCode);
+        Serial.println(". Retrying...");
+        errorCode = initializeIMU();
+    }
+    //- --
 
     estimatedStateX.setZero();
 
