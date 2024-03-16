@@ -61,12 +61,12 @@ namespace estimator {
 
         //TOF SETUP
     #if (USE_TOF_SENSOR)
-        int tofErrorCode = setupTOFSensor(TOF_INTERRUPT_PIN, TOF_XSHUT_PIN);
+        int tofErrorCode = tof::setupTOFSensor(TOF_INTERRUPT_PIN, TOF_XSHUT_PIN);
         while (tofErrorCode != 0) {
             Serial.print("Failed to initialize TOF Sensor, error code: ");
             Serial.print(tofErrorCode);
             Serial.println(". Retrying...");
-            tofErrorCode = setupTOFSensor(TOF_INTERRUPT_PIN, TOF_XSHUT_PIN);
+            tofErrorCode = tof::setupTOFSensor(TOF_INTERRUPT_PIN, TOF_XSHUT_PIN);
         }
     #endif
 
@@ -87,8 +87,8 @@ namespace estimator {
         updateIMU();
 
     #if USE_TOF_SENSOR
-        TOF_buffer.addData();
-        float* d_m_star = TOF_buffer.getAverage();
+        tof::TOF_buffer.addData();
+        float* d_m_star = tof::TOF_buffer.getAverage();
 
         Eigen::VectorXd TOFDist(1);
 
