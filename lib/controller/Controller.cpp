@@ -127,6 +127,13 @@ namespace controller {
             return RIGHT_TORQUE_VANE_NOT_ATTACHED;
         }
 
+        //ENCODER SETUP
+#if USE_ENCODER
+        while (!encoder::encoderSetup()) {
+            Serial.println("Connecting to encoder...");
+        }
+#endif
+
         innerGimbal.write(INNER_GIMBAL_INITIAL_SETTING);
         outerGimbal.write(OUTER_GIMBAL_INITIAL_SETTING);
         torqueVaneLeft.write(LEFT_TORQUE_VANE_INITIAL_SETTING);

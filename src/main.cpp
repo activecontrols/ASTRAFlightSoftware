@@ -58,12 +58,6 @@ void setup() {
   //sets LED to on indefinitely so we know teensy is on if setup() fails
   digitalWrite(LED_BUILTIN, HIGH); 
   
-  //ENCODER SETUP
-#if USE_ENCODER
-  while (!encoder::encoderSetup()) {
-    Serial.println("Connecting to encoder...");
-  }
-#endif
 
 #if USE_COMMS
   Serial.print("Set up comms...");
