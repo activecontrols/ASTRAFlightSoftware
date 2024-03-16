@@ -28,6 +28,7 @@ namespace controller {
 
     Eigen::VectorXd deltaX(X_VECTOR_LENGTH);
     Eigen::VectorXd xRef(X_VECTOR_LENGTH);
+    Eigen::VectorXd uRef(U_ROW_LENGTH);
 
     Eigen::VectorXd xSnap{X_VECTOR_LENGTH};
     Eigen::VectorXd deltaXSnap(X_VECTOR_LENGTH);
@@ -75,6 +76,7 @@ namespace controller {
                 99.992841807351638, 1.017589389543643, -0.629364064139043, 99.992889040319923, 1.017583962544098, -0.629360802065534;
 
 #if !REGULATE_ONLY
+        uRef.setZero();
         xRef.setZero();
         trajectoryGain.setZero();
         if (traj::m != U_ROW_LENGTH) {
@@ -275,7 +277,7 @@ namespace controller {
    * Loads trajectory point the rocket should be at based current mission time
    * x is loaded into xRef and u is loaded into uRef
    */
-  int controller::loadTrajectoryPoint() {
+  int loadTrajectoryPoint() {
       float currentTime = getMissionTimeSeconds() - timeOffset;
 
       if (currentTimeIndex == (traj::k-1)) {
