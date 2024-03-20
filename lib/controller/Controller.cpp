@@ -143,9 +143,6 @@ namespace controller {
     }
 
     int updateController() {
-#if !REGULATE_ONLY
-        getDeltaX(&estimator::estimatedStateX, &xRef);
-#endif
         controlLaw();
         saturation();
         controlServos();
@@ -243,12 +240,13 @@ namespace controller {
             controllerInputU(2) = 0;
         }
 
+#if USE_ENCODER
         float beta_dot = encoder::magEncoder1.getAngularSpeed();
         float gamma_dot = encoder::magEncoder2.getAngularSpeed();
-        
+
         controllerInputU(1) = controllerInputU(1) + BETA_DAMPENING_CONSTANT*beta_dot;
         controllerInputU(0) = controllerInputU(0) + GAMMA_DAMPENING_CONSTANT*gamma_dot;
-
+#endif
         return NO_ERROR_CODE;
 
     }
