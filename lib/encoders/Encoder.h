@@ -7,6 +7,9 @@ Author: Aditya , Vincent Palmerio
 #ifndef ENCODER_H
 #define ENCODER_H
 
+#include <settings.h>
+
+#if USE_ENCODER
 #include "AS5600.h"
 
 namespace encoder {
@@ -29,5 +32,6 @@ namespace encoder {
 
     extern float getSpeedEncoder2();
 }
+#endif
 #endif
 

@@ -1,5 +1,7 @@
 #include <Encoder.h>
+#include <settings.h>
 
+#if USE_ENCODER
 namespace encoder {
     AS5600 magEncoder1(&Wire); /* outer gimbal */
     AS5600 magEncoder2(&Wire1); /* inner gimbal */
@@ -37,3 +39,4 @@ namespace encoder {
         return magEncoder1.getAngularSpeed();
     }
 }
+#endif
