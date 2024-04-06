@@ -78,6 +78,7 @@ void setup() {
 #endif
 
   timer::startMissionTimer();
+  totalTimeElapsed = 0;
 }
 
 //turns the LED on and off every 3 seconds 
@@ -99,12 +100,16 @@ void led() {
 }
 
 void loop() {
-
+  Serial.print("Loop time: ");
+  Serial.println(totalTimeElapsed - lastTime);
+  
   lastTime = totalTimeElapsed;
 
+  
   Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
   controllerInputU = controller::getControlInputs();
-
+  
+  
   estimator::updateEstimator();
   controller::updateController();
 
