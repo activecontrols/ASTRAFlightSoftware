@@ -28,6 +28,7 @@ namespace controller {
 
     Eigen::VectorXd deltaX(X_VECTOR_LENGTH);
     Eigen::VectorXd xRef(X_VECTOR_LENGTH);
+    Eigen::VectorXd uRef(U_ROW_LENGTH);
 
     Eigen::VectorXd xSnap{X_VECTOR_LENGTH};
     Eigen::VectorXd deltaXSnap(X_VECTOR_LENGTH);
@@ -75,6 +76,7 @@ namespace controller {
                 99.992841807351638, 1.017589389543643, -0.629364064139043, 99.992889040319923, 1.017583962544098, -0.629360802065534;
 
 #if !REGULATE_ONLY
+        uRef.setZero();
         xRef.setZero();
         trajectoryGain.setZero();
         if (traj::m != U_ROW_LENGTH) {
@@ -125,6 +127,13 @@ namespace controller {
             return RIGHT_TORQUE_VANE_NOT_ATTACHED;
         }
 
+        //ENCODER SETUP
+#if USE_ENCODER
+        while (!encoder::encoderSetup()) {
+            Serial.println("Connecting to encoder...");
+        }
+#endif
+
         innerGimbal.write(INNER_GIMBAL_INITIAL_SETTING);
         outerGimbal.write(OUTER_GIMBAL_INITIAL_SETTING);
         torqueVaneLeft.write(LEFT_TORQUE_VANE_INITIAL_SETTING);
@@ -134,9 +143,6 @@ namespace controller {
     }
 
     int updateController() {
-#if !REGULATE_ONLY
-        getDeltaX(&estimatedStateX, &xRef);
-#endif
         controlLaw();
         saturation();
         controlServos();
@@ -196,7 +202,7 @@ namespace controller {
 
         //if comms
         //else {
-        //controlMode(&estimatedStateX, &xRef);
+        //controlMode(&estimator::estimatedStateX, &xRef);
         //}
 
 #if !REGULATE_ONLY
@@ -223,7 +229,7 @@ namespace controller {
         controlLawRegulate();
 #endif
 
-        float currentTime = getMissionTimeSeconds();
+        float currentTime = timer::getMissionTimeSeconds();
         if (currentTime < 1.5) {
             controllerInputU(2) = 100;
         } else if (currentTime < 100) {
@@ -234,28 +240,29 @@ namespace controller {
             controllerInputU(2) = 0;
         }
 
-        float beta_dot = magEncoder1.getAngularSpeed();
-        float gamma_dot = magEncoder2.getAngularSpeed();
-        
+#if USE_ENCODER
+        float beta_dot = encoder::magEncoder1.getAngularSpeed();
+        float gamma_dot = encoder::magEncoder2.getAngularSpeed();
+
         controllerInputU(1) = controllerInputU(1) + BETA_DAMPENING_CONSTANT*beta_dot;
         controllerInputU(0) = controllerInputU(0) + GAMMA_DAMPENING_CONSTANT*gamma_dot;
-
+#endif
         return NO_ERROR_CODE;
 
     }
 
     int controlLawRegulate() {
 
-        controllerInputU = -(qsGain * estimatedStateX);
+        controllerInputU = -(qsGain * estimator::estimatedStateX);
         Serial.print("Controller Multiplication: ");
         for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
-            Serial.print( -(qsGain(0, i) * estimatedStateX(i)), 5);
+            Serial.print( -(qsGain(0, i) * estimator::estimatedStateX(i)), 5);
             Serial.print(", ");
         }
         
         Serial.println();
         Serial.print(qsGain(0, 2));
-        Serial.print(estimatedStateX(2));
+        Serial.print(estimator::estimatedStateX(2));
         Serial.println();
 
         controllerInputU(0) = 180.0*controllerInputU(0)/PI;
@@ -275,8 +282,8 @@ namespace controller {
    * Loads trajectory point the rocket should be at based current mission time
    * x is loaded into xRef and u is loaded into uRef
    */
-  int controller::loadTrajectoryPoint() {
-      float currentTime = getMissionTimeSeconds() - timeOffset;
+  int loadTrajectoryPoint() {
+      float currentTime = timer::getMissionTimeSeconds() - timeOffset;
 
       if (currentTimeIndex == (traj::k-1)) {
           //set mode to Regulation and Landing
@@ -370,7 +377,7 @@ namespace controller {
 
     int controlLawTrack() {
 
-        getDeltaX(&estimatedStateX, &xRef);
+        getDeltaX(&estimator::estimatedStateX, &xRef);
 
         //update the integrator now that a new deltaX has been set
         //the integrator is being updated here because this is the closest point
@@ -401,7 +408,7 @@ namespace controller {
 
     int controlLawStability() {
 
-        getDeltaX(&estimatedStateX, &xSnap);
+        getDeltaX(&estimator::estimatedStateX, &xSnap);
 
         //update the integrator now that a new deltaX has been set
         //the integrator is being updated here because this is the closest point
