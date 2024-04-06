@@ -80,8 +80,8 @@ namespace estimator {
 
         velocityBodyFrame.setZero();
 
-        bodyFrameVelocityIntegrator.integratorSetup(&velocityBodyFrame, 3);
-        linearAccelIntegrator.integratorSetup(&earthFrameAcceleration, 3);
+        bodyFrameVelocityIntegrator.integratorSetup(&velocityBodyFrame, velocityBodyFrame.size());
+        linearAccelIntegrator.integratorSetup(&earthFrameAcceleration, earthFrameAcceleration.size());
         
         return NO_ERROR_CODE;
     }
