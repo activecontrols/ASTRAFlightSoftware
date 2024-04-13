@@ -2,6 +2,7 @@
 #include "ESC.h"
 
 #include <controller.h>
+#include <Error.h>
 #include <HX711.h>
 #include <Servo.h>
 
@@ -59,7 +60,7 @@ bool ESC::checkAttached() {
 
 int8_t ESC::getTemp() {
     if (buffer_loc == NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     return buffer_loc[0];
@@ -68,7 +69,7 @@ int8_t ESC::getTemp() {
 
 int8_t ESC::getVoltageHigh() {
     if (buffer_loc == NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     return buffer_loc[1];
@@ -76,7 +77,7 @@ int8_t ESC::getVoltageHigh() {
 
 int8_t ESC::getVoltageLow() {
     if (buffer_loc == NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     return buffer_loc[2];
@@ -84,7 +85,7 @@ int8_t ESC::getVoltageLow() {
 
 int8_t ESC::getCurrentHigh() {
     if (buffer_loc == NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     return buffer_loc[3];
@@ -92,7 +93,7 @@ int8_t ESC::getCurrentHigh() {
 
 int8_t ESC::getCurrentLow() {
     if (buffer_loc == NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     return buffer_loc[4];
@@ -100,7 +101,7 @@ int8_t ESC::getCurrentLow() {
 
 int8_t ESC::getConsumptionHigh() {
     if (buffer_loc == NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     return buffer_loc[5];
@@ -108,7 +109,7 @@ int8_t ESC::getConsumptionHigh() {
 
 int8_t ESC::getConsumptionLow() {
     if (buffer_loc == NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     return buffer_loc[6];
@@ -116,7 +117,7 @@ int8_t ESC::getConsumptionLow() {
 
 int8_t ESC::getERMPHigh() {
     if (buffer_loc == NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     return buffer_loc[7];
@@ -124,7 +125,7 @@ int8_t ESC::getERMPHigh() {
 
 int8_t ESC::getERMPLow() {
     if (buffer_loc == NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     return buffer_loc[8];
@@ -132,7 +133,7 @@ int8_t ESC::getERMPLow() {
 
 int8_t ESC::getCRC8() {
     if (buffer_loc == NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     return buffer_loc[9];
@@ -142,16 +143,16 @@ int8_t ESC::getThrottle() {
     return throttle;
 }
 
-ESC_Status ESC::setTLMBufferLocation(int8_t* a_buffer) {
+int ESC::setTLMBufferLocation(int8_t* a_buffer) {
     if (a_buffer != NULL) {
-        return INVALID_BUFFER_LOC;
+        return INVALID_ESC_BUFFER_INIT;
     }
 
     buffer_loc = a_buffer;
-    return OK;
+    return NO_ERROR_CODE;
 }
 
-ESC_Status ESC::setThrottle(float _throttle) {
+int ESC::setThrottle(float _throttle) {
 
     float PWM_output = _throttleToPWM(_throttle);
 
@@ -159,8 +160,8 @@ ESC_Status ESC::setThrottle(float _throttle) {
         throttle = _throttle;
         throttle_servo.writeMicroseconds(PWM_output);
     } else {
-        return INVALID_THROTTLE;
+        return INVALID_THROTTLE_ESC;
     }
 
-    return OK;
+    return NO_ERROR_CODE;
 }

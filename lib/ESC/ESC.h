@@ -2,20 +2,16 @@
 
 #define ESC_H
 
+#include <Error.h>
 #include <Servo.h>
-
-enum ESC_Status {
-    OK,
-    INVALID_THROTTLE,
-    INVALID_BUFFER_LOC
-};
 
 class ESC {
     public:
         ESC(int _throttle_pin);
 
-        ESC_Status setThrottle(float throttle);
-        ESC_Status setTLMBufferLocation(int8_t* buffer_loc);
+        int setThrottle(float throttle);
+        int setTLMBufferLocation(int8_t* buffer_loc);
+        bool checkAttached();
         int8_t getThrottle();
         int8_t getTemp();
         int8_t getVoltageHigh();
