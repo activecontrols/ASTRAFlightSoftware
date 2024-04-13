@@ -160,7 +160,6 @@ ESC_Status ESC::setTLMBufferLocation(int8_t* a_buffer) {
 }
 
 ESC_Status ESC::setThrottle(float _throttle) {
-    throttle = _throttle;
 
     float PWM_output = _throttleToPWM(_throttle);
 
