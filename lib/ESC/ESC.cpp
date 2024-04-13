@@ -1,8 +1,10 @@
 
 #include "ESC.h"
 
+#include <controller.h>
 #include <HX711.h>
 #include <Servo.h>
+
 
 // HX711 circuit wiring
 const int LOADCELL_DOUT_PIN = 5;
@@ -28,7 +30,7 @@ const double b = 0.000449718;
 HX711 scale;
 
 static float _throttleToPWM(float throttle) {
-    return map(throttle, 0, 1.0, PWM_LOW, PWM_HIGH);
+    return map(throttle, THROTTLE_MIN, THROTTLE_MAX, PWM_LOW, PWM_HIGH);
 }
 
 static bool _validPWM(int8_t pwm_value) {
