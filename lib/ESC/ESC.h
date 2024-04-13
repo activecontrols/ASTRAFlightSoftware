@@ -14,7 +14,7 @@ class ESC {
     public:
         ESC(int _throttle_pin);
 
-        ESC_Status setThrottle(int8_t throttle);
+        ESC_Status setThrottle(float throttle);
         ESC_Status setTLMBufferLocation(int8_t* buffer_loc);
         int8_t getThrottle();
         int8_t getTemp();
@@ -32,7 +32,7 @@ class ESC {
 
     protected:
         int throttle_pin;
-        int throttle;
+        float throttle;
         int8_t* buffer_loc;
         Servo throttle_servo;
 };

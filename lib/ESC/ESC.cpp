@@ -27,8 +27,8 @@ const double b = 0.000449718;
 
 HX711 scale;
 
-static int _throttleToPWM(int8_t throttle) {
-    return map(throttle, 0, PWM_HIGH - PWM_LOW, PWM_LOW, PWM_HIGH);
+static float _throttleToPWM(float throttle) {
+    return map(throttle, 0, 1.0, PWM_LOW, PWM_HIGH);
 }
 
 static bool _validPWM(int8_t pwm_value) {
@@ -157,10 +157,10 @@ ESC_Status ESC::setTLMBufferLocation(int8_t* a_buffer) {
     return OK;
 }
 
-ESC_Status ESC::setThrottle(int8_t _throttle) {
+ESC_Status ESC::setThrottle(float _throttle) {
     throttle = _throttle;
 
-    int PWM_output = _throttleToPWM(_throttle);
+    float PWM_output = _throttleToPWM(_throttle);
 
     if (_validPWM(PWM_output)) {
         throttle = _throttle;
