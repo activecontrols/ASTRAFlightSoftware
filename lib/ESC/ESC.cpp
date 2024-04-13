@@ -37,18 +37,9 @@ static bool _validPWM(int8_t pwm_value) {
     return ((pwm_value >= PWM_LOW) && (pwm_value <= PWM_HIGH));
 }
 
-void setup() {
-    // put your setup code here, to run once:
-    Serial.begin(115200);
-
-    // initialize tare button
+ESC::ESC(int _throttle_pin) {
     pinMode(TARE_BUTTON, INPUT_PULLDOWN);
 
-    ESC esc = ESC(ESC_PIN);
-
-}
-
-ESC::ESC(int _throttle_pin) {
     throttle_pin = _throttle_pin;
 
     // initialize esc pwm out
