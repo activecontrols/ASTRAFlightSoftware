@@ -11,9 +11,6 @@ const int LOADCELL_DOUT_PIN = 5;
 const int LOADCELL_SCK_PIN = 4;
 const int TARE_BUTTON = 2;
 
-//ESC PWM wiring
-const int ESC_PIN = 9;
-
 //ESC PWM endpoints
 const int PWM_LOW = 1020;
 const int PWM_HIGH = 1980;
@@ -54,6 +51,10 @@ ESC::ESC(int _throttle_pin) {
 
     throttle = 0;
     buffer_loc = NULL;
+}
+
+bool ESC::checkAttached() {
+    return throttle_servo.attached();
 }
 
 int8_t ESC::getTemp() {
