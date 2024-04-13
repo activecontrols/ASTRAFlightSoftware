@@ -1,5 +1,7 @@
+#include <debug.h>
+#include <Error.h>
+
 #include "IMU.h"
-#include "Error.h"
 #include "LSM6DS_LIS3MDL.h"
 
 /*
@@ -33,21 +35,21 @@ float* getValues() {
 //loads a predetermined calibration into the EEPROM
 int loadPresetCalibration() {
   //Magnetic Hard Offset
-  cal.mag_hardiron[0] = -3.35;
-  cal.mag_hardiron[1] = -0.74;
-  cal.mag_hardiron[2] = -40.79;
+  cal.mag_hardiron[0] = 18.00;
+  cal.mag_hardiron[1] = 37.79;
+  cal.mag_hardiron[2] = -84.00;
 
   //Magnetic Soft Offset
   // in uTesla
-  cal.mag_softiron[0] = 0.96;
-  cal.mag_softiron[1] = 0.02;
+  cal.mag_softiron[0] = 0.98;
+  cal.mag_softiron[1] = 0.05;
   cal.mag_softiron[2] = 0.01;  
-  cal.mag_softiron[3] = 0.02;
-  cal.mag_softiron[4] = 0.96;
+  cal.mag_softiron[3] = 0.05;
+  cal.mag_softiron[4] = 1.06;
   cal.mag_softiron[5] = 0.0;  
   cal.mag_softiron[6] = 0.01;
   cal.mag_softiron[7] = 0.0;
-  cal.mag_softiron[8] = 1.08;  
+  cal.mag_softiron[8] = 0.96;  
 
   //Gyro zero rate offset
   // in Radians/s
@@ -175,11 +177,11 @@ int updateIMU() {
   Serial.print(mag.magnetic.z, 4); Serial.println("");
 
   Serial.print("Orientation: ");
-  Serial.print(heading);
+  Serial.print(roll);
   Serial.print(", ");
   Serial.print(pitch);
   Serial.print(", ");
-  Serial.println(roll);
+  Serial.println(yaw);
 
   Serial.print("Quaternion: ");
   Serial.print(qw, 4);
@@ -190,7 +192,7 @@ int updateIMU() {
   Serial.print(", ");
   Serial.println(qz, 4);  
   //Serial.print("Took "); Serial.print(millis()-timestamp); Serial.println(" ms");
-
+  //delay(50);
 #endif
 
 
