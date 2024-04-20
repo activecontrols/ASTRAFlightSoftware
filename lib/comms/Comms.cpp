@@ -4,6 +4,7 @@
 #include "Error.h"
 #include <Arduino.h>
 #include <cstring>
+#include "settings.h"
 
 /* ----- PUBLIC INTERFACES ----- */
 
@@ -244,7 +245,7 @@ void CommsManager::registerTrajSDLoadAction(fmav_traj_ack_t (*callback) (int num
 void CommsManager::handleStartMission() {
 }
 
-/** 
+/**
  * Handle mission pause command
  */
 void CommsManager::handlePauseMission() {
@@ -256,7 +257,7 @@ void CommsManager::handlePauseMission() {
 void CommsManager::handleLandMission() {
 }
 
-/** 
+/**
  * Send heartbeat message
  */
 void CommsManager::sendHeartbeat() {
@@ -294,7 +295,7 @@ void CommsManager::sendTrajPtReq(int n) {
 
 
 /**
- * Private 
+ * Private
  */
 
 /**

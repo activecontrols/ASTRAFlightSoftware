@@ -5,8 +5,8 @@ Author: Vincent Wang, Teresa Wan
 Created: 2023-10-27
 */
 
-#ifndef COMMS_H 
-#define COMMS_H 
+#ifndef COMMS_H
+#define COMMS_H
 
 #define FASTMAVLINK_SERIAL_WRITE_CHAR 1
 #define FASTMAVLINK_IGNORE_WADDRESSOFPACKEDMEMBER
@@ -16,9 +16,7 @@ void fmav_serial_write_char(char c);
 #include "../message_lib/pscom/pscom.h"
 #include <ArduinoEigenDense.h>
 #include <stdint.h>
-
-/* Define serial interface to use at compile time */
-#define MAVLinkSerial Serial
+#include "settings.h"
 
 /* Define telemetry frequencies */
 #define TELEM_HZ 5
@@ -60,15 +58,15 @@ private:
 
     // Low-level individual message abstractions
     void sendHeartbeat();              // Send heartbeat message so we know the system is alive
-    void sendHealth();            
-    void sendTelem();              
-    void sendTrajectoryStatus();   
+    void sendHealth();
+    void sendTelem();
+    void sendTrajectoryStatus();
     void sendTrajK1Req(int k);       // Send request for part 1 of a gain matrix K
     void sendTrajK2Req(int k);       // Send request for part 2 of a gain matrix K
     void sendTrajPtReq(int n);       // Send request for trajectory point
     void sendTrajAck();               // Send final message indicating end of mission upload
     void rejectCommand(uint16_t command, const char *reason); // Send ack with command cancelled with an error
-    
+
     // Timers for periodics
     int lastHeartbeat = 0;
     int lastTelem = 0;
@@ -89,7 +87,7 @@ private:
     fmav_status_t status;
     fmav_message_t message;
 
-    // Callback handling 
+    // Callback handling
     fmav_command_ack_t (*missionStartCallback) (void);
     fmav_command_ack_t (*missionPauseCallback) (int); // pause = 0, continue = 1
     fmav_command_ack_t (*missionLandCallback) (void);
