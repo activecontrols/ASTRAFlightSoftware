@@ -47,7 +47,7 @@ namespace controller {
     Servo torqueVaneLeft;
     Servo torqueVaneRight;
 
-    ESC edfFan;
+    ESC edfFan = ESC(ESC_PIN);
 
     elapsedMillis xNonTrajTimer;
 
@@ -113,8 +113,6 @@ namespace controller {
         outerGimbal.attach(OUTER_GIMBAL_PIN);
         torqueVaneLeft.attach(LEFT_TORQUE_VANE_PIN);
         torqueVaneRight.attach(RIGHT_TORQUE_VANE_PIN);
-
-        edfFan = ESC(ESC_PIN);
 
         if (!innerGimbal.attached()) {
             return INNER_GIMBAL_NOT_ATTACHED;
