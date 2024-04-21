@@ -41,7 +41,7 @@ Last updated: 11/4/2023
   Adafruit_Sensor_Calibration_SDFat cal;
 #endif
 
-#define FILTER_UPDATE_RATE_HZ (100)
+#define FILTER_UPDATE_RATE_HZ (10000)
 #define PRINT_EVERY_N_UPDATES (10)
 #define IMU_WIRE Wire
 //#define AHRS_DEBUG_OUTPUT
