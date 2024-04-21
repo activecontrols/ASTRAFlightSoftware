@@ -11,6 +11,7 @@ Author: Vincent Palmerio
 
 */
 
+//#define ASTRA_IMU_DEBUG
 
 Eigen::VectorXd linearAccelVector(3);
 float linearAccelX, linearAccelY, linearAccelZ = 0;
@@ -82,7 +83,7 @@ int initializeIMU() {
 #endif
     return FAILED_CALIBRATION_HELPER_INIT;
   }
-
+  loadPresetCalibration();
   if (!cal.loadCalibration()) {
     //No calibration loaded/found
     static bool triedLoadPresetCalibration = false;
@@ -169,9 +170,11 @@ int updateIMU() {
   Serial.print(accel.acceleration.x, 4); Serial.print(", ");
   Serial.print(accel.acceleration.y, 4); Serial.print(", ");
   Serial.print(accel.acceleration.z, 4); Serial.print(", ");
+  Serial.println();
   Serial.print(gx, 4); Serial.print(", ");
   Serial.print(gy, 4); Serial.print(", ");
   Serial.print(gz, 4); Serial.print(", ");
+  Serial.println();
   Serial.print(mag.magnetic.x, 4); Serial.print(", ");
   Serial.print(mag.magnetic.y, 4); Serial.print(", ");
   Serial.print(mag.magnetic.z, 4); Serial.println("");
