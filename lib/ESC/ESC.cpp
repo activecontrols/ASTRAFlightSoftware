@@ -1,11 +1,13 @@
 
 #include "ESC.h"
 
-#include <controller.h>
+//#include <Controller.h>
 #include <Error.h>
 #include <HX711.h>
 #include <Servo.h>
 
+#define THROTTLE_MIN (0)
+#define THROTTLE_MAX (1)
 
 // HX711 circuit wiring
 const int LOADCELL_DOUT_PIN = 5;
