@@ -17,7 +17,10 @@ Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
 
-
+#define COMMS_RX_BUF_SIZE 32768
+#define COMMS_TX_BUF_SIZE 32768
+DMAMEM uint8_t commsRxBuffer[COMMS_RX_BUF_SIZE];
+DMAMEM uint8_t commsTxBuffer[COMMS_TX_BUF_SIZE];
 #if USE_COMMS
   #include "Comms.h"
 #endif
@@ -29,6 +32,8 @@ elapsedMillis ledTime;
 
 elapsedMicros totalTimeElapsed;
 int lastTime = 0;
+int lastPrint = 0;
+int lastStatus = 0;
 
 bool ledOn = false;
 
@@ -52,7 +57,11 @@ fmav_traj_ack_t loadSD(int number) {
 
 void setup() {
   Serial.begin(57600);
-  if (MAVLinkSerial != Serial) MAVLinkSerial.begin(57600);
+  if (MAVLinkSerial != Serial) {
+      MAVLinkSerial.begin(57600);
+      MAVLinkSerial.addMemoryForWrite(commsTxBuffer, COMMS_TX_BUF_SIZE);
+      MAVLinkSerial.addMemoryForRead(commsRxBuffer, COMMS_RX_BUF_SIZE);
+  }
 
   //Sets up led
   pinMode(LED_BUILTIN, OUTPUT);
@@ -113,9 +122,16 @@ void loop() {
 #endif
 
 #if USE_COMMS
+  comms.updateXEstimatedState(&estimator::estimatedStateX);
+  comms.updateYMeasurements(&estimator::measurementVectorY);
   comms.spin();
-  comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
-  comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
+  if (totalTimeElapsed - lastStatus > 1000 * 100) {
+    comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
+    comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
+    Serial.println("Time between loop:");
+    Serial.println(totalTimeElapsed - lastTime);
+    lastStatus = totalTimeElapsed;
+  }
 #endif
 
 #if LOG_DATA

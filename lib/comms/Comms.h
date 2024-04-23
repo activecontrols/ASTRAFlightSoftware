@@ -28,18 +28,23 @@ public:
     CommsManager(); // Empty Constructor
     void init(); // Initialize; does nothing
     void spin(); // Should be run every loop; automatically pulls 1 byte from serial and sends messages if necessary
-    void updateTelem(fmav_control_system_state_t data); // Send telemetry info e.g. position, rotation, thrust
+
+    /** Update State */
+    // Send telemetry info e.g. position, rotation, thrust
+    // Takes pointer to an Eigen::VectorXd, used to update
+    void updateXEstimatedState(Eigen::VectorXd *data);
+    void updateYMeasurements(Eigen::VectorXd *data); // Send raw sensor info
     void updateTrajectoryProgress(fmav_controller_status_t fata); // Send telemetry info e.g. position, rotation, thrust
     void updateHealth(fmav_sys_status_t data); // Send telemetry health info e.g. battery
     void sendStatusText(MAV_SEVERITY severity, const char *text); // Send status text. ONLY USE SPARINGLY (high bandwidth usage).
 
-    // Register callbacks for mission control events
+    /** Register callbacks for mission control events */
     void registerMissionStartAction(fmav_command_ack_t (*callback) (void));
     void registerMissionNextSegmentAction(fmav_command_ack_t (*callback) (float* K, float* trajStart, uint16_t trajLen));
     void registerMissionPauseAction(fmav_command_ack_t (*callback) (int));
     void registerLandAction(fmav_command_ack_t (*callback) (void));
 
-    // Register callbacks for trajectory manager
+    /** Register callbacks for trajectory manager */
     void registerTrajSDLoadAction(fmav_traj_ack_t (*trajLoadSDCallback) (int number));
     // void registerTrajK(void (*callback) (int k, int dim1, int dim2, float *K));
     // void registerTrajPt(void (*callback) (int k, fmav_traj_pt_t pt));
@@ -48,6 +53,7 @@ private:
     // Highest-level: handle all incoming messages/commands
     void processMessage(fmav_message_t *msg);
     void processCommand(uint8_t sysid, uint8_t compid, fmav_command_long_t *cmd);
+    void processSimpleCommand(uint8_t sysid, uint8_t compid, fmav_command_simple_t *cmd);
     // High-level microservice handlers
     // Parameter Protocol - currently unimplemented (figure out what to do about STL and maps)
 
@@ -59,7 +65,8 @@ private:
     // Low-level individual message abstractions
     void sendHeartbeat();              // Send heartbeat message so we know the system is alive
     void sendHealth();
-    void sendTelem();
+    void sendEstimatedState();
+    void sendMeasurements();
     void sendTrajectoryStatus();
     void sendTrajK1Req(int k);       // Send request for part 1 of a gain matrix K
     void sendTrajK2Req(int k);       // Send request for part 2 of a gain matrix K
@@ -76,7 +83,8 @@ private:
     uint16_t statusTextID = 1;
 
     // Telemetry Data
-    fmav_control_system_state_t state;
+    Eigen::VectorXd *stateX;
+    Eigen::VectorXd *measurementsY;
     fmav_controller_status_t trajectoryStatus;
     fmav_sys_status_t health;
 

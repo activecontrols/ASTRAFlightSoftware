@@ -8,6 +8,178 @@
   <p>The current MAVLink version is 2.1. The minor version numbers (after the dot) range from 1-255.</p>
   <p>This file has protocol dialect: 69.</p>
   <h2 id="enums">MAVLink Type Enumerations</h2>
+  <h3 id="MAV_PARAM_TYPE">MAV_PARAM_TYPE</h3>
+  <p>
+   <a href="#enums">
+    [Enum]
+   </a>Specifies the datatype of a MAVLink parameter.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Value</th>
+     <th>Field Name</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr id="MAV_PARAM_TYPE_UINT8">
+     <td>1</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE_UINT8">MAV_PARAM_TYPE_UINT8</a>
+     </td>
+     <td>8-bit unsigned integer</td>
+    </tr>
+    <tr id="MAV_PARAM_TYPE_INT8">
+     <td>2</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE_INT8">MAV_PARAM_TYPE_INT8</a>
+     </td>
+     <td>8-bit signed integer</td>
+    </tr>
+    <tr id="MAV_PARAM_TYPE_UINT16">
+     <td>3</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE_UINT16">MAV_PARAM_TYPE_UINT16</a>
+     </td>
+     <td>16-bit unsigned integer</td>
+    </tr>
+    <tr id="MAV_PARAM_TYPE_INT16">
+     <td>4</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE_INT16">MAV_PARAM_TYPE_INT16</a>
+     </td>
+     <td>16-bit signed integer</td>
+    </tr>
+    <tr id="MAV_PARAM_TYPE_UINT32">
+     <td>5</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE_UINT32">MAV_PARAM_TYPE_UINT32</a>
+     </td>
+     <td>32-bit unsigned integer</td>
+    </tr>
+    <tr id="MAV_PARAM_TYPE_INT32">
+     <td>6</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE_INT32">MAV_PARAM_TYPE_INT32</a>
+     </td>
+     <td>32-bit signed integer</td>
+    </tr>
+    <tr id="MAV_PARAM_TYPE_UINT64">
+     <td>7</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE_UINT64">MAV_PARAM_TYPE_UINT64</a>
+     </td>
+     <td>64-bit unsigned integer</td>
+    </tr>
+    <tr id="MAV_PARAM_TYPE_INT64">
+     <td>8</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE_INT64">MAV_PARAM_TYPE_INT64</a>
+     </td>
+     <td>64-bit signed integer</td>
+    </tr>
+    <tr id="MAV_PARAM_TYPE_REAL32">
+     <td>9</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE_REAL32">MAV_PARAM_TYPE_REAL32</a>
+     </td>
+     <td>32-bit floating-point</td>
+    </tr>
+    <tr id="MAV_PARAM_TYPE_REAL64">
+     <td>10</td>
+     <td>
+      <a href="#MAV_PARAM_TYPE_REAL64">MAV_PARAM_TYPE_REAL64</a>
+     </td>
+     <td>64-bit floating-point</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="MAV_RESULT">MAV_RESULT</h3>
+  <p>
+   <a href="#enums">
+    [Enum]
+   </a>Result from a MAVLink command (<a href="#mav_commands">MAV_CMD</a>)</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Value</th>
+     <th>Field Name</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr id="MAV_RESULT_ACCEPTED">
+     <td>0</td>
+     <td>
+      <a href="#MAV_RESULT_ACCEPTED">MAV_RESULT_ACCEPTED</a>
+     </td>
+     <td>Command is valid (is supported and has valid parameters), and was executed.</td>
+    </tr>
+    <tr id="MAV_RESULT_TEMPORARILY_REJECTED">
+     <td>1</td>
+     <td>
+      <a href="#MAV_RESULT_TEMPORARILY_REJECTED">MAV_RESULT_TEMPORARILY_REJECTED</a>
+     </td>
+     <td>Command is valid, but cannot be executed at this time. This is used to indicate a problem that should be fixed just by waiting (e.g. a state machine is busy, can't arm because have not got GPS lock, etc.). Retrying later should work.</td>
+    </tr>
+    <tr id="MAV_RESULT_DENIED">
+     <td>2</td>
+     <td>
+      <a href="#MAV_RESULT_DENIED">MAV_RESULT_DENIED</a>
+     </td>
+     <td>Command is invalid (is supported but has invalid parameters). Retrying same command and parameters will not work.</td>
+    </tr>
+    <tr id="MAV_RESULT_UNSUPPORTED">
+     <td>3</td>
+     <td>
+      <a href="#MAV_RESULT_UNSUPPORTED">MAV_RESULT_UNSUPPORTED</a>
+     </td>
+     <td>Command is not supported (unknown).</td>
+    </tr>
+    <tr id="MAV_RESULT_FAILED">
+     <td>4</td>
+     <td>
+      <a href="#MAV_RESULT_FAILED">MAV_RESULT_FAILED</a>
+     </td>
+     <td>Command is valid, but execution has failed. This is used to indicate any non-temporary or unexpected problem, i.e. any problem that must be fixed before the command can succeed/be retried. For example, attempting to write a file when out of memory, attempting to arm when sensors are not calibrated, etc.</td>
+    </tr>
+    <tr id="MAV_RESULT_IN_PROGRESS">
+     <td>5</td>
+     <td>
+      <a href="#MAV_RESULT_IN_PROGRESS">MAV_RESULT_IN_PROGRESS</a>
+     </td>
+     <td>Command is valid and is being executed. This will be followed by further progress updates, i.e. the component may send further <a href="#COMMAND_ACK">COMMAND_ACK</a> messages with result <a href="#MAV_RESULT_IN_PROGRESS">MAV_RESULT_IN_PROGRESS</a> (at a rate decided by the implementation), and must terminate by sending a <a href="#COMMAND_ACK">COMMAND_ACK</a> message with final result of the operation. The <a href="#COMMAND_ACK">COMMAND_ACK</a>.progress field can be used to indicate the progress of the operation.</td>
+    </tr>
+    <tr id="MAV_RESULT_CANCELLED">
+     <td>6</td>
+     <td>
+      <a href="#MAV_RESULT_CANCELLED">MAV_RESULT_CANCELLED</a>
+     </td>
+     <td>Command has been cancelled (as a result of receiving a <a href="#COMMAND_CANCEL">COMMAND_CANCEL</a> message).</td>
+    </tr>
+    <tr id="MAV_RESULT_COMMAND_LONG_ONLY">
+     <td>7</td>
+     <td>
+      <a href="#MAV_RESULT_COMMAND_LONG_ONLY">MAV_RESULT_COMMAND_LONG_ONLY</a>
+     </td>
+     <td>Command is only accepted when sent as a <a href="#COMMAND_LONG">COMMAND_LONG</a>.</td>
+    </tr>
+    <tr id="MAV_RESULT_COMMAND_INT_ONLY">
+     <td>8</td>
+     <td>
+      <a href="#MAV_RESULT_COMMAND_INT_ONLY">MAV_RESULT_COMMAND_INT_ONLY</a>
+     </td>
+     <td>Command is only accepted when sent as a <a href="#COMMAND_INT">COMMAND_INT</a>.</td>
+    </tr>
+    <tr id="MAV_RESULT_COMMAND_UNSUPPORTED_MAV_FRAME">
+     <td>9</td>
+     <td>
+      <a href="#MAV_RESULT_COMMAND_UNSUPPORTED_MAV_FRAME">MAV_RESULT_COMMAND_UNSUPPORTED_MAV_FRAME</a>
+     </td>
+     <td>Command is invalid because a frame is required and the specified frame is not supported.</td>
+    </tr>
+   </tbody>
+  </table>
   <h3 id="MAV_SYS_STATUS_SENSOR">MAV_SYS_STATUS_SENSOR</h3>
   <p>
    <a href="#enums">
@@ -728,6 +900,115 @@
     </tr>
    </tbody>
   </table>
+  <h3 id="RAW_IMU">RAW_IMU (<a href="#RAW_IMU">
+    #27
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>The RAW IMU readings for a 9DOF sensor, which is identified by the id (default IMU1). This message should always contain the true raw values without any scaling to allow data capture and system debugging.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Units</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>time_usec</td>
+     <td>uint64_t</td>
+     <td>us</td>
+     <td>Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.</td>
+    </tr>
+    <tr>
+     <td>xacc</td>
+     <td>int16_t</td>
+     <td>
+     </td>
+     <td>X acceleration (raw)</td>
+    </tr>
+    <tr>
+     <td>yacc</td>
+     <td>int16_t</td>
+     <td>
+     </td>
+     <td>Y acceleration (raw)</td>
+    </tr>
+    <tr>
+     <td>zacc</td>
+     <td>int16_t</td>
+     <td>
+     </td>
+     <td>Z acceleration (raw)</td>
+    </tr>
+    <tr>
+     <td>xgyro</td>
+     <td>int16_t</td>
+     <td>
+     </td>
+     <td>Angular speed around X axis (raw)</td>
+    </tr>
+    <tr>
+     <td>ygyro</td>
+     <td>int16_t</td>
+     <td>
+     </td>
+     <td>Angular speed around Y axis (raw)</td>
+    </tr>
+    <tr>
+     <td>zgyro</td>
+     <td>int16_t</td>
+     <td>
+     </td>
+     <td>Angular speed around Z axis (raw)</td>
+    </tr>
+    <tr>
+     <td>xmag</td>
+     <td>int16_t</td>
+     <td>
+     </td>
+     <td>X Magnetic field (raw)</td>
+    </tr>
+    <tr>
+     <td>ymag</td>
+     <td>int16_t</td>
+     <td>
+     </td>
+     <td>Y Magnetic field (raw)</td>
+    </tr>
+    <tr>
+     <td>zmag</td>
+     <td>int16_t</td>
+     <td>
+     </td>
+     <td>Z Magnetic field (raw)</td>
+    </tr>
+    <tr>
+     <td style="color:blue;">id<a href="#mav2_extension_field" title="MAVLink2 extension field">
+       **
+      </a>
+     </td>
+     <td>uint8_t</td>
+     <td>
+     </td>
+     <td>Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)</td>
+    </tr>
+    <tr>
+     <td style="color:blue;">temperature<a href="#mav2_extension_field" title="MAVLink2 extension field">
+       **
+      </a>
+     </td>
+     <td>int16_t</td>
+     <td>cdegC</td>
+     <td>Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).</td>
+    </tr>
+   </tbody>
+  </table>
   <h3 id="CONTROL_SYSTEM_STATE">CONTROL_SYSTEM_STATE (<a href="#CONTROL_SYSTEM_STATE">
     #146
    </a>
@@ -1329,34 +1610,6 @@
     </tr>
    </tbody>
   </table>
-  <h3 id="TRAJ_LOAD_SD_CARD">TRAJ_LOAD_SD_CARD (<a href="#TRAJ_LOAD_SD_CARD">
-    #51809
-   </a>
-   )
-  </h3>
-  <p>
-   <a href="#messages">
-    [Message]
-   </a>
-   <strong>
-    (MAVLink 2)
-   </strong>Load trajectory file from SD card.</p>
-  <table class="sortable">
-   <thead>
-    <tr>
-     <th>Field Name</th>
-     <th>Type</th>
-     <th>Description</th>
-    </tr>
-   </thead>
-   <tbody>
-    <tr>
-     <td>filename</td>
-     <td>char[63]</td>
-     <td>Name of file</td>
-    </tr>
-   </tbody>
-  </table>
   <h3 id="TRAJ_INFO">TRAJ_INFO (<a href="#TRAJ_INFO">
     #51810
    </a>
@@ -1633,6 +1886,34 @@
       <a href="#MAV_RESULT">MAV_RESULT</a>
      </td>
      <td>Result of load.</td>
+    </tr>
+   </tbody>
+  </table>
+  <h3 id="COMMAND_SIMPLE">COMMAND_SIMPLE (<a href="#COMMAND_SIMPLE">
+    #51880
+   </a>
+   )
+  </h3>
+  <p>
+   <a href="#messages">
+    [Message]
+   </a>
+   <strong>
+    (MAVLink 2)
+   </strong>Send a simple string command, for rapid prototyping.</p>
+  <table class="sortable">
+   <thead>
+    <tr>
+     <th>Field Name</th>
+     <th>Type</th>
+     <th>Description</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>command</td>
+     <td>char[127]</td>
+     <td>Command to send</td>
     </tr>
    </tbody>
   </table>

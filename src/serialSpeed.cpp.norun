@@ -1,0 +1,23 @@
+#include <Arduino.h>
+
+elapsedMicros timer;
+int wait = 2;
+#define TX_BUF_SIZE 65536
+DMAMEM byte txBuf[TX_BUF_SIZE];
+
+void setup() {
+    Serial.begin(57600);
+    Serial1.begin(57600l);
+    Serial1.addMemoryForWrite(txBuf, TX_BUF_SIZE);
+}
+
+void loop() {
+    int start = timer;
+    for (int i = 0; i < 66; i++) {
+        Serial1.write('a');
+    }
+    int end = timer;
+    Serial.printf("Elapsed: %d, wait: %d\r\n", end - start, wait);
+    delay(wait);
+    // wait -= 1;
+}
