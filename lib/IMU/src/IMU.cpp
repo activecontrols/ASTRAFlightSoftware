@@ -35,6 +35,8 @@ float* getValues() {
 
 //loads a predetermined calibration into the EEPROM
 int loadPresetCalibration() {
+
+#if IMU_NUMBER == 1
   //Magnetic Hard Offset
   cal.mag_hardiron[0] = 18.00;
   cal.mag_hardiron[1] = 37.79;
@@ -57,6 +59,32 @@ int loadPresetCalibration() {
   cal.gyro_zerorate[0] = 0.05;
   cal.gyro_zerorate[1] = -0.01;
   cal.gyro_zerorate[2] = -0.01;
+#endif
+
+#if IMU_NUMBER == 2 /* NOT CALIBRATED YET */
+  //Magnetic Hard Offset
+  cal.mag_hardiron[0] = 0.0;
+  cal.mag_hardiron[1] = 0.0;
+  cal.mag_hardiron[2] = 0.0;
+
+  //Magnetic Soft Offset
+  // in uTesla
+  cal.mag_softiron[0] = 0.0;
+  cal.mag_softiron[1] = 0.0;
+  cal.mag_softiron[2] = 0.0;  
+  cal.mag_softiron[3] = 0.0;
+  cal.mag_softiron[4] = 0.0;
+  cal.mag_softiron[5] = 0.0;  
+  cal.mag_softiron[6] = 0.0;
+  cal.mag_softiron[7] = 0.0;
+  cal.mag_softiron[8] = 0.0;  
+
+  //Gyro zero rate offset
+  // in Radians/s
+  cal.gyro_zerorate[0] = 0.0;
+  cal.gyro_zerorate[1] = 0.0;
+  cal.gyro_zerorate[2] = 0.0;
+#endif
 
   if (cal.saveCalibration()) {
     return FAILED_LOAD_CALIBRATION;
