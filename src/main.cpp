@@ -144,7 +144,7 @@ void loop() {
   // }
   // Serial.println();
 
-  Serial.print(millis()/1000.0, 3); Serial.print(", ");
+  /*Serial.print(millis()/1000.0, 3); Serial.print(", ");
   for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
     Serial.print(estimator::estimatedStateX(i), 3);
     if (i != ESTIMATED_STATE_DIMENSION - 1) Serial.print(", ");
@@ -154,7 +154,7 @@ void loop() {
     Serial.print(controllerInputU(i), 3);
     if (i != U_ROW_LENGTH - 1) Serial.print(", ");
   }
-  Serial.println();
+  Serial.println();*/
   
   //turns led on and off
   led();

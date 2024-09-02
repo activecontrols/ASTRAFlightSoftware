@@ -254,7 +254,7 @@ namespace controller {
     int controlLawRegulate() {
 
         controllerInputU = -(qsGain * estimator::estimatedStateX);
-        Serial.print("Controller Multiplication: ");
+        /*Serial.print("Controller Multiplication: ");
         for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
             Serial.print( -(qsGain(0, i) * estimator::estimatedStateX(i)), 5);
             Serial.print(", ");
@@ -271,7 +271,7 @@ namespace controller {
 
         controllerInputU(1) = 180.0*controllerInputU(1)/PI;
         Serial.print("Controller Beta: ");
-        Serial.println(controllerInputU(1), 3);
+        Serial.println(controllerInputU(1), 3);*/
 
         return NO_ERROR_CODE;
     }

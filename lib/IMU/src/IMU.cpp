@@ -20,6 +20,8 @@ Eigen::VectorXd magnetometerVector(3);
 float roll, pitch, yaw = 0;
 float gx, gy, gz = 0; //degrees per second on gyro
 float qw, qx, qy, qz = 0; //quaternarion
+elapsedMillis totalMillis = 0;
+int lastMillis = 0;
 
 /*
  * You must free the pointer and set it to NULL after using the pointer!
@@ -141,7 +143,7 @@ int initializeIMU() {
 #endif
 
   setup_sensors();
-  filter.begin(FILTER_UPDATE_RATE_HZ);
+  filter.begin(FILTER_UPDATE_RATE_HZ); // not the rate this filter is running at. that is why changing the sample rate is fucking w the reading
   
   Wire.setClock(400000); // 400KHz
 
@@ -160,14 +162,15 @@ int updateIMU() {
   cal.calibrate(mag);
   cal.calibrate(accel);
   cal.calibrate(gyro);
+  gx = gyro.gyro.x; // SENSORS_RADS_TO_DPS; //omega x
+  gy = gyro.gyro.y; // SENSORS_RADS_TO_DPS; //omega y
+  gz = gyro.gyro.z; // SENSORS_RADS_TO_DPS; //omega z
 
   // Gyroscope needs to be converted from Rad/s to Degree/s
   // the rest are not unit-important
 
-  gx = gyro.gyro.x; //* SENSORS_RADS_TO_DPS; //omega x
-  gy = gyro.gyro.y; //* SENSORS_RADS_TO_DPS; //omega y
-  gz = gyro.gyro.z; //* SENSORS_RADS_TO_DPS; //omega z
-
+  
+  
   // Update the SensorFusion filter
   filter.update(gx, gy, gz, 
                 accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, 
@@ -181,6 +184,37 @@ int updateIMU() {
 
   //float qw, qx, qy, qz;
   filter.getQuaternion(&qw, &qx, &qy, &qz);
+
+if(totalMillis - lastMillis > 10){
+
+    Serial.print("Quaternion,");
+    Serial.print(qw, 5);
+    Serial.print(",");
+    Serial.print(qx, 5);
+    Serial.print(",");
+    Serial.print(qy, 5);
+    Serial.print(",");
+    Serial.print(qz, 5);
+    Serial.println();
+    /*Serial.print("imu,");
+    Serial.print(gx, 5);
+    Serial.print(",");
+    Serial.print(gy, 5);
+    Serial.print(",");
+    Serial.print(gz, 5);
+    Serial.print(",");
+    Serial.print(accel.acceleration.x, 5);
+    Serial.print(",");
+    Serial.print(accel.acceleration.y, 5);
+    Serial.print(",");
+    Serial.print(accel.acceleration.z, 5);
+    Serial.print(",");
+    Serial.print((totalMillis - lastMillis)/1000.0, 5);
+    Serial.println();*/
+    lastMillis = totalMillis;
+  }
+  
+
 
 
   filter.getLinearAcceleration(&linearAccelX, &linearAccelY, &linearAccelZ); //"a" -  linear acceleration

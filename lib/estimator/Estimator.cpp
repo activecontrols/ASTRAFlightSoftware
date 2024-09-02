@@ -128,13 +128,15 @@ namespace estimator {
 
         Eigen::Vector4d realQuaternion(4);
         realQuaternion = math_functions::quaternionProduct(measuredQuaternion, rotationConjugate);
-        Serial.println("Quaternion: ");
-        Serial.print(realQuaternion(1), 5);
-        Serial.print(", ");
-        Serial.print(realQuaternion(2), 5);
-        Serial.print(", ");
-        Serial.print(realQuaternion(3), 5);
-        Serial.println();
+        // Serial.print("Quaternion,");
+        // Serial.print(measuredQuaternion(0), 5);
+        // Serial.print(",");
+        // Serial.print(measuredQuaternion(1), 5);
+        // Serial.print(",");
+        // Serial.print(measuredQuaternion(2), 5);
+        // Serial.print(",");
+        // Serial.print(measuredQuaternion(3), 5);
+        // Serial.println();
 
         estimatedStateX(0) = realQuaternion(1);
         estimatedStateX(1) = realQuaternion(2);
