@@ -227,6 +227,10 @@ void CommsManager::processSimpleCommand(uint8_t sysid, uint8_t compid, fmav_comm
  * Send telemetry
  */
 void CommsManager::sendEstimatedState() {
+    if (this->stateX == NULL) {
+        this->sendStatusText(MAV_SEVERITY_WARNING, "Estimated state vector ptr not set");
+        return;
+    }
     fmav_control_system_state_t state;
     state.time_usec = micros();
     state.q[1] = (*(this->stateX))(0);
@@ -245,6 +249,10 @@ void CommsManager::sendEstimatedState() {
  * Send raw measurements
  */
 void CommsManager::sendMeasurements() {
+    if (this->measurementsY == NULL) {
+        this->sendStatusText(MAV_SEVERITY_WARNING, "Measurements vector ptr not set");
+        return;
+    }
     fmav_raw_imu_t data;
     data.time_usec = micros();
     data.xacc = (*(this->measurementsY))(0);

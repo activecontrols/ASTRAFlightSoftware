@@ -83,8 +83,8 @@ private:
     uint16_t statusTextID = 1;
 
     // Telemetry Data
-    Eigen::VectorXd *stateX;
-    Eigen::VectorXd *measurementsY;
+    Eigen::VectorXd *stateX = NULL;
+    Eigen::VectorXd *measurementsY = NULL;
     fmav_controller_status_t trajectoryStatus;
     fmav_sys_status_t health;
 
