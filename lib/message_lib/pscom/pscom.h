@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 #ifndef FASTMAVLINK_BUILD_DATE
-#define FASTMAVLINK_BUILD_DATE  "Wed Dec 06 2023"
+#define FASTMAVLINK_BUILD_DATE  "Sun Apr 21 2024"
 #endif
 
 #ifndef FASTMAVLINK_DIALECT_VERSION
@@ -169,6 +169,7 @@ typedef enum MAV_CMD {
 #endif
 
 #include "./mavlink_msg_sys_status.h"
+#include "./mavlink_msg_raw_imu.h"
 #include "./mavlink_msg_control_system_state.h"
 #include "./mavlink_msg_command_long.h"
 #include "./mavlink_msg_command_ack.h"
@@ -178,7 +179,6 @@ typedef enum MAV_CMD {
 #include "./mavlink_msg_param_set.h"
 #include "./mavlink_msg_statustext.h"
 #include "./mavlink_msg_controller_status.h"
-#include "./mavlink_msg_traj_load_sd_card.h"
 #include "./mavlink_msg_traj_info.h"
 #include "./mavlink_msg_traj_req_k1.h"
 #include "./mavlink_msg_traj_k1.h"
@@ -187,6 +187,7 @@ typedef enum MAV_CMD {
 #include "./mavlink_msg_traj_req_pt.h"
 #include "./mavlink_msg_traj_pt.h"
 #include "./mavlink_msg_traj_ack.h"
+#include "./mavlink_msg_command_simple.h"
 
 #ifdef FASTMAVLINK_IGNORE_WADDRESSOFPACKEDMEMBER
   #if defined __GNUC__ && __GNUC__ >= 9

@@ -12,12 +12,15 @@
 #include <ArduinoEigen.h>
 
 /*
-main.cpp 
+main.cpp
 Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
 
-
+#define COMMS_RX_BUF_SIZE 32768
+#define COMMS_TX_BUF_SIZE 32768
+DMAMEM uint8_t commsRxBuffer[COMMS_RX_BUF_SIZE];
+DMAMEM uint8_t commsTxBuffer[COMMS_TX_BUF_SIZE];
 #if USE_COMMS
   #include "Comms.h"
 #endif
@@ -29,6 +32,8 @@ elapsedMillis ledTime;
 
 elapsedMicros totalTimeElapsed;
 int lastTime = 0;
+int lastPrint = 0;
+int lastStatus = 0;
 
 bool ledOn = false;
 
@@ -51,13 +56,18 @@ fmav_traj_ack_t loadSD(int number) {
 #endif
 
 void setup() {
-  Serial.begin(9600);
-  
+  Serial.begin(57600);
+  if (MAVLinkSerial != Serial) {
+      MAVLinkSerial.begin(57600);
+      MAVLinkSerial.addMemoryForWrite(commsTxBuffer, COMMS_TX_BUF_SIZE);
+      MAVLinkSerial.addMemoryForRead(commsRxBuffer, COMMS_RX_BUF_SIZE);
+  }
+
   //Sets up led
   pinMode(LED_BUILTIN, OUTPUT);
   //sets LED to on indefinitely so we know teensy is on if setup() fails
-  digitalWrite(LED_BUILTIN, HIGH); 
-  
+  digitalWrite(LED_BUILTIN, HIGH);
+
 
 #if USE_COMMS
   Serial.print("Set up comms...");
@@ -66,10 +76,11 @@ void setup() {
   Serial.println("Done");
 #endif
 
-
+#if DO_CONTROLS
   estimator::initializeEstimator();
 
   controller::initializeController();
+#endif
   delay(4000);
 
 #if LOG_DATA
@@ -80,9 +91,9 @@ void setup() {
   timer::startMissionTimer();
 }
 
-//turns the LED on and off every 3 seconds 
+//turns the LED on and off every 3 seconds
 void led() {
-  
+
   if (ledTime >= 1000) {
 
     //(HIGH and LOW are the voltage levels)
@@ -93,7 +104,7 @@ void led() {
       digitalWrite(LED_BUILTIN, HIGH);
       ledOn = true;
     }
-    
+
     ledTime = 0;
   }
 }
@@ -102,16 +113,25 @@ void loop() {
 
   lastTime = totalTimeElapsed;
 
+#if DO_CONTROLS
   Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
   controllerInputU = controller::getControlInputs();
 
   estimator::updateEstimator();
   controller::updateController();
+#endif
 
 #if USE_COMMS
+  comms.updateXEstimatedState(&estimator::estimatedStateX);
+  comms.updateYMeasurements(&estimator::measurementVectorY);
   comms.spin();
-  comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
-  comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
+  if (totalTimeElapsed - lastStatus > 1000 * 100) {
+    comms.sendStatusText(MAV_SEVERITY_INFO, "Time between loop:");
+    comms.sendStatusText(MAV_SEVERITY_INFO, String(totalTimeElapsed-lastTime).c_str());
+    Serial.println("Time between loop:");
+    Serial.println(totalTimeElapsed - lastTime);
+    lastStatus = totalTimeElapsed;
+  }
 #endif
 
 #if LOG_DATA
@@ -130,7 +150,7 @@ void loop() {
   Serial.printf("Delay: %.2f ms. Wrote: %d\n", (double) (totalTimeElapsed-lastTime) / 1000.0, logger::write_count);
 #endif
 
-  
+
 
   // controllerInputU; //the vector to access for outputs
   // for (int i = 0; i < controllerInputU.size(); i++) {
@@ -139,6 +159,7 @@ void loop() {
   // }
   // Serial.println();
 
+#if PRINT_DIM
   Serial.print(millis()/1000.0, 3); Serial.print(", ");
   for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
     Serial.print(estimator::estimatedStateX(i), 3);
@@ -150,7 +171,8 @@ void loop() {
     if (i != U_ROW_LENGTH - 1) Serial.print(", ");
   }
   Serial.println();
-  
+#endif
+
   //turns led on and off
   led();
 }

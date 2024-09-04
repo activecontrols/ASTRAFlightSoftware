@@ -1,9 +1,11 @@
 #include "Comms.h"
 //#include "../estimator/Estimator.h"
 //#include <stdlib.h>
+#include "../message_lib/pscom/pscom.h"
 #include "Error.h"
 #include <Arduino.h>
 #include <cstring>
+#include "settings.h"
 
 /* ----- PUBLIC INTERFACES ----- */
 
@@ -35,7 +37,8 @@ void CommsManager::spin() {
     }
 
     if (millis() - lastTelem > (1000 / TELEM_HZ)) {
-        this->sendTelem();
+        this->sendEstimatedState();
+        this->sendMeasurements();
         this->lastTelem = millis();
     }
 
@@ -48,9 +51,21 @@ void CommsManager::spin() {
 /**
  * Update telemetry information to be sent periodically to the
  * ground control station.
+ *
+ * TODO: Might be more efficient to get a pointer directly to estimator::estimatedStateX
  */
-void CommsManager::updateTelem(fmav_control_system_state_t data) {
-    this->state = data;
+void CommsManager::updateXEstimatedState(Eigen::VectorXd *data) {
+    this->stateX = data;
+}
+
+/**
+ * Update telemetry information to be sent periodically to the
+ * ground control station.
+ *
+ * TODO: Might be more efficient to get a pointer directly to estimator::measurementVectorY
+ */
+void CommsManager::updateYMeasurements(Eigen::VectorXd *data) {
+    this->measurementsY = data;
 }
 
 /**
@@ -110,6 +125,11 @@ void CommsManager::processMessage(fmav_message_t *msg) {
             fmav_command_long_t command;
             fmav_msg_command_long_decode(&command, msg);
             this->processCommand(msg->sysid, msg->compid, &command);
+            break;
+        case FASTMAVLINK_MSG_ID_COMMAND_SIMPLE:
+            fmav_command_simple_t simpleCommand;
+            fmav_msg_command_simple_decode(&simpleCommand, msg);
+            this->processSimpleCommand(msg->sysid, msg->compid, &simpleCommand);
             break;
         case FASTMAVLINK_MSG_ID_PARAM_REQUEST_LIST:
             break; // Handling currently not implemented
@@ -189,14 +209,64 @@ void CommsManager::processCommand(uint8_t sysid, uint8_t compid, fmav_command_lo
     }
 }
 
+/**
+ * Process a simple string command.
+ */
+void CommsManager::processSimpleCommand(uint8_t sysid, uint8_t compid, fmav_command_simple_t *cmd) {
+    this->sendStatusText(MAV_SEVERITY_INFO, "SIMPLECOMMAND");
+    if (strstr(cmd->command, "GO") != NULL) {
+        // Go command, handle it
+        this->sendStatusText(MAV_SEVERITY_INFO, "GO");
+    } else if (strstr(cmd->command, "STOP") != NULL) {
+        // Stop command, handle it
+        this->sendStatusText(MAV_SEVERITY_INFO, "STOP");
+    }
+}
 
 /**
  * Send telemetry
  */
-void CommsManager::sendTelem() {
+void CommsManager::sendEstimatedState() {
+    if (this->stateX == NULL) {
+        this->sendStatusText(MAV_SEVERITY_WARNING, "Estimated state vector ptr not set");
+        return;
+    }
+    fmav_control_system_state_t state;
+    state.time_usec = micros();
+    state.q[1] = (*(this->stateX))(0);
+    state.q[2] = (*(this->stateX))(1);
+    state.q[3] = (*(this->stateX))(2);
+    state.x_pos = (*(this->stateX))(3);
+    state.y_pos = (*(this->stateX))(4);
+    state.z_pos = (*(this->stateX))(5);
     fmav_msg_control_system_state_encode_to_serial(
         this->sysid, this->compid,
-        &(this->state), &(this->status)
+        &state, &(this->status)
+    );
+}
+
+/**
+ * Send raw measurements
+ */
+void CommsManager::sendMeasurements() {
+    if (this->measurementsY == NULL) {
+        this->sendStatusText(MAV_SEVERITY_WARNING, "Measurements vector ptr not set");
+        return;
+    }
+    fmav_raw_imu_t data;
+    data.time_usec = micros();
+    data.xacc = (*(this->measurementsY))(0);
+    data.yacc = (*(this->measurementsY))(1);
+    data.zacc = (*(this->measurementsY))(2);
+    data.xgyro = (*(this->measurementsY))(3);
+    data.ygyro = (*(this->measurementsY))(4);
+    data.zgyro = (*(this->measurementsY))(5);
+    data.xmag = (*(this->measurementsY))(6);
+    data.ymag = (*(this->measurementsY))(7);
+    data.zmag = (*(this->measurementsY))(8);
+    fmav_msg_raw_imu_encode_to_serial(
+        this->sysid, this->compid,
+        &data, &(this->status)
     );
 }
 
@@ -244,7 +314,7 @@ void CommsManager::registerTrajSDLoadAction(fmav_traj_ack_t (*callback) (int num
 void CommsManager::handleStartMission() {
 }
 
-/** 
+/**
  * Handle mission pause command
  */
 void CommsManager::handlePauseMission() {
@@ -256,7 +326,7 @@ void CommsManager::handlePauseMission() {
 void CommsManager::handleLandMission() {
 }
 
-/** 
+/**
  * Send heartbeat message
  */
 void CommsManager::sendHeartbeat() {
@@ -294,7 +364,7 @@ void CommsManager::sendTrajPtReq(int n) {
 
 
 /**
- * Private 
+ * Private
  */
 
 /**
