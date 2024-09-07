@@ -17,6 +17,11 @@ Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
 
+#define battVPin 41 // PLACEHOLDER
+
+#define CHECK_BATTERY_VOLTAGE 1
+
+
 
 #if USE_COMMS
   #include "Comms.h"
@@ -58,6 +63,10 @@ void setup() {
   //sets LED to on indefinitely so we know teensy is on if setup() fails
   digitalWrite(LED_BUILTIN, HIGH); 
   
+
+#if CHECK_BATTERY_VOLTAGE
+  pinMode(battVPin, INPUT)
+#endif
 
 #if USE_COMMS
   Serial.print("Set up comms...");
@@ -103,6 +112,18 @@ void loop() {
   Serial.print("Loop time: ");
   Serial.println(totalTimeElapsed - lastTime);
   
+#if CHECK_BATTERY_VOLTAGE
+  int pinVal = analogRead(A8);
+  float batteryV = (pinVal * 10) / 1023;
+  if (batteryV < 7)
+  {
+    while(1)
+    {
+      Serial.print("BATTERY TOO LOW");
+    }
+  }
+#endif
+
   lastTime = totalTimeElapsed;
 
   
