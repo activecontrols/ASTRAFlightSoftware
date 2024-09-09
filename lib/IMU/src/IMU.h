@@ -41,7 +41,7 @@ Last updated: 11/4/2023
   Adafruit_Sensor_Calibration_SDFat cal;
 #endif
 
-#define FILTER_UPDATE_RATE_HZ (1000) // not the 
+#define FILTER_UPDATE_RATE_HZ (333) // not the 
 #define PRINT_EVERY_N_UPDATES (10)
 #define IMU_WIRE Wire
 #define IMU_NUMBER (1) /* Determined which IMU we are using (ie, physical IMU labeled as 1 or 2)*/

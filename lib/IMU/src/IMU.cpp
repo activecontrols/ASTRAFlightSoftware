@@ -22,6 +22,7 @@ float gx, gy, gz = 0; //degrees per second on gyro
 float qw, qx, qy, qz = 0; //quaternarion
 elapsedMillis totalMillis = 0;
 int lastMillis = 0;
+int lastFilterMillis = 0;
 
 /*
  * You must free the pointer and set it to NULL after using the pointer!
@@ -40,21 +41,21 @@ int loadPresetCalibration() {
 
 #if IMU_NUMBER == 1
   //Magnetic Hard Offset
-  cal.mag_hardiron[0] = 18.00;
-  cal.mag_hardiron[1] = 37.79;
-  cal.mag_hardiron[2] = -84.00;
+  cal.mag_hardiron[0] = -59.66830635;
+  cal.mag_hardiron[1] = 57.91606393;
+  cal.mag_hardiron[2] = -13.95585555;
 
   //Magnetic Soft Offset
   // in uTesla
-  cal.mag_softiron[0] = 0.98;
-  cal.mag_softiron[1] = 0.05;
-  cal.mag_softiron[2] = 0.01;  
-  cal.mag_softiron[3] = 0.05;
-  cal.mag_softiron[4] = 1.06;
-  cal.mag_softiron[5] = 0.0;  
-  cal.mag_softiron[6] = 0.01;
-  cal.mag_softiron[7] = 0.0;
-  cal.mag_softiron[8] = 0.96;  
+  cal.mag_softiron[0] = 27.247827;
+  cal.mag_softiron[1] = 1.00577368;
+  cal.mag_softiron[2] = -0.32313557;  
+  cal.mag_softiron[3] = 1.00577368;
+  cal.mag_softiron[4] = 23.64999463;
+  cal.mag_softiron[5] = -2.0111187;  
+  cal.mag_softiron[6] = -0.32313557;
+  cal.mag_softiron[7] = -2.0111187;
+  cal.mag_softiron[8] = 15.59083004;  
 
   //Gyro zero rate offset
   // in Radians/s
@@ -145,7 +146,7 @@ int initializeIMU() {
   setup_sensors();
   filter.begin(FILTER_UPDATE_RATE_HZ); // not the rate this filter is running at. that is why changing the sample rate is fucking w the reading
   
-  Wire.setClock(400000); // 400KHz
+  Wire.setClock(25000); // 400KHz
 
   return NO_ERROR_CODE;
 }
@@ -162,9 +163,9 @@ int updateIMU() {
   cal.calibrate(mag);
   cal.calibrate(accel);
   cal.calibrate(gyro);
-  gx = gyro.gyro.x; // SENSORS_RADS_TO_DPS; //omega x
-  gy = gyro.gyro.y; // SENSORS_RADS_TO_DPS; //omega y
-  gz = gyro.gyro.z; // SENSORS_RADS_TO_DPS; //omega z
+  gx = gyro.gyro.x * SENSORS_RADS_TO_DPS; //omega x
+  gy = gyro.gyro.y * SENSORS_RADS_TO_DPS; //omega y
+  gz = gyro.gyro.z * SENSORS_RADS_TO_DPS; //omega z
 
   // Gyroscope needs to be converted from Rad/s to Degree/s
   // the rest are not unit-important
@@ -174,7 +175,10 @@ int updateIMU() {
   // Update the SensorFusion filter
   filter.update(gx, gy, gz, 
                 accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, 
-                mag.magnetic.x, mag.magnetic.y, mag.magnetic.z);
+                0.0, 0.0, 0.0, ((float)(totalMillis - lastFilterMillis))/1000.0);
+
+  lastFilterMillis = totalMillis;
+  float heading = atan2(mag.magnetic.y, mag.magnetic.x) * 180/(3.14);
 
   // print the heading, pitch and roll
   roll = filter.getRoll();
@@ -185,6 +189,7 @@ int updateIMU() {
   //float qw, qx, qy, qz;
   filter.getQuaternion(&qw, &qx, &qy, &qz);
 
+  
 if(totalMillis - lastMillis > 10){
 
     Serial.print("Quaternion,");
@@ -195,7 +200,28 @@ if(totalMillis - lastMillis > 10){
     Serial.print(qy, 5);
     Serial.print(",");
     Serial.print(qz, 5);
+    Serial.println("");
+    Serial.print(gx, 5);
+    Serial.print(",");
+    Serial.print(gy, 5);
+    Serial.print(",");
+    Serial.print(gz, 5);
     Serial.println();
+    Serial.print(magnetometer->x_gauss, 5);
+    Serial.print(",");
+    Serial.print(magnetometer->y_gauss, 5);
+    Serial.print(",");
+    Serial.print(magnetometer->z_gauss, 5);
+    Serial.println("");
+    Serial.print(magnetometer->xu, 10);
+    Serial.print(",");
+    Serial.print(magnetometer->yu, 10);
+    Serial.print(",");
+    Serial.print(magnetometer->zu, 10);
+    Serial.println("");
+    Serial.print(heading, 5);
+    Serial.println("");
+    
     /*Serial.print("imu,");
     Serial.print(gx, 5);
     Serial.print(",");

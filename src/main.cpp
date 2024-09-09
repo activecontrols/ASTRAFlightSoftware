@@ -51,7 +51,7 @@ fmav_traj_ack_t loadSD(int number) {
 #endif
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(38400);
   
   //Sets up led
   pinMode(LED_BUILTIN, OUTPUT);
@@ -100,8 +100,8 @@ void led() {
 }
 
 void loop() {
-  Serial.print("Loop time: ");
-  Serial.println(totalTimeElapsed - lastTime);
+  //Serial.print("Loop time: ");
+  //Serial.println(totalTimeElapsed - lastTime);
   
   lastTime = totalTimeElapsed;
 
