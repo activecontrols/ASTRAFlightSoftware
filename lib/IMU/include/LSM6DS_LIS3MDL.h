@@ -30,6 +30,7 @@ bool init_sensors(TwoWire *i2c_wire) {
   if (!lsm6ds.begin_I2C() && !lsm6ds.begin_I2C((uint8_t) 0x6A, i2c_wire, 0L) && !lsm6ds.begin_I2C((uint8_t) 0x6B, i2c_wire, 0L)) {
     return false;
   }
+  //lis3mdl = *(new Adafruit_LIS3MDL);
   if (!lis3mdl.begin_I2C((uint8_t) 0x1C, i2c_wire)) {
     lis3mdl = *(new Adafruit_LIS3MDL);
     if (!lis3mdl.begin_I2C((uint8_t) 0x1E, i2c_wire)) {
@@ -53,8 +54,9 @@ void setup_sensors(void) {
   // set slightly above refresh rate
   lsm6ds.setAccelDataRate(LSM6DS_RATE_3_33K_HZ);
   lsm6ds.setGyroDataRate(LSM6DS_RATE_3_33K_HZ);
-  lis3mdl.setDataRate(LIS3MDL_DATARATE_1000_HZ);
-  lis3mdl.setPerformanceMode(LIS3MDL_ULTRAHIGHMODE);
+  lis3mdl.setDataRate(LIS3MDL_DATARATE_560_HZ);
+  lis3mdl.setPerformanceMode(LIS3MDL_MEDIUMMODE);
+  //lis3mdl.setBlockDataUpdate();
   lis3mdl.setOperationMode(LIS3MDL_CONTINUOUSMODE);
 }
 
