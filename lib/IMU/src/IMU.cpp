@@ -176,7 +176,7 @@ int updateIMU() {
   // Update the SensorFusion filter
   filter.update(gx, gy, gz, 
                 accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, 
-                0.0, 0.0, 0.0, ((float)(totalMillis - lastFilterMillis))/1000.0);
+                mag.magnetic.x, mag.magnetic.y, mag.magnetic.z, ((float)(totalMillis - lastFilterMillis))/1000.0);
 
   lastFilterMillis = totalMillis;
   float heading = atan2(mag.magnetic.y, mag.magnetic.x) * 180/(3.14);
@@ -202,7 +202,7 @@ if(totalMillis - lastMillis > 10){
     Serial.print(",");
     Serial.print(qz, 5);
     Serial.println("");
-    Serial.print(gx, 5);
+    /*Serial.print(gx, 5);
     Serial.print(",");
     Serial.print(gy, 5);
     Serial.print(",");
@@ -221,7 +221,7 @@ if(totalMillis - lastMillis > 10){
     Serial.print(magnetometer->zu, 10);
     Serial.println("");
     Serial.print(heading, 5);
-    Serial.println("");
+    Serial.println("");*/
     
     /*Serial.print("imu,");
     Serial.print(gx, 5);

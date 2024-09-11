@@ -56,7 +56,7 @@ void setup_sensors(void) {
   lsm6ds.setGyroDataRate(LSM6DS_RATE_3_33K_HZ);
   lis3mdl.setDataRate(LIS3MDL_DATARATE_560_HZ);
   lis3mdl.setPerformanceMode(LIS3MDL_MEDIUMMODE);
-  //lis3mdl.setBlockDataUpdate();
+  lis3mdl.setBlockDataUpdate();
   lis3mdl.setOperationMode(LIS3MDL_CONTINUOUSMODE);
 }
 
