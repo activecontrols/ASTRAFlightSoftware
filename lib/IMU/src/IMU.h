@@ -43,7 +43,7 @@ Author: Vincent Palmerio
 #define IMU_NUMBER (1) /* Determined which IMU we are using (ie, physical IMU labeled as 1 or 2)*/
 
 
-extern float* orientationArray;
+extern float orientationArray[3];
 extern float roll, pitch, yaw;
 extern Eigen::VectorXd linearAccelVector;
 extern float linearAccelX, linearAccelY, linearAccelZ;
