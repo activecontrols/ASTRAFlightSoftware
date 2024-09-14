@@ -3,16 +3,11 @@
 
 //#include <Controller.h>
 #include <Error.h>
-#include <HX711.h>
+#include <Arduino.h>
 #include <Servo.h>
 
 #define THROTTLE_MIN (0)
 #define THROTTLE_MAX (1)
-
-// HX711 circuit wiring
-const int LOADCELL_DOUT_PIN = 5;
-const int LOADCELL_SCK_PIN = 4;
-const int TARE_BUTTON = 2;
 
 //ESC PWM endpoints
 const int PWM_LOW = 1020;
@@ -20,14 +15,6 @@ const int PWM_HIGH = 1980;
 
 //number of times to arm
 int arm_tries = 10;
-
-//number of transient states to record
-int transient_record = 100;
-
-const double a = -0.0141443;
-const double b = 0.000449718;
-
-HX711 scale;
 
 static float _throttleToPWM(float throttle) {
     return map(throttle, THROTTLE_MIN, THROTTLE_MAX, PWM_LOW, PWM_HIGH);
@@ -38,8 +25,6 @@ static bool _validPWM(int8_t pwm_value) {
 }
 
 ESC::ESC(int _throttle_pin) {
-    pinMode(TARE_BUTTON, INPUT_PULLDOWN);
-
     throttle_pin = _throttle_pin;
 
     // initialize esc pwm out
