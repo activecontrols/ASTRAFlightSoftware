@@ -17,7 +17,6 @@ Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
 
-
 #if USE_COMMS
   #include "Comms.h"
 #endif
@@ -52,6 +51,7 @@ fmav_traj_ack_t loadSD(int number) {
 
 void setup() {
   Serial.begin(9600);
+  Serial1.begin(57600);
   
   //Sets up led
   pinMode(LED_BUILTIN, OUTPUT);
@@ -137,19 +137,17 @@ void loop() {
 
   
 
-  // controllerInputU; //the vector to access for outputs
-  // for (int i = 0; i < controllerInputU.size(); i++) {
-  //   Serial.print(" ");
-  //   Serial.print(controllerInputU(i));
-  // }
-  // Serial.println();
+  Serial.print("Time Elasped: ");
+  Serial.println(millis()/1000.0, 3);
 
-  Serial.print(millis()/1000.0, 3); Serial.print(", ");
+  Serial.print("Estimated State Vector: ");
   for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
     Serial.print(estimator::estimatedStateX(i), 3);
     if (i != ESTIMATED_STATE_DIMENSION - 1) Serial.print(", ");
   }
   Serial.println();
+
+  Serial.print("Control Vector: ");
   for (byte i = 0; i < U_ROW_LENGTH; i++) {
     Serial.print(controllerInputU(i), 3);
     if (i != U_ROW_LENGTH - 1) Serial.print(", ");
