@@ -167,11 +167,11 @@ namespace controller {
         
         torqueVaneLeft.write(controllerInputU(3) + LEFT_TORQUE_VANE_INITIAL_SETTING); //write alpha to left torque vane
         torqueVaneRight.write(-controllerInputU(3) + RIGHT_TORQUE_VANE_INITIAL_SETTING); //write -alpha to right torque vane
-#endif
 
         int errorCode = edfFan.setThrottle(controllerInputU(2)); //write throttle to ESC (power), which then talks to EDF (fan))
-        
+#endif
 
+        
         return NO_ERROR_CODE;
     }
 
