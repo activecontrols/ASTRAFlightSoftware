@@ -17,6 +17,12 @@ Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
 
+// BATTERY VOLTAGE VARIABLES
+
+#define battVPin 41 // SHOULD BE THE RIGHT PIN
+#define CHECK_BATTERY_VOLTAGE 1
+elapsedMillis fastLedTime;
+
 #if USE_COMMS
   #include "Comms.h"
 #endif
@@ -59,6 +65,10 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH); 
   
 
+#if CHECK_BATTERY_VOLTAGE
+  pinMode(battVPin, INPUT);
+#endif
+
 #if USE_COMMS
   Serial.print("Set up comms...");
   comms.init();
@@ -98,10 +108,44 @@ void led() {
   }
 }
 
+//Mainly for battery voltage checker, could possibly be used for other things too
+void fastLED() {
+  if (fastLedTime >= 400) {
+
+    //(HIGH and LOW are the voltage levels)
+    if (ledOn == true) {
+      digitalWrite(LED_BUILTIN, LOW);
+      ledOn = false;
+    } else if (ledOn == false) {
+      digitalWrite(LED_BUILTIN, HIGH);
+      ledOn = true;
+    }
+    
+    fastLedTime = 0;
+  }
+}
+
 void loop() {
   Serial.print("Loop time: ");
   Serial.println(totalTimeElapsed - lastTime);
   
+#if CHECK_BATTERY_VOLTAGE
+  int pinVal = analogRead(battVPin); //Reading analog pin
+  float batteryV = (pinVal * 10) / 1023; //Converting analog signal into battery voltage
+
+  if (batteryV < 6) {
+    Serial.print("BATTERY VOLTAGE IS CRITICALLY LOW (<6.0V)");
+    fastLED();
+  }
+  else if (batteryV < 6.4) {
+    Serial.print("BATTERY VOLTAGE IS VERY LOW (<6.4V)");
+    fastLED();
+  }
+  else if (batteryV < 7) {
+    Serial.print("BATTERY VOLTAGE IS LOW (<7V)");
+  }
+#endif
+
   lastTime = totalTimeElapsed;
   
   estimator::updateEstimator();
