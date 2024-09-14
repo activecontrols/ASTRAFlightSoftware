@@ -3,9 +3,6 @@
 IMU.h - Header file for the IMU Driver
 Description: Contains all functions and variables to interact with the IMU
 Author: Vincent Palmerio
-
-Last updated: 11/4/2023
-
 */
 
 #ifndef IMU_H
@@ -19,9 +16,9 @@ Last updated: 11/4/2023
 #include <ArduinoEigenDense.h>
 #include <Wire.h>
 
-//uncomment to print data to console for just IMU
+//uncomment to print debugging data to console
 #define ASTRA_IMU_DEBUG 
-
+//#define AHRS_DEBUG_OUTPUT
 
 
 // Full orientation sensing using NXP/Madgwick/Mahony and a range of 9-DoF
@@ -45,10 +42,8 @@ Last updated: 11/4/2023
 #define IMU_WIRE Wire
 #define IMU_NUMBER (1) /* Determined which IMU we are using (ie, physical IMU labeled as 1 or 2)*/
 
-//#define AHRS_DEBUG_OUTPUT
 
-
-extern float* values;
+extern float* orientationArray;
 extern float roll, pitch, yaw;
 extern Eigen::VectorXd linearAccelVector;
 extern float linearAccelX, linearAccelY, linearAccelZ;
@@ -68,7 +63,7 @@ static Adafruit_NXPSensorFusion filter; // slowest
 extern int initializeIMU();
 extern int updateIMU();
 extern int loadPresetCalibration();
-extern float* getValues();
+extern float* updateOrientationArray();
 
 
 #endif

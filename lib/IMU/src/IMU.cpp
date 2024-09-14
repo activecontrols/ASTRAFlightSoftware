@@ -21,17 +21,7 @@ float roll, pitch, yaw = 0;
 float gx, gy, gz = 0; //degrees per second on gyro
 float qw, qx, qy, qz = 0; //quaternarion
 float gxDPS, gyDPS, gzDPS = 0; //degrees per second on gyro
-/*
- * You must free the pointer and set it to NULL after using the pointer!
- */
-float* getValues() {
-  float* values = (float*)malloc(3 * sizeof(float));
-  values[0] = roll;
-  values[1] = pitch;
-  values[2] = yaw;
-  return values;
-}
-
+float orientationArray[3] = {0, 0, 0};
 
 //loads a predetermined calibration into the EEPROM
 int loadPresetCalibration() {
@@ -93,7 +83,12 @@ int loadPresetCalibration() {
   return NO_ERROR_CODE;
 }
 
-
+float* updateOrientationArray() {
+  orientationArray[0] = roll;
+  orientationArray[1] = pitch;
+  orientationArray[2] = yaw;
+  return orientationArray;
+}
 
 int initializeIMU() {
   
@@ -185,8 +180,6 @@ int updateIMU() {
 
 #if defined(ASTRA_FULL_DEBUG) or defined(ASTRA_IMU_DEBUG)
 
-  //Serial.print("I2C took "); Serial.print(millis()-timestamp); Serial.println(" ms");;
-  //Serial.print("Update took "); Serial.print(millis()-timestamp); Serial.println(" ms");
   Serial.print("Acceleration: ");
   Serial.print(accel.acceleration.x, 4); Serial.print(", ");
   Serial.print(accel.acceleration.y, 4); Serial.print(", ");
@@ -218,8 +211,7 @@ int updateIMU() {
   Serial.print(qy, 4);
   Serial.print(", ");
   Serial.println(qz, 4);  
-  //Serial.print("Took "); Serial.print(millis()-timestamp); Serial.println(" ms");
-  //delay(50);
+
 #endif
 
   return NO_ERROR_CODE;
