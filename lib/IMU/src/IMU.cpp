@@ -20,7 +20,7 @@ Eigen::VectorXd magnetometerVector(3);
 float roll, pitch, yaw = 0;
 float gx, gy, gz = 0; //degrees per second on gyro
 float qw, qx, qy, qz = 0; //quaternarion
-
+float gxDPS, gyDPS, gzDPS = 0; //degrees per second on gyro
 /*
  * You must free the pointer and set it to NULL after using the pointer!
  */
@@ -96,13 +96,8 @@ int loadPresetCalibration() {
 
 
 int initializeIMU() {
-  //Serial.begin(115200);
-  //while (!Serial) yield();
-  //Serial.println("test");
-  for (int i = 0; i < linearAccelVector.size(); i++) {
-    linearAccelVector(i) = 0;
-  }
-
+  
+  linearAccelVector.setZero();
 
   if (!cal.begin()) {
     //Failed to initialize calibration helper
@@ -143,7 +138,7 @@ int initializeIMU() {
   setup_sensors();
   filter.begin(FILTER_UPDATE_RATE_HZ);
   
-  Wire.setClock(400000); // 400KHz
+  Wire.setClock(WIRE_UPDATE_CLOCK); 
 
   return NO_ERROR_CODE;
 }
@@ -161,15 +156,17 @@ int updateIMU() {
   cal.calibrate(accel);
   cal.calibrate(gyro);
 
+  gx = gyro.gyro.x; //omega x
+  gy = gyro.gyro.y; //omega y
+  gz = gyro.gyro.z; //omega z
+
   // Gyroscope needs to be converted from Rad/s to Degree/s
   // the rest are not unit-important
-
-  gx = gyro.gyro.x; //* SENSORS_RADS_TO_DPS; //omega x
-  gy = gyro.gyro.y; //* SENSORS_RADS_TO_DPS; //omega y
-  gz = gyro.gyro.z; //* SENSORS_RADS_TO_DPS; //omega z
-
-  // Update the SensorFusion filter
-  filter.update(gx, gy, gz, 
+  gxDPS = gyro.gyro.x * SENSORS_RADS_TO_DPS; //omega x
+  gyDPS = gyro.gyro.y * SENSORS_RADS_TO_DPS; //omega y
+  gzDPS = gyro.gyro.z * SENSORS_RADS_TO_DPS; //omega z
+  
+  filter.update(gxDPS, gyDPS, gzDPS, 
                 accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, 
                 mag.magnetic.x, mag.magnetic.y, mag.magnetic.z);
 
@@ -178,12 +175,9 @@ int updateIMU() {
   pitch = filter.getPitch();
   yaw = filter.getYaw();
 
-
-  //float qw, qx, qy, qz;
   filter.getQuaternion(&qw, &qx, &qy, &qz);
 
-
-  filter.getLinearAcceleration(&linearAccelX, &linearAccelY, &linearAccelZ); //"a" -  linear acceleration
+  filter.getLinearAcceleration(&linearAccelX, &linearAccelY, &linearAccelZ);
 
   linearAccelVector << linearAccelX, linearAccelY, linearAccelZ;
   gyroscopeVector << gx, gy, gz;
@@ -191,22 +185,24 @@ int updateIMU() {
 
 #if defined(ASTRA_FULL_DEBUG) or defined(ASTRA_IMU_DEBUG)
 
-  //Serial.print("I2C took "); Serial.print(millis()-timestamp); Serial.println(" ms");
-
+  //Serial.print("I2C took "); Serial.print(millis()-timestamp); Serial.println(" ms");;
   //Serial.print("Update took "); Serial.print(millis()-timestamp); Serial.println(" ms");
-  Serial.print("Raw: ");
+  Serial.print("Acceleration: ");
   Serial.print(accel.acceleration.x, 4); Serial.print(", ");
   Serial.print(accel.acceleration.y, 4); Serial.print(", ");
   Serial.print(accel.acceleration.z, 4); Serial.print(", ");
   Serial.println();
+  Serial.print("Gyro");
   Serial.print(gx, 4); Serial.print(", ");
   Serial.print(gy, 4); Serial.print(", ");
   Serial.print(gz, 4); Serial.print(", ");
   Serial.println();
+  Serial.print("Magnetometer: ");
   Serial.print(mag.magnetic.x, 4); Serial.print(", ");
   Serial.print(mag.magnetic.y, 4); Serial.print(", ");
-  Serial.print(mag.magnetic.z, 4); Serial.println("");
+  Serial1.print(mag.magnetic.z, 4); Serial1.println("\n");
 
+  Serial.println();
   Serial.print("Orientation: ");
   Serial.print(roll);
   Serial.print(", ");
@@ -226,8 +222,6 @@ int updateIMU() {
   //delay(50);
 #endif
 
-
   return NO_ERROR_CODE;
-
 }
 

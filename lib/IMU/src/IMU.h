@@ -20,7 +20,7 @@ Last updated: 11/4/2023
 #include <Wire.h>
 
 //uncomment to print data to console for just IMU
-//#define ASTRA_IMU_DEBUG 
+#define ASTRA_IMU_DEBUG 
 
 
 
@@ -34,15 +34,14 @@ Last updated: 11/4/2023
 // to Adafruit Unified Sensor interface
 
 
-
 #if defined(ADAFRUIT_SENSOR_CALIBRATION_USE_EEPROM)
   static Adafruit_Sensor_Calibration_EEPROM cal;
 #else
   Adafruit_Sensor_Calibration_SDFat cal;
 #endif
 
-#define FILTER_UPDATE_RATE_HZ (10000)
-#define PRINT_EVERY_N_UPDATES (10)
+#define FILTER_UPDATE_RATE_HZ (1200)
+#define WIRE_UPDATE_CLOCK (400000)
 #define IMU_WIRE Wire
 #define IMU_NUMBER (1) /* Determined which IMU we are using (ie, physical IMU labeled as 1 or 2)*/
 
@@ -62,6 +61,8 @@ extern float qw, qx, qy, qz; //quaternarion
 
 // slower == better quality output
 static Adafruit_NXPSensorFusion filter; // slowest
+//static Adafruit_Mahony filter; 
+//static Adafruit_Madgwick filter;
 
 
 extern int initializeIMU();
