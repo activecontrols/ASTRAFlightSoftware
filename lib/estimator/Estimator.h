@@ -13,14 +13,9 @@ Author: Vincent Palmerio
 #define MEASUREMENT_DIMENSION (9)
 
 namespace estimator {
-    extern int initializeEstimator(); 
+    int initializeEstimator(); 
 
     extern Eigen::VectorXd estimatedStateX;
-    extern Eigen::VectorXd measurementVectorY;
-    extern Eigen::VectorXd initialQuaternion;
-    extern Eigen::VectorXd initialAcceleration;
-    extern Eigen::VectorXd earthFrameAcceleration;
-    extern Eigen::VectorXd velocityBodyFrame;
 
     int updateEstimator(); 
 

@@ -16,7 +16,6 @@ Author: Vincent Palmerio
 
 namespace estimator {
     Eigen::VectorXd estimatedStateX(ESTIMATED_STATE_DIMENSION);
-
     Eigen::VectorXd measurementVectorY(MEASUREMENT_DIMENSION);
     Eigen::VectorXd initialQuaternion(4);
     Eigen::VectorXd initialAcceleration(3);
@@ -35,24 +34,24 @@ namespace estimator {
     int initializeEstimator() {
 
         //IMU SETUP
-        int errorCode = initializeIMU();
+        int errorCode = imu::initializeIMU();
         while(errorCode != 0) {
             Serial.print("Failed to initialize IMU, error code: ");
             Serial.print(errorCode);
             Serial.println(". Retrying...");
-            errorCode = initializeIMU();
+            errorCode = imu::initializeIMU();
         }
-        //- --
+        //----
 
         estimatedStateX.setZero();
         
         for (byte i = 0; i < 10000; i++) {
             //TODO: Add a delay here to allow the kalman filter to calibrate to loop time
-            updateIMU();
+            imu::updateIMU();
         }
     
-        initialAcceleration << linearAccelVector;
-        initialQuaternion << qw, qx, qy, qz;
+        initialAcceleration << imu::linearAccelVector;
+        initialQuaternion << imu::qw, imu::qx, imu::qy, imu::qz;
 
         rotationConjugate = math::quaternionConjugate(initialQuaternion);
 
@@ -60,7 +59,7 @@ namespace estimator {
 
         initialAcceleration << math::CBI * initialAcceleration;
 
-        earthFrameAcceleration << (math::CBI * linearAccelVector) - initialAcceleration;
+        earthFrameAcceleration << (math::CBI * imu::linearAccelVector) - initialAcceleration;
 
         //TOF SETUP
     #if (USE_TOF_SENSOR)
@@ -87,7 +86,7 @@ namespace estimator {
     }
 
     int updateEstimator() {
-        updateIMU();
+        imu::updateIMU();
 
     #if USE_TOF_SENSOR
         tof::TOF_buffer.addData();
@@ -104,15 +103,15 @@ namespace estimator {
 
 
         Eigen::Vector4d measuredQuaternion(4);
-        measuredQuaternion << qw, qx, qy, qz;
+        measuredQuaternion << imu::qw, imu::qx, imu::qy, imu::qz;
 
         Eigen::VectorXd currentQuaternion(4);
         currentQuaternion << math::quaternionProduct(math::quaternionConjugate(initialQuaternion), measuredQuaternion);
         Eigen::VectorXd omega(3);
-        omega << gx, gy, gz;
+        omega << imu::gx, imu::gy, imu::gz;
 
         math::calculateCBI(currentQuaternion);
-        earthFrameAcceleration << math::CBI*linearAccelVector - initialAcceleration;
+        earthFrameAcceleration << math::CBI*imu::linearAccelVector - initialAcceleration;
 
         bodyFrameVelocityIntegrator.integratorUpdate();
 
@@ -139,11 +138,11 @@ namespace estimator {
         estimatedStateX(1) = measuredQuaternion(2);
         estimatedStateX(2) = measuredQuaternion(3);
 
-        estimatedStateX(3) = gy;
-        estimatedStateX(4) = gx;
-        estimatedStateX(5) = gz;
+        estimatedStateX(3) = imu::gy;
+        estimatedStateX(4) = imu::gx;
+        estimatedStateX(5) = imu::gz;
 
-        measurementVectorY << linearAccelVector, gyroscopeVector, magnetometerVector;
+        measurementVectorY << imu::linearAccelVector, imu::gyroscopeVector, imu::magnetometerVector;
 
         return NO_ERROR_CODE;
     }

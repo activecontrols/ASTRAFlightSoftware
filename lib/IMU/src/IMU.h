@@ -1,4 +1,3 @@
-
 /*
 IMU.h - Header file for the IMU Driver
 Description: Contains all functions and variables to interact with the IMU
@@ -42,29 +41,28 @@ Author: Vincent Palmerio
 #define IMU_WIRE Wire
 #define IMU_NUMBER (1) /* Determined which IMU we are using (ie, physical IMU labeled as 1 or 2)*/
 
-
-extern float orientationArray[3];
-extern float roll, pitch, yaw;
-extern Eigen::VectorXd linearAccelVector;
-extern float linearAccelX, linearAccelY, linearAccelZ;
-
-extern Eigen::VectorXd gyroscopeVector;
-extern Eigen::VectorXd magnetometerVector;
-
-extern float gx, gy, gz; //degrees per second on gyro
-extern float qw, qx, qy, qz; //quaternarion
-
 // slower == better quality output
 static Adafruit_NXPSensorFusion filter; // slowest
 //static Adafruit_Mahony filter; 
 //static Adafruit_Madgwick filter;
 
+namespace imu {
+  extern float orientationArray[3];
+  extern float roll, pitch, yaw;
+  extern Eigen::VectorXd linearAccelVector;
+  extern float linearAccelX, linearAccelY, linearAccelZ;
 
-extern int initializeIMU();
-extern int updateIMU();
-extern int loadPresetCalibration();
-extern float* updateOrientationArray();
+  extern Eigen::VectorXd gyroscopeVector;
+  extern Eigen::VectorXd magnetometerVector;
 
+  extern float gx, gy, gz; //degrees per second on gyro
+  extern float qw, qx, qy, qz; //quaternarion
+
+  int initializeIMU();
+  int updateIMU();
+  int loadPresetCalibration();
+  float* updateOrientationArray();
+}
 
 #endif
 
