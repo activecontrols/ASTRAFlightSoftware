@@ -44,23 +44,23 @@ namespace estimator {
         }
         //- --
 
-
         estimatedStateX.setZero();
         
-        for (byte i = 0; i < 100; i++) {
+        for (byte i = 0; i < 10000; i++) {
+            //TODO: Add a delay here to allow the kalman filter to calibrate to loop time
             updateIMU();
         }
     
         initialAcceleration << linearAccelVector;
         initialQuaternion << qw, qx, qy, qz;
 
-        rotationConjugate = math_functions::quaternionConjugate(initialQuaternion);
+        rotationConjugate = math::quaternionConjugate(initialQuaternion);
 
-        math_functions::calculateCBI(initialQuaternion);
+        math::calculateCBI(initialQuaternion);
 
-        initialAcceleration << math_functions::CBI * initialAcceleration;
+        initialAcceleration << math::CBI * initialAcceleration;
 
-        earthFrameAcceleration << (math_functions::CBI * linearAccelVector) - initialAcceleration;
+        earthFrameAcceleration << (math::CBI * linearAccelVector) - initialAcceleration;
 
         //TOF SETUP
     #if (USE_TOF_SENSOR)
@@ -102,43 +102,42 @@ namespace estimator {
         d_m_star = NULL;
     #endif
 
-        
 
         Eigen::Vector4d measuredQuaternion(4);
         measuredQuaternion << qw, qx, qy, qz;
-        // Eigen::VectorXd currentQuaternion(4);
-        // currentQuaternion << quaternionProduct(quaternionConjugate(initialQuaternion), measuredQuaternion);
-        // Eigen::VectorXd omega(3);
-        // omega << gx, gy, gz;
 
-        // calculateCBI(currentQuaternion);
-        // earthFrameAcceleration << CBI*linearAccelVector - initialAcceleration;
+        Eigen::VectorXd currentQuaternion(4);
+        currentQuaternion << math::quaternionProduct(math::quaternionConjugate(initialQuaternion), measuredQuaternion);
+        Eigen::VectorXd omega(3);
+        omega << gx, gy, gz;
 
-        // bodyFrameVelocityIntegrator.integratorUpdate();
+        math::calculateCBI(currentQuaternion);
+        earthFrameAcceleration << math::CBI*linearAccelVector - initialAcceleration;
 
-        // linearAccelIntegrator.integratorUpdate();
+        bodyFrameVelocityIntegrator.integratorUpdate();
 
-        // velocityBodyFrame << bodyFrameVelocityIntegrator.integratedData(0),
-        //                         bodyFrameVelocityIntegrator.integratedData(1),
-        //                         bodyFrameVelocityIntegrator.integratedData(2);
+        linearAccelIntegrator.integratorUpdate();
 
-        // estimatedStateX(0) = linearAccelIntegrator.integratedData(0);
-        // estimatedStateX(1) = linearAccelIntegrator.integratedData(1);
-        // estimatedStateX(2) = linearAccelIntegrator.integratedData(2);
+        velocityBodyFrame << bodyFrameVelocityIntegrator.integratedData(0),
+                                bodyFrameVelocityIntegrator.integratedData(1),
+                                bodyFrameVelocityIntegrator.integratedData(2);
+
 
         Eigen::Vector4d realQuaternion(4);
-        realQuaternion = math_functions::quaternionProduct(measuredQuaternion, rotationConjugate);
-        Serial.println("Quaternion: ");
-        Serial.print(realQuaternion(1), 5);
+        realQuaternion = math::quaternionProduct(measuredQuaternion, rotationConjugate);
+        
+
+        Serial.println("Measured Quaternion: ");
+        Serial.print(measuredQuaternion(1), 5);
         Serial.print(", ");
-        Serial.print(realQuaternion(2), 5);
+        Serial.print(measuredQuaternion(2), 5);
         Serial.print(", ");
-        Serial.print(realQuaternion(3), 5);
+        Serial.print(measuredQuaternion(3), 5);
         Serial.println();
 
-        estimatedStateX(0) = realQuaternion(1);
-        estimatedStateX(1) = realQuaternion(2);
-        estimatedStateX(2) = realQuaternion(3);
+        estimatedStateX(0) = measuredQuaternion(1);
+        estimatedStateX(1) = measuredQuaternion(2);
+        estimatedStateX(2) = measuredQuaternion(3);
 
         estimatedStateX(3) = gy;
         estimatedStateX(4) = gx;
