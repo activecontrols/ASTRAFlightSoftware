@@ -106,6 +106,8 @@ namespace controller {
             }
         }
 #endif
+
+#if ENABLE_MOTOR_CONTROL
         innerGimbal.attach(INNER_GIMBAL_PIN);
         outerGimbal.attach(OUTER_GIMBAL_PIN);
         torqueVaneLeft.attach(LEFT_TORQUE_VANE_PIN);
@@ -126,6 +128,7 @@ namespace controller {
         if (!torqueVaneRight.attached()) {
             return RIGHT_TORQUE_VANE_NOT_ATTACHED;
         }
+#endif
 
         //ENCODER SETUP
 #if USE_ENCODER
