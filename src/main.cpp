@@ -66,7 +66,6 @@ void setup() {
   Serial.println("Done");
 #endif
 
-
   estimator::initializeEstimator();
 
   controller::initializeController();
@@ -104,11 +103,6 @@ void loop() {
   Serial.println(totalTimeElapsed - lastTime);
   
   lastTime = totalTimeElapsed;
-
-  
-  Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
-  controllerInputU = controller::getControlInputs();
-  
   
   estimator::updateEstimator();
   controller::updateController();
@@ -136,7 +130,7 @@ void loop() {
 #endif
 
   
-
+  //DEBUGGING STATEMENTS ----------------------------------------------
   Serial.print("Time Elasped: ");
   Serial.println(millis()/1000.0, 3);
 
@@ -149,10 +143,11 @@ void loop() {
 
   Serial.print("Control Vector: ");
   for (byte i = 0; i < U_ROW_LENGTH; i++) {
-    Serial.print(controllerInputU(i), 3);
+    Serial.print(controller::controllerInputU(i), 3);
     if (i != U_ROW_LENGTH - 1) Serial.print(", ");
   }
   Serial.println();
+  // -------------------------------------------------------------------
   
   //turns led on and off
   led();
