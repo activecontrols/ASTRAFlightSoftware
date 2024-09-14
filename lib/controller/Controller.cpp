@@ -151,11 +151,13 @@ namespace controller {
 
     int controlServos() {
 
+#if ENABLE_MOTOR_CONTROL
         innerGimbal.write(controllerInputU(0) + INNER_GIMBAL_INITIAL_SETTING); //write gamma to inner gimbal
         outerGimbal.write(controllerInputU(1) + OUTER_GIMBAL_INITIAL_SETTING); //write beta to outer gimbal
         
         torqueVaneLeft.write(controllerInputU(3) + LEFT_TORQUE_VANE_INITIAL_SETTING); //write alpha to left torque vane
         torqueVaneRight.write(-controllerInputU(3) + RIGHT_TORQUE_VANE_INITIAL_SETTING); //write -alpha to right torque vane
+#endif
 
         return NO_ERROR_CODE;
     }
