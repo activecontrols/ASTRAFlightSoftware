@@ -6,7 +6,7 @@ Description:  Defines several helpful math functions, including those declared i
 Author: Ani Gokhale
 */
 
-namespace math_functions{
+namespace math{
     Eigen::MatrixXd CBI(3, 3);
 
     void calculateCBI(Eigen::VectorXd q) {
@@ -28,5 +28,42 @@ namespace math_functions{
         Eigen::VectorXd qstar(4);
         qstar << q(0), -q(1), -q(2), -q(3);
         return qstar;
+    }
+
+    Eigen::Quaterniond getConstrainedQuaternion(Eigen::Matrix4Xd* v) {
+        //magnitude constraint of quaternion
+        //prone to precision float errors
+        double constraint = std::sqrt(
+            1-
+            (*v)(2,0)*(*v)(2,0)-
+            (*v)(2,1)*(*v)(2,1)-
+            (*v)(2,2)*(*v)(2,2)
+        );
+
+        Eigen::Quaterniond e(
+            constraint,
+            v[2](0),
+            v[2](1),
+            v[2](0)
+        );
+        return e;
+    }
+
+    void getDeltaX(Eigen::Matrix4Xd* x, Eigen::Matrix4Xd* xRef, Eigen::VectorXd* deltaX) {
+
+        //magnitude of vector in first row
+        (*deltaX)(0) = ((*x).row(0) - (*xRef).row(0)).norm();
+
+        //magnitude of vector in second row
+        (*deltaX)(1) = ((*x).row(1) - (*xRef).row(1)).norm();
+
+        Eigen::Quaterniond e = getConstrainedQuaternion(x) * getConstrainedQuaternion(xRef);
+        //theta (vector of length 1)
+        (*deltaX)(2) = 2*std::acos(e.w());
+
+        //magnitude of vector in fourth row
+        (*deltaX)(3) = ((*x).row(3) - (*xRef).row(3)).norm();
+
+        return;
     }
 }

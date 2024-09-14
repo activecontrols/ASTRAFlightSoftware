@@ -25,13 +25,13 @@ Author: Vincent Palmerio
 #define ALPHA_MAX (8) /* left and right torque vane max */
 #define ALPHA_MIN (-ALPHA_MAX) /* left and right torque vane min */
 #define INNER_GIMBAL_PIN (29)
-#define OUTER_GIMBAL_PIN (36)
+#define OUTER_GIMBAL_PIN (39)
 #define LEFT_TORQUE_VANE_PIN (33)
-#define RIGHT_TORQUE_VANE_PIN (28)
 #define ESC_PIN (9)
+#define RIGHT_TORQUE_VANE_PIN (36)
 #define INNER_GIMBAL_INITIAL_SETTING (82)
 #define OUTER_GIMBAL_INITIAL_SETTING (110)
-#define LEFT_TORQUE_VANE_INITIAL_SETTING (145)
+#define LEFT_TORQUE_VANE_INITIAL_SETTING (140)
 #define RIGHT_TORQUE_VANE_INITIAL_SETTING (140)
 #define BETA_DAMPENING_CONSTANT (0.03)
 #define GAMMA_DAMPENING_CONSTANT (0.02)

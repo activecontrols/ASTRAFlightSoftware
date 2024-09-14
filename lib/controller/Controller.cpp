@@ -109,6 +109,8 @@ namespace controller {
             }
         }
 #endif
+
+#if ENABLE_MOTOR_CONTROL
         innerGimbal.attach(INNER_GIMBAL_PIN);
         outerGimbal.attach(OUTER_GIMBAL_PIN);
         torqueVaneLeft.attach(LEFT_TORQUE_VANE_PIN);
@@ -129,6 +131,7 @@ namespace controller {
         if (!torqueVaneRight.attached()) {
             return RIGHT_TORQUE_VANE_NOT_ATTACHED;
         }
+#endif
 
         if (!edfFan.checkAttached()) {
             return ESC_NOT_ATTACHED;
@@ -158,11 +161,13 @@ namespace controller {
 
     int controlServos() {
 
+#if ENABLE_MOTOR_CONTROL
         innerGimbal.write(controllerInputU(0) + INNER_GIMBAL_INITIAL_SETTING); //write gamma to inner gimbal
         outerGimbal.write(controllerInputU(1) + OUTER_GIMBAL_INITIAL_SETTING); //write beta to outer gimbal
         
         torqueVaneLeft.write(controllerInputU(3) + LEFT_TORQUE_VANE_INITIAL_SETTING); //write alpha to left torque vane
         torqueVaneRight.write(-controllerInputU(3) + RIGHT_TORQUE_VANE_INITIAL_SETTING); //write -alpha to right torque vane
+#endif
 
         int errorCode = edfFan.setThrottle(controllerInputU(2)); //write throttle to ESC (power), which then talks to EDF (fan))
         
@@ -264,24 +269,10 @@ namespace controller {
     int controlLawRegulate() {
 
         controllerInputU = -(qsGain * estimator::estimatedStateX);
-        Serial.print("Controller Multiplication: ");
-        for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
-            Serial.print( -(qsGain(0, i) * estimator::estimatedStateX(i)), 5);
-            Serial.print(", ");
-        }
-        
-        Serial.println();
-        Serial.print(qsGain(0, 2));
-        Serial.print(estimator::estimatedStateX(2));
-        Serial.println();
 
         controllerInputU(0) = 180.0*controllerInputU(0)/PI;
-        Serial.print("Controller Gamma: ");
-        Serial.println(controllerInputU(0), 3);
-
+        
         controllerInputU(1) = 180.0*controllerInputU(1)/PI;
-        Serial.print("Controller Beta: ");
-        Serial.println(controllerInputU(1), 3);
 
         return NO_ERROR_CODE;
     }
@@ -457,43 +448,3 @@ namespace controller {
     }
 
 }
-
-
-//UNUSED
-//-----------------------------------------------------------------------------------------
-// Eigen::Quaterniond getConstrainedQuaternion(Eigen::Matrix4Xd* v) {
-//     //magnitude constraint of quaternion
-//     //prone to precision float errors
-//     double constraint = std::sqrt(
-//         1-
-//         (*v)(2,0)*(*v)(2,0)-
-//         (*v)(2,1)*(*v)(2,1)-
-//         (*v)(2,2)*(*v)(2,2)
-//     );
-
-//     Eigen::Quaterniond e(
-//         constraint,
-//         v[2](0),
-//         v[2](1),
-//         v[2](0)
-//     );
-//     return e;
-// }
-
-// int getDeltaX(Eigen::Matrix4Xd* x, Eigen::Matrix4Xd* xRef) {
-
-//     //magnitude of vector in first row
-//     deltaX(0) = ((*x).row(0) - (*xRef).row(0)).norm();
-
-//     //magnitude of vector in second row
-//     deltaX(1) = ((*x).row(1) - (*xRef).row(1)).norm();
-
-//     Eigen::Quaterniond e = getConstrainedQuaternion(x) * getConstrainedQuaternion(xRef);
-//     //theta (vector of length 1)
-//     deltaX(2) = 2*std::acos(e.w());
-
-//     //magnitude of vector in fourth row
-//     deltaX(3) = ((*x).row(3) - (*xRef).row(3)).norm();
-
-//     return NO_ERROR_CODE;
-// }
