@@ -11,6 +11,7 @@
 #endif
 
 #include <Arduino.h>
+#include <ESC.h>
 #include <Servo.h>
 
 
@@ -45,6 +46,8 @@ namespace controller {
     Servo outerGimbal;
     Servo torqueVaneLeft;
     Servo torqueVaneRight;
+
+    ESC edfFan = ESC(ESC_PIN);
 
     elapsedMillis xNonTrajTimer;
 
@@ -130,6 +133,10 @@ namespace controller {
         }
 #endif
 
+        if (!edfFan.checkAttached()) {
+            return ESC_NOT_ATTACHED;
+        }
+
         //ENCODER SETUP
 #if USE_ENCODER
         while (!encoder::encoderSetup()) {
@@ -161,6 +168,9 @@ namespace controller {
         torqueVaneLeft.write(controllerInputU(3) + LEFT_TORQUE_VANE_INITIAL_SETTING); //write alpha to left torque vane
         torqueVaneRight.write(-controllerInputU(3) + RIGHT_TORQUE_VANE_INITIAL_SETTING); //write -alpha to right torque vane
 #endif
+
+        int errorCode = edfFan.setThrottle(controllerInputU(2)); //write throttle to ESC (power), which then talks to EDF (fan))
+        
 
         return NO_ERROR_CODE;
     }
