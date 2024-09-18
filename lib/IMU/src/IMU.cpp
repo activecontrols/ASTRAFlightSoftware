@@ -59,9 +59,9 @@ int loadPresetCalibration() {
 
   //Gyro zero rate offset
   // in Radians/s
-  cal.gyro_zerorate[0] = 0.05;
-  cal.gyro_zerorate[1] = -0.01;
-  cal.gyro_zerorate[2] = -0.01;
+  cal.gyro_zerorate[0] = 0.0;
+  cal.gyro_zerorate[1] = 0.0;
+  cal.gyro_zerorate[2] = 0.0;
 #endif
 
 #if IMU_NUMBER == 2 /* NOT CALIBRATED YET */
@@ -159,6 +159,8 @@ int updateIMU() {
   magnetometer->getEvent(&mag);
   accelerometer->getEvent(&accel);
   gyroscope->getEvent(&gyro);
+
+  
   
 
   cal.calibrate(mag);
@@ -176,7 +178,7 @@ int updateIMU() {
   // Update the SensorFusion filter
   filter.update(gx, gy, gz, 
                 accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, 
-                mag.magnetic.x, mag.magnetic.y, mag.magnetic.z, ((float)(totalMillis - lastFilterMillis))/1000.0);
+                mag.magnetic.x,mag.magnetic.y,mag.magnetic.z);
 
   lastFilterMillis = totalMillis;
   float heading = atan2(mag.magnetic.y, mag.magnetic.x) * 180/(3.14);
