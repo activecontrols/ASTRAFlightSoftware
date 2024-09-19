@@ -1,17 +1,18 @@
 #include "MEKF.h"
 #include "ArduinoEigenDense.h"
 
-Eigen::Quaterniond estimate(1.0, 0, 0, 0);
+
+Eigen::Quaterniond estimate;
 Eigen::VectorXd gyro_bias(3);
 Eigen::VectorXd accel_bias(3);
 Eigen::VectorXd mag_bias(3);
 
-Eigen::Matrix3d gyro_cov_mat;
-Eigen::Matrix3d gyro_bias_cov_mat;
-Eigen::Matrix3d accel_cov_mat;
-Eigen::Matrix3d accel_bias_cov_mat;
-Eigen::Matrix3d mag_cov_mat;
-Eigen::Matrix3d mag_bias_cov_mat;
+Eigen::Matrix3d gyro_cov_mat(3, 3);
+Eigen::Matrix3d gyro_bias_cov_mat(3, 3);
+Eigen::Matrix3d accel_cov_mat(3,3);
+Eigen::Matrix3d accel_bias_cov_mat(3,3);
+Eigen::Matrix3d mag_cov_mat(3,3);
+Eigen::Matrix3d mag_bias_cov_mat(3,3);
 
 Eigen::MatrixXd estimate_covariance(18,18);
 Eigen::MatrixXd observation_covariance(6,6);
@@ -39,7 +40,7 @@ void initKalman(Eigen::Quaterniond init_est, double estimate_covar, double gyro_
     K = Eigen::MatrixXd::Zero(18, 6);
 
     G = Eigen::MatrixXd::Zero(18,18);
-    G.block<3, 3>(0, 9) = Eigen::MatrixXd::Identity(3,3) * -1;
+    G.block<3, 3>(0, 9) = -Eigen::MatrixXd::Identity(3,3);
     G.block<3, 3>(6, 3) = Eigen::MatrixXd::Identity(3,3);
 
     gyro_cov_mat = Eigen::Matrix3d::Identity(3,3) * gyro_cov;
@@ -82,38 +83,59 @@ void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::Ve
     angular_velocity.w() = 0;
     angular_velocity.vec() = gyro_meas;
     angular_velocity = estimate * angular_velocity;
-    Eigen::Quaterniond q_temp(angular_velocity.coeffs() * time_delta * 0.5);
+    Eigen::Quaterniond q_temp;
+    q_temp = angular_velocity.coeffs() * time_delta * 0.5;
     estimate.coeffs() += q_temp.coeffs();
     estimate.normalize();
 
     G.block<3, 3>(0, 0) = -skewSymmetric(gyro_meas);
-    G.block<3, 3>(3, 0) = estimate.toRotationMatrix() * skewSymmetric(acc_meas);
+    G.block<3, 3>(3, 0) = -estimate.toRotationMatrix() * skewSymmetric(acc_meas);
     G.block<3, 3>(3, 12) = -estimate.toRotationMatrix();
     F_mat = Eigen::MatrixXd::Identity(18, 18) + G * time_delta;
 
+
     estimate_covariance = (F_mat * estimate_covariance * F_mat.transpose()) + process_covariance(time_delta);
+    //Serial.println(process_covariance(time_delta)(0, 0) * pow(10, 7));
 
     H = Eigen::MatrixXd::Zero(6, 18);
     Eigen::Vector3d acc_dir(0.0, 0.0, -1.0);
     Eigen::Vector3d mag_dir(1.0, 0.0, 0.0);
 
-    H.block<3, 3>(0, 0) = skewSymmetric(estimate * acc_dir);
+    H.block<3, 3>(0, 0) = skewSymmetric(rotateVector3ByQuat(acc_dir, estimate.inverse()));
     H.block<3, 3>(0, 12) = Eigen::MatrixXd::Identity(3, 3);
-    H.block<3, 3>(3, 0) = skewSymmetric(estimate * mag_dir);
+    H.block<3, 3>(3, 0) = skewSymmetric(rotateVector3ByQuat(mag_dir, estimate.inverse()));
     H.block<3, 3>(3, 15) = Eigen::MatrixXd::Identity(3, 3);
     Eigen::MatrixXd PH_T = Eigen::MatrixXd::Zero(18, 6);
     PH_T = estimate_covariance * H.transpose();
     inverse_cov = H * PH_T + observation_covariance;
     K = PH_T * inverse_cov.inverse();
-
+    
     estimate_covariance = (Eigen::MatrixXd::Identity(18, 18) - (K * H)) * estimate_covariance;
 
     Eigen::MatrixXd observation = Eigen::MatrixXd::Zero(1, 6);
     observation.block<1, 3>(0, 0) = acc_meas;
     observation.block<1, 3>(0, 3) = mag_meas;
+    
     Eigen::MatrixXd predicted_observation = Eigen::MatrixXd::Zero(1, 6);
-    predicted_observation.block<1, 3>(0, 0) = estimate * acc_dir;
-    predicted_observation.block<1, 3>(0, 3) = estimate * mag_dir;
+    predicted_observation.block<1, 3>(0, 0) = rotateVector3ByQuat(acc_dir, estimate.inverse());
+    predicted_observation.block<1, 3>(0, 3) = rotateVector3ByQuat(mag_dir, estimate.inverse());
+    /*Eigen::Quaterniond inv = estimate.inverse();
+
+    Serial.print("acc, mag, ");
+    Serial.print(inv.w(), 5);
+    Serial.print(",");
+    Serial.print(inv.x(), 5);
+    Serial.print(",");
+    Serial.print(inv.y(), 5);
+    Serial.print(",");
+    Serial.print(inv.z(), 5);
+    Serial.print(",");
+    Serial.print(predicted_observation(0, 0), 5);
+    Serial.print(",");
+    Serial.print(predicted_observation(0, 1), 5);
+    Serial.print(",");
+    Serial.print(predicted_observation(0, 2), 5);
+    Serial.println("");*/
 
     aposteriori_state = K * (observation - predicted_observation).transpose();
 
@@ -133,4 +155,14 @@ Eigen::MatrixXd skewSymmetric(Eigen::VectorXd v){
         v(2), 0.0, -v(0),
         -v(1), v(0), 0.0;
     return m;
+}
+
+Eigen::Vector3d rotateVector3ByQuat(Eigen::Vector3d v, Eigen::Quaterniond q){
+    Eigen::Quaterniond v_q;
+    v_q.w() = 0.0;
+    v_q.vec() = v;
+    Eigen::Quaterniond rotated_v_q;
+    rotated_v_q = q * v_q * q.inverse();
+    Eigen::Vector3d vec_ret(rotated_v_q.x(), rotated_v_q.y(), rotated_v_q.z());
+    return vec_ret;
 }

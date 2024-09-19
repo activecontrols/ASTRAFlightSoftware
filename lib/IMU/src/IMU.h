@@ -18,6 +18,7 @@ Last updated: 11/4/2023
 #include <Adafruit_AHRS.h>
 #include <ArduinoEigenDense.h>
 #include <Wire.h>
+#include <MEKF.h>
 
 //uncomment to print data to console for just IMU
 //#define ASTRA_IMU_DEBUG 

@@ -22,7 +22,14 @@ float gx, gy, gz = 0; //degrees per second on gyro
 float qw, qx, qy, qz = 0; //quaternarion
 elapsedMillis totalMillis = 0;
 int lastMillis = 0;
+elapsedMillis filterMillis = 0;
 int lastFilterMillis = 0;
+Eigen::Quaterniond testA(1.0, 0.5, 0.5, 0.5);
+Eigen::Quaterniond testB(1.0, 1.2, 0.2, 0.2);
+Eigen::Vector3d vecTest(5.6, 6.8, -1.0);
+Eigen::Matrix3d rotMat;
+Eigen::Quaterniond testC;
+Eigen::MatrixXd proc_cov;
 
 /*
  * You must free the pointer and set it to NULL after using the pointer!
@@ -99,6 +106,16 @@ int loadPresetCalibration() {
 
 
 int initializeIMU() {
+  //testA.coeffs() += testB.coeffs();
+  //testA.normalize();
+  /*rotMat = testA.toRotationMatrix();
+  Eigen::Quaterniond v_q;
+  v_q.w() = 0.0;
+  v_q.vec() = vecTest;
+  Eigen::Quaterniond rotated_v_q;
+  rotated_v_q = testB.inverse() * v_q * testB.inverse().inverse();
+  vecTest = rotated_v_q.vec();*/
+  proc_cov = skewSymmetric(vecTest);
   //Serial.begin(115200);
   //while (!Serial) yield();
   //Serial.println("test");
@@ -144,6 +161,8 @@ int initializeIMU() {
 #endif
 
   setup_sensors();
+  initKalman(Eigen::Quaterniond::Identity(), 0.0, 0.0000194955, 0.000000000000000025032, 0.0000000024616355, 0.0, 0.0000000024616355, 0.0, 0.0003, 0.00003);
+  //proc_cov = process_covariance(0.03);
   filter.begin(FILTER_UPDATE_RATE_HZ); // not the rate this filter is running at. that is why changing the sample rate is fucking w the reading
   
   Wire.setClock(25000); // 400KHz
@@ -166,9 +185,9 @@ int updateIMU() {
   cal.calibrate(mag);
   cal.calibrate(accel);
   cal.calibrate(gyro);
-  gx = gyro.gyro.x * SENSORS_RADS_TO_DPS; //omega x
-  gy = gyro.gyro.y * SENSORS_RADS_TO_DPS; //omega y
-  gz = gyro.gyro.z * SENSORS_RADS_TO_DPS; //omega z
+  gx = gyro.gyro.x; //omega x
+  gy = gyro.gyro.y; //omega y
+  gz = gyro.gyro.z; //omega z
 
   // Gyroscope needs to be converted from Rad/s to Degree/s
   // the rest are not unit-important
@@ -176,11 +195,13 @@ int updateIMU() {
   
   
   // Update the SensorFusion filter
-  filter.update(gx, gy, gz, 
+  updateKalman(Eigen::Vector3d(gx, gy, gz), Eigen::Vector3d(-accel.acceleration.x/9.8, -accel.acceleration.y/9.8, -accel.acceleration.z/9.8), 
+                Eigen::Vector3d(0.0, 0.0, 0.0), (double)(filterMillis - lastFilterMillis)/1000.0);
+  /*filter.update(gx, gy, gz, 
                 accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, 
-                mag.magnetic.x,mag.magnetic.y,mag.magnetic.z);
-
-  lastFilterMillis = totalMillis;
+                mag.magnetic.x,mag.magnetic.y,mag.magnetic.z);*/
+  
+  lastFilterMillis = filterMillis;
   float heading = atan2(mag.magnetic.y, mag.magnetic.x) * 180/(3.14);
 
   // print the heading, pitch and roll
@@ -188,9 +209,12 @@ int updateIMU() {
   pitch = filter.getPitch();
   yaw = filter.getYaw();
 
-
+  qw = estimate.w();
+  qx = estimate.x();
+  qy = estimate.y();
+  qz = estimate.z();
   //float qw, qx, qy, qz;
-  filter.getQuaternion(&qw, &qx, &qy, &qz);
+  //filter.getQuaternion(&qw, &qx, &qy, &qz);
 
   
 if(totalMillis - lastMillis > 10){
@@ -204,13 +228,25 @@ if(totalMillis - lastMillis > 10){
     Serial.print(",");
     Serial.print(qz, 5);
     Serial.println("");
-    /*Serial.print(gx, 5);
+    Serial.print(proc_cov(0, 0), 5);
     Serial.print(",");
-    Serial.print(gy, 5);
+    Serial.print(proc_cov(0, 1), 5);
     Serial.print(",");
-    Serial.print(gz, 5);
+    Serial.print(proc_cov(0, 2), 5);
     Serial.println();
-    Serial.print(magnetometer->x_gauss, 5);
+    Serial.print(proc_cov(1, 0), 5);
+    Serial.print(",");
+    Serial.print(proc_cov(1, 1), 5);
+    Serial.print(",");
+    Serial.print(proc_cov(1, 2), 5);
+    Serial.println();
+    Serial.print(proc_cov(2, 0), 5);
+    Serial.print(",");
+    Serial.print(proc_cov(2, 1), 5);
+    Serial.print(",");
+    Serial.print(proc_cov(2, 2), 5);
+    Serial.println();
+    /*Serial.print(magnetometer->x_gauss, 5);
     Serial.print(",");
     Serial.print(magnetometer->y_gauss, 5);
     Serial.print(",");
