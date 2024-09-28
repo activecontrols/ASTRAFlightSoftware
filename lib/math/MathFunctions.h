@@ -9,7 +9,7 @@ Author: Ani Gokhale
 
 #include <ArduinoEigen.h>
 
-namespace math_functions {
+namespace math {
     extern Eigen::MatrixXd CBI;
 
     void calculateCBI(Eigen::VectorXd q);

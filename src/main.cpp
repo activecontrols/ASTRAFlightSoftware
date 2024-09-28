@@ -17,6 +17,11 @@ Description: Currently used to run tests for the entire flight software
 Author: Vincent Palmerio
 */
 
+// BATTERY VOLTAGE VARIABLES
+
+#define battVPin 41 // SHOULD BE THE RIGHT PIN
+#define CHECK_BATTERY_VOLTAGE 1
+elapsedMillis fastLedTime;
 
 #if USE_COMMS
   #include "Comms.h"
@@ -52,6 +57,7 @@ fmav_traj_ack_t loadSD(int number) {
 
 void setup() {
   Serial.begin(9600);
+  Serial1.begin(57600);
   
   //Sets up led
   pinMode(LED_BUILTIN, OUTPUT);
@@ -59,13 +65,16 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH); 
   
 
+#if CHECK_BATTERY_VOLTAGE
+  pinMode(battVPin, INPUT);
+#endif
+
 #if USE_COMMS
   Serial.print("Set up comms...");
   comms.init();
   comms.registerTrajSDLoadAction(loadSD);
   Serial.println("Done");
 #endif
-
 
   estimator::initializeEstimator();
 
@@ -78,6 +87,7 @@ void setup() {
 #endif
 
   timer::startMissionTimer();
+  totalTimeElapsed = 0;
 }
 
 //turns the LED on and off every 3 seconds 
@@ -98,13 +108,46 @@ void led() {
   }
 }
 
+//Mainly for battery voltage checker, could possibly be used for other things too
+void fastLED() {
+  if (fastLedTime >= 400) {
+
+    //(HIGH and LOW are the voltage levels)
+    if (ledOn == true) {
+      digitalWrite(LED_BUILTIN, LOW);
+      ledOn = false;
+    } else if (ledOn == false) {
+      digitalWrite(LED_BUILTIN, HIGH);
+      ledOn = true;
+    }
+    
+    fastLedTime = 0;
+  }
+}
+
 void loop() {
+  Serial.print("Loop time: ");
+  Serial.println(totalTimeElapsed - lastTime);
+  
+#if CHECK_BATTERY_VOLTAGE
+  int pinVal = analogRead(battVPin); //Reading analog pin
+  float batteryV = (pinVal * 10) / 1023; //Converting analog signal into battery voltage
+
+  if (batteryV < 6) {
+    Serial.print("BATTERY VOLTAGE IS CRITICALLY LOW (<6.0V)");
+    fastLED();
+  }
+  else if (batteryV < 6.4) {
+    Serial.print("BATTERY VOLTAGE IS VERY LOW (<6.4V)");
+    fastLED();
+  }
+  else if (batteryV < 7) {
+    Serial.print("BATTERY VOLTAGE IS LOW (<7V)");
+  }
+#endif
 
   lastTime = totalTimeElapsed;
-
-  Eigen::VectorXd controllerInputU(U_ROW_LENGTH);
-  controllerInputU = controller::getControlInputs();
-
+  
   estimator::updateEstimator();
   controller::updateController();
 
@@ -131,25 +174,24 @@ void loop() {
 #endif
 
   
+  //DEBUGGING STATEMENTS ----------------------------------------------
+  Serial.print("Time Elasped: ");
+  Serial.println(millis()/1000.0, 3);
 
-  // controllerInputU; //the vector to access for outputs
-  // for (int i = 0; i < controllerInputU.size(); i++) {
-  //   Serial.print(" ");
-  //   Serial.print(controllerInputU(i));
-  // }
-  // Serial.println();
-
-  Serial.print(millis()/1000.0, 3); Serial.print(", ");
+  Serial.print("Estimated State Vector: ");
   for (byte i = 0; i < ESTIMATED_STATE_DIMENSION; i++) {
     Serial.print(estimator::estimatedStateX(i), 3);
     if (i != ESTIMATED_STATE_DIMENSION - 1) Serial.print(", ");
   }
   Serial.println();
+
+  Serial.print("Control Vector: ");
   for (byte i = 0; i < U_ROW_LENGTH; i++) {
-    Serial.print(controllerInputU(i), 3);
+    Serial.print(controller::controllerInputU(i), 3);
     if (i != U_ROW_LENGTH - 1) Serial.print(", ");
   }
   Serial.println();
+  // -------------------------------------------------------------------
   
   //turns led on and off
   led();

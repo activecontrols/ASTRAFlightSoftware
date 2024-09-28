@@ -7,7 +7,7 @@ Author: Vincent Palmerio
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <ArduinoEigenDense.h>
+#include <ArduinoEigen.h>
 
 #define MODE_ARRAY_LENGTH (12)
 #define K_ARRAY_LENGTH (10)
@@ -20,17 +20,18 @@ Author: Vincent Palmerio
 #define BETA_MIN (-BETA_MAX) /* outer gimbal min */
 #define GAMMA_MAX (8) /* inner gimbal max */
 #define GAMMA_MIN (-GAMMA_MAX) /* inner gimbal min */
-#define THROTTLE_MIN (0)
-#define THROTTLE_MAX (1)
+#define THROTTLE_MIN (0) /* Must change in ESC.cpp (cannot include controller.h because circular dependencies)*/
+#define THROTTLE_MAX (1) /* Must change in ESC.cpp (cannot include controller.h because circular dependencies)*/
 #define ALPHA_MAX (8) /* left and right torque vane max */
 #define ALPHA_MIN (-ALPHA_MAX) /* left and right torque vane min */
 #define INNER_GIMBAL_PIN (29)
-#define OUTER_GIMBAL_PIN (36)
+#define OUTER_GIMBAL_PIN (39)
 #define LEFT_TORQUE_VANE_PIN (33)
-#define RIGHT_TORQUE_VANE_PIN (28)
+#define ESC_PIN (9)
+#define RIGHT_TORQUE_VANE_PIN (36)
 #define INNER_GIMBAL_INITIAL_SETTING (82)
 #define OUTER_GIMBAL_INITIAL_SETTING (110)
-#define LEFT_TORQUE_VANE_INITIAL_SETTING (145)
+#define LEFT_TORQUE_VANE_INITIAL_SETTING (140)
 #define RIGHT_TORQUE_VANE_INITIAL_SETTING (140)
 #define BETA_DAMPENING_CONSTANT (0.03)
 #define GAMMA_DAMPENING_CONSTANT (0.02)
@@ -70,7 +71,7 @@ namespace controller {
     double minMax(double value, double min, double max);
     Eigen::VectorXd getControlInputs();
     int controlModeUpdate(int controlModeIndicator);
-    int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
+    //int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
 }
 
 #endif
