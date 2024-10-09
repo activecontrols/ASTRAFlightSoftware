@@ -48,27 +48,31 @@ int loadPresetCalibration() {
 
 #if IMU_NUMBER == 1
   //Magnetic Hard Offset
-  cal.mag_hardiron[0] = -59.66830635;
-  cal.mag_hardiron[1] = 57.91606393;
-  cal.mag_hardiron[2] = -13.95585555;
+    cal.mag_hardiron[0] = 18.00;
+    cal.mag_hardiron[1] = 37.79;
+    cal.mag_hardiron[2] = -84.00;
 
-  //Magnetic Soft Offset
-  // in uTesla
-  cal.mag_softiron[0] = 27.247827;
-  cal.mag_softiron[1] = 1.00577368;
-  cal.mag_softiron[2] = -0.32313557;  
-  cal.mag_softiron[3] = 1.00577368;
-  cal.mag_softiron[4] = 23.64999463;
-  cal.mag_softiron[5] = -2.0111187;  
-  cal.mag_softiron[6] = -0.32313557;
-  cal.mag_softiron[7] = -2.0111187;
-  cal.mag_softiron[8] = 15.59083004;  
+    //Magnetic Soft Offset
+    // in uTesla
+    cal.mag_softiron[0] = 0.98;
+    cal.mag_softiron[1] = 0.05;
+    cal.mag_softiron[2] = 0.01;  
+    cal.mag_softiron[3] = 0.05;
+    cal.mag_softiron[4] = 1.06;
+    cal.mag_softiron[5] = 0.0;  
+    cal.mag_softiron[6] = 0.01;
+    cal.mag_softiron[7] = 0.0;
+    cal.mag_softiron[8] = 0.96;  
 
   //Gyro zero rate offset
   // in Radians/s
   cal.gyro_zerorate[0] = 0.0;
   cal.gyro_zerorate[1] = 0.0;
   cal.gyro_zerorate[2] = 0.0;
+
+  cal.accel_zerog[0] = 0.25;
+  cal.accel_zerog[1] = -0.17;
+  cal.accel_zerog[2] = 10.01 - 9.81;
 #endif
 
 #if IMU_NUMBER == 2 /* NOT CALIBRATED YET */
@@ -161,7 +165,7 @@ int initializeIMU() {
 #endif
 
   setup_sensors();
-  initKalman(Eigen::Quaterniond::Identity(), 0.0, 0.0000194955, 0.000000000000000025032, 0.0000000024616355, 0.0, 0.0000000024616355, 0.0, 0.0003, 0.00003);
+  initKalman(Eigen::Quaterniond::Identity(), 0.0, 0.0000194955, 0.000000000000000025032, 0.0000000024616355 * 6.0, 0.0, 0.0000000024616355, 0.0, 0.0003 * 6.0, 0.00003);
   //proc_cov = process_covariance(0.03);
   filter.begin(FILTER_UPDATE_RATE_HZ); // not the rate this filter is running at. that is why changing the sample rate is fucking w the reading
   
@@ -195,7 +199,7 @@ int updateIMU() {
   
   
   // Update the SensorFusion filter
-  updateKalman(Eigen::Vector3d(gx, gy, gz), Eigen::Vector3d(-accel.acceleration.x/9.8, -accel.acceleration.y/9.8, -accel.acceleration.z/9.8), 
+  updateKalman(Eigen::Vector3d(gx, gy, gz), Eigen::Vector3d(-accel.acceleration.x, -accel.acceleration.y, -accel.acceleration.z), 
                 Eigen::Vector3d(0.0, 0.0, 0.0), (double)(filterMillis - lastFilterMillis)/1000.0);
   /*filter.update(gx, gy, gz, 
                 accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, 
@@ -227,12 +231,12 @@ if(totalMillis - lastMillis > 10){
     Serial.print(qy, 5);
     Serial.print(",");
     Serial.print(qz, 5);
-    Serial.println("");
-    Serial.print(proc_cov(0, 0), 5);
     Serial.print(",");
-    Serial.print(proc_cov(0, 1), 5);
+    Serial.print(pos_estimate.x(), 5);
     Serial.print(",");
-    Serial.print(proc_cov(0, 2), 5);
+    Serial.print(pos_estimate.y(), 5);
+    Serial.print(",");
+    Serial.print(pos_estimate.z(), 5);
     Serial.println();
     Serial.print(proc_cov(1, 0), 5);
     Serial.print(",");

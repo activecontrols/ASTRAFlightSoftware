@@ -3,6 +3,8 @@
 
 
 Eigen::Quaterniond estimate;
+Eigen::Vector3d pos_estimate;
+Eigen::Vector3d vel_estimate;
 Eigen::VectorXd gyro_bias(3);
 Eigen::VectorXd accel_bias(3);
 Eigen::VectorXd mag_bias(3);
@@ -77,6 +79,7 @@ Eigen::MatrixXd process_covariance(double time_delta){
 void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::VectorXd mag_meas, double time_delta){
     gyro_meas = gyro_meas - gyro_bias;
     acc_meas = acc_meas - accel_bias;
+    mag_meas.normalize();
     mag_meas = mag_meas - mag_bias;
 
     Eigen::Quaterniond angular_velocity;
@@ -88,6 +91,13 @@ void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::Ve
     estimate.coeffs() += q_temp.coeffs();
     estimate.normalize();
 
+    Eigen::Vector3d acc_dir(0.0, 0.0, -9.8);
+    Eigen::Vector3d mag_dir(1.0, 0.0, 0.0);
+
+    Eigen::Vector3d acc_rot = rotateVector3ByQuat(acc_meas, estimate) - acc_dir;
+    vel_estimate += acc_rot * time_delta;
+    pos_estimate += vel_estimate * time_delta;
+
     G.block<3, 3>(0, 0) = -skewSymmetric(gyro_meas);
     G.block<3, 3>(3, 0) = -estimate.toRotationMatrix() * skewSymmetric(acc_meas);
     G.block<3, 3>(3, 12) = -estimate.toRotationMatrix();
@@ -95,11 +105,10 @@ void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::Ve
 
 
     estimate_covariance = (F_mat * estimate_covariance * F_mat.transpose()) + process_covariance(time_delta);
+
     //Serial.println(process_covariance(time_delta)(0, 0) * pow(10, 7));
 
     H = Eigen::MatrixXd::Zero(6, 18);
-    Eigen::Vector3d acc_dir(0.0, 0.0, -1.0);
-    Eigen::Vector3d mag_dir(1.0, 0.0, 0.0);
 
     H.block<3, 3>(0, 0) = skewSymmetric(rotateVector3ByQuat(acc_dir, estimate.inverse()));
     H.block<3, 3>(0, 12) = Eigen::MatrixXd::Identity(3, 3);
@@ -107,7 +116,9 @@ void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::Ve
     H.block<3, 3>(3, 15) = Eigen::MatrixXd::Identity(3, 3);
     Eigen::MatrixXd PH_T = Eigen::MatrixXd::Zero(18, 6);
     PH_T = estimate_covariance * H.transpose();
-    inverse_cov = H * PH_T + observation_covariance;
+    Eigen::MatrixXd current_obs_covariance = observation_covariance;
+    current_obs_covariance.topLeftCorner(3, 3) *= getAccelHealth(acc_meas);
+    inverse_cov = H * PH_T + current_obs_covariance;
     K = PH_T * inverse_cov.inverse();
     
     estimate_covariance = (Eigen::MatrixXd::Identity(18, 18) - (K * H)) * estimate_covariance;
@@ -144,9 +155,16 @@ void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::Ve
     estimate_to_fold.vec() = 0.5 * aposteriori_state.block<3, 1>(0, 0);
     estimate = estimate * estimate_to_fold;
     estimate.normalize();
+    vel_estimate += aposteriori_state.block<3, 1>(3, 0);
+    pos_estimate += aposteriori_state.block<3, 1>(6, 0);
     gyro_bias += aposteriori_state.block<3, 1>(9, 0);
     accel_bias += aposteriori_state.block<3, 1>(12, 0);
     mag_bias += aposteriori_state.block<3, 1>(15, 0);
+}
+
+float getAccelHealth(Eigen::VectorXd acc){
+    float mag = acc.squaredNorm()/pow(9.81, 2.0);
+    return 1.0 + (abs(mag - 1.0) * ACCEL_HEALTH_COEFFICIENT);
 }
 
 Eigen::MatrixXd skewSymmetric(Eigen::VectorXd v){
