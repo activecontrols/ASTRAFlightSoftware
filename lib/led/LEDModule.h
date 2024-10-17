@@ -22,7 +22,7 @@ class LEDModule: public FlightModule {
 public:
     LEDModule();
     LEDModule(int pin);
-    void init() override;
+    int init() override;
     void update() override;
 private:
     void blink(unsigned long threshold);

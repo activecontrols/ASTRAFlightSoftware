@@ -1,4 +1,5 @@
 #include "LEDModule.h"
+#include "Error.h"
 #include <Arduino.h>
 
 #define SLOW_THRESHOLD 1000
@@ -12,11 +13,12 @@ LEDModule::LEDModule(int pin) {
     this->pin = pin;
 }
 
-void LEDModule::init() {
+int LEDModule::init() {
     flightData::ledMode = 0;
     pinMode(this->pin, OUTPUT);
     //sets LED to on indefinitely so we know teensy is on if setup() fails
     digitalWrite(this->pin, HIGH); 
+    return NO_ERROR_CODE;
 }
 
 void LEDModule::update() {

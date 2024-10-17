@@ -5,12 +5,15 @@
  */
 #ifndef FLIGHTMODULE_H
 #define FLIGHTMODULE_H
+
+#include "Error.h"
+
 class FlightModule {
 public:
     /**
      * Initialize module during startup. This might e.g. load data, initialize an I2C device, etc.
      */
-    virtual void init() {}
+    virtual int init() { return NO_ERROR_CODE; }
 
     /**
      * Run an update during mainloop. This might e.g. update the estimator, read data, etc.

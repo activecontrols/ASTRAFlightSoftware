@@ -11,10 +11,11 @@ Scheduler::Scheduler(std::vector<FlightModule> schedule) {
 /**
  * Call inits for each module.
  */
-void Scheduler::init() {
+int Scheduler::init() {
     for (unsigned int i = 0; i < this->schedule.size(); ++i) {
         this->schedule[i].init();
     }
+    return NO_ERROR_CODE;
 }
 
 /**

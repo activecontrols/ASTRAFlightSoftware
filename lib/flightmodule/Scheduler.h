@@ -10,7 +10,7 @@
 class Scheduler : public FlightModule {
 public:
     Scheduler(std::vector<FlightModule> schedule);
-    void init() override;
+    int init() override;
     void update() override;
 private:
     std::vector<FlightModule> schedule;

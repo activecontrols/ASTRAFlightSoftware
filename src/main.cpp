@@ -1,4 +1,5 @@
 #include "Scheduler.h"
+#include "IMU.h"
 #include "FlightModule.h"
 #include "VoltageModule.h"
 #include "LEDModule.h"
@@ -14,6 +15,7 @@ namespace flightData {
 std::vector<FlightModule> basicSchedule = {
   LEDModule(),
   VoltageModule(0, BATT_V_PIN),
+  IMUModule(),
 };
 Scheduler scheduler(basicSchedule);
 

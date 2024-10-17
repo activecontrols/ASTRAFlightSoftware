@@ -20,7 +20,7 @@ namespace flightData {
 class VoltageModule: public FlightModule {
 public:
     VoltageModule(int idx, int battVPin);
-    void init() override;
+    int init() override;
     void update() override;
 private:
     float *voltagePtr;

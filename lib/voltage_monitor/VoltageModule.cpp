@@ -1,4 +1,5 @@
 #include "VoltageModule.h"
+#include "Error.h"
 #include <Arduino.h>
 
 #define SLOW_THRESHOLD 1000
@@ -9,9 +10,10 @@ VoltageModule::VoltageModule(int idx, int battVPin) {
     this->battVPin = battVPin;
 }
 
-void VoltageModule::init() {
+int VoltageModule::init() {
     *(this->voltagePtr) = 0;
     pinMode(this->battVPin, INPUT);
+    return NO_ERROR_CODE;
 }
 
 void VoltageModule::update() {
