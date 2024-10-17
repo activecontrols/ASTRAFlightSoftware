@@ -12,7 +12,6 @@ Author: Vincent Palmerio
 #include <Adafruit_LIS3MDL.h>
 #include <Adafruit_AHRS.h>
 #include <Adafruit_Sensor_Calibration.h>
-#include <Adafruit_AHRS.h>
 #include <ArduinoEigenDense.h>
 #include <Wire.h>
 

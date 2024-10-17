@@ -4,6 +4,8 @@
 #include "IMU.h"
 #include "LSM6DS_LIS3MDL.h"
 
+#include <ArduinoEigenDense.h>
+
 /*
 IMU.cpp 
 Description: Function definititions for declarations in IMU.h
