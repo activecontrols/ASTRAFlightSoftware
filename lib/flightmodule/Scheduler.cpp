@@ -1,4 +1,4 @@
-#include <flightmodule/Scheduler.h>
+#include "Scheduler.h"
 
 /**
  * Construct a scheduler with a list of modules.
@@ -11,8 +11,8 @@ Scheduler::Scheduler(std::vector<FlightModule> schedule) {
 /**
  * Call inits for each module.
  */
-Scheduler::init() {
-    for (int i = 0; i < this->schedule.size(); ++i) {
+void Scheduler::init() {
+    for (unsigned int i = 0; i < this->schedule.size(); ++i) {
         this->schedule[i].init();
     }
 }
@@ -20,8 +20,8 @@ Scheduler::init() {
 /**
  * Call updates for each module.
  */
-Scheduler::update(unsigned long time) {
-    for (int i = 0; i < this->schedule.size(); ++i) {
+void Scheduler::update() {
+    for (unsigned int i = 0; i < this->schedule.size(); ++i) {
         this->schedule[i].update();
     }
 }

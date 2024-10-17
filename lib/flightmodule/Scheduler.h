@@ -5,11 +5,13 @@
 #define SCHEDULER_H
 
 #include <vector>
-#include <flightmodule/FlightModule.h>
+#include "FlightModule.h"
 
 class Scheduler : public FlightModule {
 public:
     Scheduler(std::vector<FlightModule> schedule);
+    void init() override;
+    void update() override;
 private:
     std::vector<FlightModule> schedule;
 };

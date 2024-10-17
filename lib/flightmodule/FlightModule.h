@@ -10,12 +10,12 @@ public:
     /**
      * Initialize module during startup. This might e.g. load data, initialize an I2C device, etc.
      */
-    void init();
+    virtual void init() {}
 
     /**
      * Run an update during mainloop. This might e.g. update the estimator, read data, etc.
      */
-    void update();
+    virtual void update() {}
 };
 
 #endif // FLIGHTMODULE_H
