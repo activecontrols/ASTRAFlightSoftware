@@ -3,6 +3,8 @@
  * Each module in the ASTRA flight software system must implement a FlightModule to be run.
  * A Scheduler will run a loop which calls init() on startup and update() on loop.
  */
+#ifndef FLIGHTMODULE_H
+#define FLIGHTMODULE_H
 class FlightModule {
 public:
     /**
@@ -15,3 +17,5 @@ public:
      */
     void update();
 };
+
+#endif // FLIGHTMODULE_H
