@@ -17,7 +17,7 @@ int NXPEstimatorModule::init() {
     return NO_ERROR_CODE;
 }
 
-void NXPEstimatorModule::update() {
+void NXPEstimatorModule::update(unsigned long time) {
     // Extract data
     float ax = flightData::measurementVectorY(0);
     float ay = flightData::measurementVectorY(1);

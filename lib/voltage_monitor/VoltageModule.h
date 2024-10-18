@@ -21,7 +21,7 @@ class VoltageModule: public FlightModule {
 public:
     VoltageModule(int idx, int battVPin);
     int init() override;
-    void update() override;
+    void update(unsigned long time) override;
 private:
     float *voltagePtr;
     int battVPin;

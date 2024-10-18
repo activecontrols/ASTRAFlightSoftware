@@ -27,7 +27,7 @@ class NXPEstimatorModule: public FlightModule {
 public:
     NXPEstimatorModule();
     int init() override;
-    void update() override;
+    void update(unsigned long time) override;
 private:
     // slower == better quality output
     Adafruit_NXPSensorFusion filter; // slowest

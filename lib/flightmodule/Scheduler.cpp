@@ -21,8 +21,8 @@ int Scheduler::init() {
 /**
  * Call updates for each module.
  */
-void Scheduler::update() {
+void Scheduler::update(unsigned long time) {
     for (unsigned int i = 0; i < this->schedule.size(); ++i) {
-        this->schedule[i].update();
+        this->schedule[i].update(time);
     }
 }

@@ -23,9 +23,9 @@ public:
     LEDModule();
     LEDModule(int pin);
     int init() override;
-    void update() override;
+    void update(unsigned long time) override;
 private:
-    void blink(unsigned long threshold);
+    void blink(unsigned long time, unsigned long threshold);
     int pin = LED_BUILTIN;
     int ledOn = false;
     unsigned long lastUpdate = 0;

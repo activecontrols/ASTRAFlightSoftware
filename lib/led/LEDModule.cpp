@@ -21,13 +21,13 @@ int LEDModule::init() {
     return NO_ERROR_CODE;
 }
 
-void LEDModule::update() {
+void LEDModule::update(unsigned long time) {
     switch (flightData::ledMode) {
         case 1:
-            this->blink(SLOW_THRESHOLD);
+            this->blink(time, SLOW_THRESHOLD);
             break;
         case 2:
-            this->blink(FAST_THRESHOLD);
+            this->blink(time, FAST_THRESHOLD);
             break;
         default:
             if (this->ledOn) {
@@ -38,8 +38,8 @@ void LEDModule::update() {
     }
 }
 
-void LEDModule::blink(unsigned long threshold) {
-    if (millis() - this->lastUpdate > threshold) {
+void LEDModule::blink(unsigned long time, unsigned long threshold) {
+    if (time - this->lastUpdate > threshold * 1000) {
         if (this->ledOn) {
             digitalWrite(this->pin, HIGH);
             this->ledOn = false;

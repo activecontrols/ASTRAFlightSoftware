@@ -59,7 +59,7 @@ public:
     // combining with other modules
     IMUModule(Eigen::VectorXd* measurementVector);
     int init() override;
-    void update() override;
+    void update(unsigned long time) override;
 private:
     Eigen::VectorXd* measurementVector;
 

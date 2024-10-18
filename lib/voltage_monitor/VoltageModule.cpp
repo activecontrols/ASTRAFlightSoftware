@@ -16,7 +16,7 @@ int VoltageModule::init() {
     return NO_ERROR_CODE;
 }
 
-void VoltageModule::update() {
+void VoltageModule::update(unsigned long time) {
   int pinVal = analogRead(this->battVPin); //Reading analog pin
   float batteryV = (pinVal * 10) / 1023; //Converting analog signal into battery voltage
 

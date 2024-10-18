@@ -58,7 +58,7 @@ int IMUModule::init() {
     return NO_ERROR_CODE;
 }
 
-void IMUModule::update() {
+void IMUModule::update(unsigned long time) {
     /* Read the motion sensors */
     sensors_event_t accel, gyro, mag;
     accelerometer->getEvent(&accel);

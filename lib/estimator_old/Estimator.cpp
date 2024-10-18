@@ -46,6 +46,7 @@ namespace estimator {
         estimatedStateX.setZero();
         
         for (byte i = 0; i < 10000; i++) {
+            // TODO: WTF?
             //TODO: Add a delay here to allow the kalman filter to calibrate to loop time
             imu::updateIMU();
         }

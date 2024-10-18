@@ -30,5 +30,5 @@ void setup() {
 }
 
 void loop() {
-  scheduler.update();
+  scheduler.update(micros());
 }
