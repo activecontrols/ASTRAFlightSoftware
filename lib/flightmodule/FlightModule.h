@@ -18,7 +18,7 @@ public:
     /**
      * Run an update during mainloop. This might e.g. update the estimator, read data, etc.
      */
-    virtual void update() {}
+    virtual void update(unsigned long time) {}
 };
 
 #endif // FLIGHTMODULE_H
