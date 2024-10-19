@@ -58,7 +58,7 @@ void CommsManager::update(unsigned long time) {
     }
 
     if (time - lastTelem > (1000000 / TELEM_HZ)) {
-        this->sendTelem();
+        this->sendTelem(time);
         this->lastTelem = time;
     }
 
@@ -138,7 +138,8 @@ void CommsManager::processCommand(uint8_t sysid, uint8_t compid, fmav_command_lo
 /**
  * Send telemetry
  */
-void CommsManager::sendTelem() {
+void CommsManager::sendTelem(unsigned long time) {
+    // Send fused state
     fmav_control_system_state_t state;
     state.q[1] = flightData::estimatedStateX(0);
     state.q[2] = flightData::estimatedStateX(1);
@@ -151,6 +152,23 @@ void CommsManager::sendTelem() {
     fmav_msg_control_system_state_encode_to_serial(
         this->sysid, this->compid,
         &state, &(this->status)
+    );
+
+    // Send raw IMU data
+    fmav_scaled_imu_t rawImu;
+    rawImu.time_usec = time;
+    rawImu.xacc = (int16_t) 1000 * flightData::measurementVectorY(0);
+    rawImu.yacc = (int16_t) 1000 * flightData::measurementVectorY(1);
+    rawImu.zacc = (int16_t) 1000 * flightData::measurementVectorY(2);
+    rawImu.xgyro = (int16_t) 1000 * flightData::measurementVectorY(3);
+    rawImu.ygyro = (int16_t) 1000 * flightData::measurementVectorY(4);
+    rawImu.zgyro = (int16_t) 1000 * flightData::measurementVectorY(5);
+    rawImu.xmag = (int16_t) 1000 * flightData::measurementVectorY(6);
+    rawImu.ymag = (int16_t) 1000 * flightData::measurementVectorY(7);
+    rawImu.zmag = (int16_t) 1000 * flightData::measurementVectorY(8);
+    fmav_msg_scaled_imu_encode_to_serial(
+        this->sysid, this->compid,
+        &rawImu, &(this->status)
     );
 }
 

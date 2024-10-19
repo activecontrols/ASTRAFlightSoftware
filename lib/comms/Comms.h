@@ -48,7 +48,7 @@ private:
     // Low-level individual message abstractions
     void sendHeartbeat();              // Send heartbeat message so we know the system is alive
     void sendHealth();            
-    void sendTelem();              
+    void sendTelem(unsigned long time);              
 
     void ackCommand(uint16_t command, uint8_t code, uint8_t sysid, uint8_t compid);
     void rejectCommand(uint16_t command, const char *reason); // Send ack with command cancelled with an error
