@@ -23,7 +23,7 @@ int FakeIMUModule::init() {
 void FakeIMUModule::update(unsigned long time) {
     float ax = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
     float ay = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
-    float az = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5) - 9.8;
+    float az = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5) + 9.8;
 
     float gxDPS = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
     float gyDPS = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
