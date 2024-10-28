@@ -38,14 +38,9 @@ void fmav_serial_write_char(char c) {
 /* Helpers for data available and data read */
 void setupSerial() {
     udp::skipper_udp_init();
-    std::cout << "errno:" << errno << std::endl;
     udp::skipper_udp_bind_socket();
-    std::cout << "errno2:" << errno << std::endl;
 }
 uint16_t availableBytes() {
-    // int bytesAvailable = 0;
-    // ioctl(udpsock::fdm, FIONREAD, &bytesAvailable);
-    // return bytesAvailable;
     int bytesAvailable = udp::skipper_udp_recv_bytes();
     return bytesAvailable;
 }
