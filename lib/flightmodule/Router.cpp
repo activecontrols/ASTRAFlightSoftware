@@ -41,6 +41,10 @@ void Router::registerSchedule(enum State state, Scheduler *modules) {
 }
 
 int Router::changeSchedule(enum State state) {
-    this->nextSchedule = this->schedules[state];
+    if (this->currentSchedule == nullptr) {
+        this->currentSchedule = this->schedules[state];
+    } else {
+        this->nextSchedule = this->schedules[state];
+    }
     return NO_ERROR_CODE;
 }

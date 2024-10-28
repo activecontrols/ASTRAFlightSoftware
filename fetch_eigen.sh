@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ -d lib/math/Eigen ]; then
+    echo "It looks like Eigen is already installed."
+    echo "If you want to reinstall, run rm -r lib/math/Eigen."
+    exit 1
+fi
+
+echo "Downloading Eigen..."
+wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+tar xf eigen-3.4.0.tar.gz
+mv eigen-3.4.0/Eigen lib/math
+
+# Remove temp
+rm -rf eigen-3.4.0 eigen-3.4.0.tar.gz
+echo "Done!"

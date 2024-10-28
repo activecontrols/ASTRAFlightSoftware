@@ -18,12 +18,18 @@ namespace flightData {
   Router *router;
 }
 
-std::vector<FlightModule> basicSchedule = {
-  LEDModule(),
-  VoltageModule(0, BATT_V_PIN),
-  IMUModule(),
-  NXPEstimatorModule(),
-  CommsManager()
+LEDModule ledModule;
+VoltageModule voltageModule(0, BATT_V_PIN);
+IMUModule imuModule;
+NXPEstimatorModule estimatorModule;
+CommsManager commsManager;
+
+std::vector<FlightModule*> basicSchedule = {
+  (FlightModule*) &ledModule,
+  (FlightModule*) &voltageModule,
+  (FlightModule*) &imuModule,
+  (FlightModule*) &estimatorModule,
+  (FlightModule*) &commsManager,
 };
 Scheduler scheduler(basicSchedule);
 Router centralRouter;

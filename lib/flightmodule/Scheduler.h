@@ -9,11 +9,11 @@
 
 class Scheduler : public FlightModule {
 public:
-    Scheduler(std::vector<FlightModule> schedule);
+    Scheduler(std::vector<FlightModule*> &schedule);
     int init() override;
     void update(unsigned long time) override;
 private:
-    std::vector<FlightModule> schedule;
+    std::vector<FlightModule*> schedule;
 };
 
 #endif // SCHEDULER_H

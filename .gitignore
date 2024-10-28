@@ -5,3 +5,5 @@
 .vscode/ipch
 .DS_Store
 a.out
+**/*.gch
+lib/math/Eigen
