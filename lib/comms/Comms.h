@@ -16,7 +16,7 @@ void fmav_serial_write_char(char c);
 #include "../message_lib/pscom/pscom.h"
 #include "FlightModule.h"
 #include "Router.h"
-#include <ArduinoEigenDense.h>
+#include "VEigen.h"
 #include <stdint.h>
 
 /* Define telemetry frequencies */
@@ -35,7 +35,7 @@ class CommsManager : public FlightModule {
 public:
     CommsManager(); // Empty Constructor
     int init() override; // Initialize; does nothing
-    void update(unsigned long time); // Should be run every loop; automatically pulls 1 byte from serial and sends messages if necessary
+    void update(unsigned long time) override; // Should be run every loop; automatically pulls 1 byte from serial and sends messages if necessary
     void sendStatusText(MAV_SEVERITY severity, const char *text); // Send status text. ONLY USE SPARINGLY (high bandwidth usage).
 
 private:
@@ -62,7 +62,6 @@ private:
     uint16_t statusTextID = 1;
 
     // Internal Data
-    Stream *serial;
     uint8_t sysid = 68;
     uint8_t compid = 1;
     fmav_status_t status;
