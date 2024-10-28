@@ -13,7 +13,11 @@ g++ \
 -I lib/flightmodule \
 -I lib/IMU/include/ \
 -I lib/IMU/src/ \
+-I lib/estimator/ \
 lib/flightmodule/Scheduler.cpp \
 lib/flightmodule/Router.cpp \
 lib/IMU/src/FakeIMU.cpp \
+lib/estimator/MEKF.cpp \
+lib/estimator/MEKFEstimatorModule.cpp \
+lib/math/MathFunctions.cpp \
 src/main_posix.cpp

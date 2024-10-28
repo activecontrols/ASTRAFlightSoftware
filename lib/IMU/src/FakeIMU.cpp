@@ -5,6 +5,8 @@
 
 #include "VEigen.h"
 
+#define NOISE_COEFF 0.1
+
 FakeIMUModule::FakeIMUModule() {
     this->measurementVector = &flightData::measurementVectorY;
 }
@@ -19,17 +21,17 @@ int FakeIMUModule::init() {
 }
 
 void FakeIMUModule::update(unsigned long time) {
-    float ax = 10 * (rand() / (float)RAND_MAX - 0.5);
-    float ay = 10 * (rand() / (float)RAND_MAX - 0.5);
-    float az = 10 * (rand() / (float)RAND_MAX - 0.5);
+    float ax = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
+    float ay = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
+    float az = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5) - 9.8;
 
-    float gxDPS = 10 * (rand() / (float)RAND_MAX - 0.5);
-    float gyDPS = 10 * (rand() / (float)RAND_MAX - 0.5);
-    float gzDPS = 10 * (rand() / (float)RAND_MAX - 0.5);
+    float gxDPS = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
+    float gyDPS = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
+    float gzDPS = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
 
-    float mx = 10 * (rand() / (float)RAND_MAX - 0.5);
-    float my = 10 * (rand() / (float)RAND_MAX - 0.5);
-    float mz = 10 * (rand() / (float)RAND_MAX - 0.5);
+    float mx = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5) + 1;
+    float my = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
+    float mz = NOISE_COEFF * (rand() / (float)RAND_MAX - 0.5);
 
     *(this->measurementVector) << ax, ay, az, gxDPS, gyDPS, gzDPS, mx, my, mz;
 }

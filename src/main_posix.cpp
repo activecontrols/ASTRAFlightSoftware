@@ -5,6 +5,7 @@
 #include "Scheduler.h"
 #include "Router.h"
 #include "FakeIMU.h"
+#include "MEKFEstimatorModule.h"
 #include "FlightModule.h"
 #include <vector>
 #include <chrono>
@@ -12,13 +13,16 @@
 
 namespace flightData {
   Eigen::VectorXd measurementVectorY(9);
+  Eigen::VectorXd estimatedStateX(6);
   Router *router;
 }
 
 FakeIMUModule fakeIMU;
+MEKFEstimatorModule estimator;
 
 std::vector<FlightModule*> basicSchedule = {
     (FlightModule*) &fakeIMU,
+    (FlightModule*) &estimator,
 };
 Scheduler scheduler(basicSchedule);
 Router centralRouter;
@@ -41,7 +45,7 @@ int main(int argc, char** argv) {
 
   while (1) {
     centralRouter.update(micros());
-    std::cout << flightData::measurementVectorY.reshaped(1, 9).format(CleanFmt) << "\n";
+    std::cout << flightData::estimatedStateX.reshaped(1, 6).format(CleanFmt) << "\n";
   }
 }
 
