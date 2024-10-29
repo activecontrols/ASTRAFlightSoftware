@@ -25,6 +25,7 @@ Eigen::MatrixXd inverse_cov(6, 6);
 Eigen::MatrixXd K(18, 6);
 Eigen::MatrixXd aposteriori_state(18, 1);
 
+// initializes kalmna filter.
 void initKalman(Eigen::Quaterniond init_est, double estimate_covar, double gyro_cov, double gyro_bias_cov, double accel_proc_cov, 
                 double accel_bias_cov, double mag_proc_cov, double mag_bias_cov, double accel_obs_cov, double mag_obs_cov){
     estimate = init_est;
@@ -77,11 +78,13 @@ Eigen::MatrixXd process_covariance(double time_delta){
 }
 
 void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::VectorXd mag_meas, double time_delta){
+    // subtracting biases from measured values
     gyro_meas = gyro_meas - gyro_bias;
     acc_meas = acc_meas - accel_bias;
     mag_meas.normalize();
     mag_meas = mag_meas - mag_bias;
 
+    // using quaternion math to update quaternion estimate with measured angular velocity
     Eigen::Quaterniond angular_velocity;
     angular_velocity.w() = 0;
     angular_velocity.vec() = gyro_meas;
@@ -98,18 +101,25 @@ void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::Ve
     vel_estimate += acc_rot * time_delta;
     pos_estimate += vel_estimate * time_delta;
 
+    // constructing current state matrix with new measurements
     G.block<3, 3>(0, 0) = -skewSymmetric(gyro_meas);
     G.block<3, 3>(3, 0) = -estimate.toRotationMatrix() * skewSymmetric(acc_meas);
     G.block<3, 3>(3, 12) = -estimate.toRotationMatrix();
     F_mat = Eigen::MatrixXd::Identity(18, 18) + G * time_delta;
 
 
+    // generating a priori estimate covariance from our estimate
+    // process covariance is added, which is our uncertainty in our measurements as a function of time. Basically, as our
+    // time between measurements get longer, the more uncertain we are about what our current measurement is
     estimate_covariance = (F_mat * estimate_covariance * F_mat.transpose()) + process_covariance(time_delta);
 
     //Serial.println(process_covariance(time_delta)(0, 0) * pow(10, 7));
 
+    // generating Kalman gain based on our observation covariance, which is basically how much we trust our accelerometer and
+    // magnetometer over our gyro based estimate. 
     H = Eigen::MatrixXd::Zero(6, 18);
 
+    // creating a matrix with our predicted measurement states to create Kalman gain
     H.block<3, 3>(0, 0) = skewSymmetric(rotateVector3ByQuat(acc_dir, estimate.inverse()));
     H.block<3, 3>(0, 12) = Eigen::MatrixXd::Identity(3, 3);
     H.block<3, 3>(3, 0) = skewSymmetric(rotateVector3ByQuat(mag_dir, estimate.inverse()));
@@ -117,10 +127,14 @@ void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::Ve
     Eigen::MatrixXd PH_T = Eigen::MatrixXd::Zero(18, 6);
     PH_T = estimate_covariance * H.transpose();
     Eigen::MatrixXd current_obs_covariance = observation_covariance;
+    // additionally, we can change our observation covariance based on external factors -> in this case if there is lots of external
+    // acceleration, we do not trust our accelerometer attitude measurement.
     current_obs_covariance.topLeftCorner(3, 3) *= getAccelHealth(acc_meas);
     inverse_cov = H * PH_T + current_obs_covariance;
     K = PH_T * inverse_cov.inverse();
     
+    // generating a posteriori covariance with Kalman gain, basically updating our confidence in our estimate based on our confidence
+    // in our new accelerometer and magnetometer values
     estimate_covariance = (Eigen::MatrixXd::Identity(18, 18) - (K * H)) * estimate_covariance;
 
     Eigen::MatrixXd observation = Eigen::MatrixXd::Zero(1, 6);
@@ -132,24 +146,14 @@ void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::Ve
     predicted_observation.block<1, 3>(0, 3) = rotateVector3ByQuat(mag_dir, estimate.inverse());
     /*Eigen::Quaterniond inv = estimate.inverse();
 
-    Serial.print("acc, mag, ");
-    Serial.print(inv.w(), 5);
-    Serial.print(",");
-    Serial.print(inv.x(), 5);
-    Serial.print(",");
-    Serial.print(inv.y(), 5);
-    Serial.print(",");
-    Serial.print(inv.z(), 5);
-    Serial.print(",");
-    Serial.print(predicted_observation(0, 0), 5);
-    Serial.print(",");
-    Serial.print(predicted_observation(0, 1), 5);
-    Serial.print(",");
-    Serial.print(predicted_observation(0, 2), 5);
-    Serial.println("");*/
-
+    // correcting our predicted gyro integrated observation with our magnetometer and accelerometer data
+    // using Kalman gain
     aposteriori_state = K * (observation - predicted_observation).transpose();
 
+    // applying the Kalman filter data to our current state.
+    // Basically the aposteriori_state returns out a difference between our old estimate and what we think 
+    // our new estimate should be. Here we apply those to our values.
+    // These are the outputs of this filter.
     Eigen::Quaterniond estimate_to_fold;
     estimate_to_fold.w() = 1.0;
     estimate_to_fold.vec() = 0.5 * aposteriori_state.block<3, 1>(0, 0);
