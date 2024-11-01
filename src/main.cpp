@@ -36,6 +36,8 @@ void setup() {
   centralRouter.changeSchedule(ASTRA_MAINLOOP);
 
   centralRouter.init();
+
+  // testing code
 }
 
 void loop() {

@@ -1,6 +1,7 @@
 #include "LEDModule.h"
 #include "Error.h"
 #include <Arduino.h>
+#include <Logger.h>
 
 #define SLOW_THRESHOLD 1000
 #define FAST_THRESHOLD 400
