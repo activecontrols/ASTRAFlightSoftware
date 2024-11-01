@@ -12,12 +12,15 @@
 /* Define serial interface to use at compile time */
 #if IS_ARDUINO
 #include <Arduino.h>
-#define MAVLinkSerial Serial
+#define MAVLinkSerial Serial1
 #define FASTMAVLINK_SERIAL_WRITE_CHAR 1
 void fmav_serial_write_char(char c) {
     MAVLinkSerial.write(c);
 }
 /* Helpers for data available and data read */
+void setupSerial() {
+    MAVLinkSerial.begin(57600);
+}
 uint16_t availableBytes() {
     return MAVLinkSerial.available();
 }
@@ -25,7 +28,25 @@ char readChar() {
     return MAVLinkSerial.read();
 }
 #else
-#error Comms not implemented for non-Arduino interfaces - maybe you can add it :)
+// #error Comms not implemented for non-Arduino interfaces - maybe you can add it :)
+#include "udp.h"
+#include <unistd.h>
+#include <sys/ioctl.h>
+void fmav_serial_write_char(char c) {
+    udp::skipper_udp_send_bytes((uint8_t*) &c, 1);
+}
+/* Helpers for data available and data read */
+void setupSerial() {
+    udp::skipper_udp_init();
+    udp::skipper_udp_bind_socket();
+}
+uint16_t availableBytes() {
+    int bytesAvailable = udp::skipper_udp_recv_bytes();
+    return bytesAvailable;
+}
+char readChar() {
+    return udp::skipper_udp_read_byte();
+}
 #endif
 
 /* ----- PUBLIC INTERFACES ----- */
@@ -36,16 +57,22 @@ char readChar() {
  * libraries.
  */
 CommsManager::CommsManager() { }
-int CommsManager::init() { return NO_ERROR_CODE; }
+int CommsManager::init() { 
+    setupSerial();
+    return NO_ERROR_CODE;
+}
 
+#include <iostream>
 /**
  * Spin function; this should be run every loop. Processes
  * new data from serial input and sends periodic messages
  */
 void CommsManager::update(unsigned long time) {
     uint16_t available = availableBytes();
+    // std::cout << "AVIAL:" << available << std::endl;
     for (uint16_t i = 0; i < available; i++) {
         char c = readChar();
+        std::cout << "c:" << c << std::endl;
         uint8_t res = fmav_parse_to_msg(&(this->message), &(this->status), c);
         if (res == FASTMAVLINK_PARSE_RESULT_OK) {
             this->processMessage(&(this->message));

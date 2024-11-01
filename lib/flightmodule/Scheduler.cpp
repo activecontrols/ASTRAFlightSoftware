@@ -1,10 +1,11 @@
 #include "Scheduler.h"
+#include <iostream>
 
 /**
  * Construct a scheduler with a list of modules.
  * Must pass correct size.
  */
-Scheduler::Scheduler(std::vector<FlightModule> schedule) {
+Scheduler::Scheduler(std::vector<FlightModule*> &schedule) {
     this->schedule = schedule;
 }
 
@@ -13,7 +14,7 @@ Scheduler::Scheduler(std::vector<FlightModule> schedule) {
  */
 int Scheduler::init() {
     for (unsigned int i = 0; i < this->schedule.size(); ++i) {
-        this->schedule[i].init();
+        this->schedule[i]->init();
     }
     return NO_ERROR_CODE;
 }
@@ -23,6 +24,6 @@ int Scheduler::init() {
  */
 void Scheduler::update(unsigned long time) {
     for (unsigned int i = 0; i < this->schedule.size(); ++i) {
-        this->schedule[i].update(time);
+        this->schedule[i]->update(time);
     }
 }

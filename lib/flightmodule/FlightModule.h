@@ -7,6 +7,7 @@
 #define FLIGHTMODULE_H
 
 #include "Error.h"
+#include <iostream>
 
 class FlightModule {
 public:
