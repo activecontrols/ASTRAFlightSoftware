@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include <Arduino.h>
 #include <iostream>
 #include <string>
 
@@ -71,16 +72,16 @@ void Logger::addMessage(LogLevel logLevel, const T& data) {
             parent = this;
         }
         if (logLevel >= parent->writeToConsoleLevel) {
-            // the following message will be written to console
-            parent->writeToConsole(logLevel, this->prefix, data);
+            // the following message will be written to serial
+            // parent->writeToConsole(logLevel, this->prefix, data);
+            parent->writeToSerial(logLevel, this->prefix, data);
         }
         if (logLevel >= parent->writeToSDLevel) {
             // the following message will be written to SD card
-            // TBD
             parent->writeToSD(data);
         }
     } else {
-        cout << "Message not passed to central logger" << endl;
+        Serial.println("Message not passed to central logger");
     }
 }
 
@@ -88,32 +89,32 @@ void Logger::addMessage(LogLevel logLevel, const T& data) {
  * Gives the string representation of the given data using function overloading
  */
 template<typename T>
-string toString(const T& data) {
-    return data.print();
+const char * toConstChar(const T& data) {
+    return data.print().c_str();
 }
-string toString(string data) {
+const char * toConstChar(string data) {
+    return data.c_str();
+}
+const char * toConstChar(char *data) {
     return data;
 }
-char *toString(char *data) {
-    return data;
-}
-const char *toString(const char *data) {
+const char * toConstChar(const char *data) {
     return data;
 }
 
-/**
- * The central logger will write the data to console
- * 
- * The associated prefix and log level for the data/message are also given
- * as arguments to this function
- */
-template <typename T>
-void Logger::writeToConsole(LogLevel logLevel, string prefix, const T& data) {
-    cout << "CONSOLE" << endl;
-    cout << "Log level: " << logLevelString(logLevel) << endl;
-    cout << "Prefix: " << prefix << endl;
-    cout << "Data: " << toString(data) << endl;
-}
+// /**
+//  * The central logger will write the data to console
+//  * 
+//  * The associated prefix and log level for the data/message are also given
+//  * as arguments to this function
+//  */
+// template <typename T>
+// void Logger::writeToConsole(LogLevel logLevel, string prefix, const T& data) {
+//     cout << "CONSOLE" << endl;
+//     cout << "Log level: " << logLevelString(logLevel) << endl;
+//     cout << "Prefix: " << prefix << endl;
+//     cout << "Data: " << toString(data) << endl;
+// }
 
 /**
  * The central logger will write the data to serial
@@ -123,7 +124,12 @@ void Logger::writeToConsole(LogLevel logLevel, string prefix, const T& data) {
  */
 template <typename T>
 void Logger::writeToSerial(LogLevel logLevel, string prefix, const T& data) {
-    Serial.println("test");
+    Serial.print("Log Level: ");
+    Serial.println(logLevelString(logLevel).c_str());
+    Serial.print("Prefix: ");
+    Serial.println(prefix.c_str());
+    Serial.print("Data: ");
+    Serial.println(toConstChar(data));
 }
 
 /**
@@ -136,15 +142,15 @@ void Logger::writeToSD(const T& data) {
 }
 void Logger::writeToSD(string data) {
     // TBD
-    cout << "TBD SD Card" << endl;
+    Serial.println("TBD write to SD Card");
 }
 void Logger::writeToSD(char *data) {
     // TBD
-    cout << "TBD SD Card" << endl;
+    Serial.println("TBD write to SD Card");
 }
 void Logger::writeToSD(const char *data) {
     // TBD
-    cout << "TBD SD Card" << endl;
+    Serial.println("TBD write to SD Card");
 }
 
 // for testing purposes
@@ -162,17 +168,17 @@ int main() {
     p2.name = "Bob";
 
     centralLogger.addMessage(ERROR, p1);
-    cout << endl;
+    Serial.println();
 
     imuLogger.addMessage(FATAL, p2);
-    cout << endl;
+    Serial.println();
 
     imuLogger.addMessage(ERROR, "Hello World");
-    cout << endl;
+    Serial.println();
 
     string emerg = "Emergency";
     imuLogger.addMessage(FATAL, "emergency");
-    cout << endl;
+    Serial.println();
 
     return 0;
 }

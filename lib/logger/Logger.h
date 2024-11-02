@@ -1,6 +1,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include <Arduino.h>
 #include <iostream>
 #include <string>
 
@@ -16,10 +17,10 @@ enum LogLevel {
 };
 
 template <typename T>
-string toString(const T& data);
-string toString(string data);
-char *toString(char *data);
-const char *toString(const char *data);
+const char * toConstChar(const T& data);
+const char * toConstChar(string data);
+const char * toConstChar(char *data);
+const char * toConstChar(const char *data);
 
 class Logger {
 public:
@@ -62,7 +63,7 @@ struct Person {
   }
 
   void binaryPrint() const {
-    cout << "binary printing a person struct" << endl;
+    Serial.println("binary printing a person struct");
   }
 };
 
