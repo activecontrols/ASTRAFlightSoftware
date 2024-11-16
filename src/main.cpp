@@ -7,6 +7,8 @@
 #include "LEDModule.h"
 #include "Comms.h"
 #include "ControllerModule.h"
+#include "EncoderModule.h"
+#include "settings.h"
 #include <Arduino.h>
 
 #define BATT_V_PIN 41 // SHOULD BE THE RIGHT PIN
@@ -15,6 +17,8 @@ namespace flightData {
   int ledMode = 0;
   CONTROL_MODE currentMode = CONTROL_MODE::STABILIZE_MODE;
   float voltage[1] = {0.0f};
+  float encoderPos[4] = {0.0f};
+  float encoderSpeeds[4] = {0.0f};
   Router *router;
   Eigen::VectorXd measurementVectorY(9);
   Eigen::VectorXd estimatedStateX(6);
@@ -27,11 +31,15 @@ IMUModule imuModule;
 NXPEstimatorModule estimatorModule;
 CommsManager commsManager;
 Controller controllerModule;
+Encoder encoderModule;
 
 std::vector<FlightModule*> basicSchedule = {
   (FlightModule*) &ledModule,
   (FlightModule*) &voltageModule,
   (FlightModule*) &imuModule,
+#if USE_ENCODER
+  (FlightModule*) &encoderModule,
+#endif
   (FlightModule*) &estimatorModule,
   (FlightModule*) &controllerModule,
   (FlightModule*) &commsManager,
