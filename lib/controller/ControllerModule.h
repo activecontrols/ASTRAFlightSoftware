@@ -55,8 +55,8 @@ class Controller : FlightModule {
 
 public:
 
-  int init(); /** initialize */
-  void update(); /** check switch to different control mode is needed, else update control loop of current control mode */
+  int init() override; /** initialize */
+  void update(unsigned long time) override; /** check switch to different control mode is needed, else update control loop of current control mode */
   bool often = true;
   int every_us = 200;
   int timeout_ms = 20;
