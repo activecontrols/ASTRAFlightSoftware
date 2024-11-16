@@ -6,6 +6,7 @@
 #include "NXPEstimatorModule.h"
 #include "LEDModule.h"
 #include "Comms.h"
+#include "ControllerModule.h"
 #include <Arduino.h>
 
 #define BATT_V_PIN 41 // SHOULD BE THE RIGHT PIN
@@ -15,7 +16,9 @@ namespace flightData {
   float voltage[1] = {0.0f};
   Eigen::VectorXd measurementVectorY(9);
   Eigen::VectorXd estimatedStateX(6);
+  Eigen::VectorXd controllerInputU(4);
   Router *router;
+  CONTROL_MODE currentMode = CONTROL_MODE::STABILIZE_MODE;
 }
 
 LEDModule ledModule;
@@ -23,12 +26,14 @@ VoltageModule voltageModule(0, BATT_V_PIN);
 IMUModule imuModule;
 NXPEstimatorModule estimatorModule;
 CommsManager commsManager;
+Controller controllerModule;
 
 std::vector<FlightModule*> basicSchedule = {
   (FlightModule*) &ledModule,
   (FlightModule*) &voltageModule,
   (FlightModule*) &imuModule,
   (FlightModule*) &estimatorModule,
+  (FlightModule*) &controllerModule,
   (FlightModule*) &commsManager,
 };
 Scheduler scheduler(basicSchedule);
