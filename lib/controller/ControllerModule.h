@@ -34,6 +34,11 @@
 #define LEFT_TORQUE_VANE_INITIAL_SETTING (140)
 #define RIGHT_TORQUE_VANE_INITIAL_SETTING (140)
 
+/** Servo control dampening */
+#define BETA_DAMPENING_CONSTANT (0.03)
+#define GAMMA_DAMPENING_CONSTANT (0.02)
+
+
 namespace flightData {
     extern Eigen::VectorXd controllerInputU;
     extern CONTROL_MODE currentMode;

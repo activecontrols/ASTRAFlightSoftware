@@ -1,5 +1,6 @@
 #include "ControllerModule.h"
 #include "settings.h"
+#include "EncoderModule.h"
 
 int Controller::init() {
 
@@ -56,8 +57,8 @@ void Controller::update(unsigned long time) {
 void Controller::dampenControls() {
 #if IS_ARDUINO
   #if USE_ENCODER
-    float beta_dot = encoder::magEncoder1.getAngularSpeed();
-    float gamma_dot = encoder::magEncoder2.getAngularSpeed();
+    float beta_dot = flightData::encoderSpeeds[OUTER_GIMBAL_INDEX];
+    float gamma_dot = flightData::encoderSpeeds[INNER_GIMBAL_INDEX];
 
     //TODO: servo dampening needs to happen for the vanes
 
