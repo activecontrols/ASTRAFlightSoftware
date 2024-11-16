@@ -13,12 +13,12 @@
 
 namespace flightData {
   int ledMode = 0;
+  CONTROL_MODE currentMode = CONTROL_MODE::STABILIZE_MODE;
   float voltage[1] = {0.0f};
+  Router *router;
   Eigen::VectorXd measurementVectorY(9);
   Eigen::VectorXd estimatedStateX(6);
   Eigen::VectorXd controllerInputU(4);
-  Router *router;
-  CONTROL_MODE currentMode = CONTROL_MODE::STABILIZE_MODE;
 }
 
 LEDModule ledModule;
@@ -36,6 +36,7 @@ std::vector<FlightModule*> basicSchedule = {
   (FlightModule*) &controllerModule,
   (FlightModule*) &commsManager,
 };
+
 Scheduler scheduler(basicSchedule);
 Router centralRouter;
 void setup() {
