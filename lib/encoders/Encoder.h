@@ -1,3 +1,4 @@
+#ifdef one
 /*
 Encoder.h
 Description: Arduino testing code for the buffer class
@@ -34,4 +35,4 @@ namespace encoder {
 }
 #endif
 #endif
-
+#endif
