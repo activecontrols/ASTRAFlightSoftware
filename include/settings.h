@@ -8,5 +8,6 @@ Author: Vincent Palmerio
 #define USE_TOF_SENSOR (false)
 #define USE_COMMS (false)
 #define ENABLE_MOTOR_CONTROL (false)
+#define USE_EDF (false)
 #define LOG_DATA (false)
 #define REGULATE_ONLY (true)
