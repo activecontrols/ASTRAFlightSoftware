@@ -1,3 +1,4 @@
+#ifdef one
 #include "Controller.h"
 #include "Error.h"
 #include "settings.h"
@@ -448,3 +449,4 @@ namespace controller {
     }
 
 }
+#endif
