@@ -1,4 +1,5 @@
 #include "ControllerModule.h"
+#include "settings.h"
 
 int Controller::init() {
 
@@ -43,7 +44,7 @@ int Controller::init() {
   return 0;
 }
 
-void Controller::update() {
+void Controller::update(unsigned long time) {
     //call current control law based on value in flight data
     modes[flightData::currentMode]->update();
 
@@ -60,8 +61,8 @@ void Controller::dampenControls() {
 
     //TODO: servo dampening needs to happen for the vanes
 
-    controllerInputU(1) = controllerInputU(1) + BETA_DAMPENING_CONSTANT*beta_dot;
-    controllerInputU(0) = controllerInputU(0) + GAMMA_DAMPENING_CONSTANT*gamma_dot;
+    flightData::controllerInputU(1) = flightData::controllerInputU(1) + BETA_DAMPENING_CONSTANT*beta_dot;
+    flightData::controllerInputU(0) = flightData::controllerInputU(0) + GAMMA_DAMPENING_CONSTANT*gamma_dot;
   #endif
 #endif
 }
@@ -83,15 +84,15 @@ void Controller::saturate() {
 void Controller::controlServos() {
 #if IS_ARDUINO
   #if ENABLE_MOTOR_CONTROL
-    innerGimbal.write(controllerInputU(0) + INNER_GIMBAL_INITIAL_SETTING); //write gamma to inner gimbal
-    outerGimbal.write(controllerInputU(1) + OUTER_GIMBAL_INITIAL_SETTING); //write beta to outer gimbal
+    innerGimbal.write(flightData::controllerInputU(0) + INNER_GIMBAL_INITIAL_SETTING); //write gamma to inner gimbal
+    outerGimbal.write(flightData::controllerInputU(1) + OUTER_GIMBAL_INITIAL_SETTING); //write beta to outer gimbal
     
-    torqueVaneLeft.write(controllerInputU(3) + LEFT_TORQUE_VANE_INITIAL_SETTING); //write alpha to left torque vane
-    torqueVaneRight.write(-controllerInputU(3) + RIGHT_TORQUE_VANE_INITIAL_SETTING); //write -alpha to right torque vane
+    torqueVaneLeft.write(flightData::controllerInputU(3) + LEFT_TORQUE_VANE_INITIAL_SETTING); //write alpha to left torque vane
+    torqueVaneRight.write(-flightData::controllerInputU(3) + RIGHT_TORQUE_VANE_INITIAL_SETTING); //write -alpha to right torque vane
   #endif
 
   #if USE_EDF
-    int errorCode = edfFan.setThrottle(controllerInputU(2)); //write throttle to ESC (power), which then talks to EDF (fan))
+    int errorCode = edfFan.setThrottle(flightData::controllerInputU(2)); //write throttle to ESC (power), which then talks to EDF (fan))
   #endif
 #endif
 }
