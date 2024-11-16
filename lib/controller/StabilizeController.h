@@ -7,7 +7,6 @@
 namespace flightData {
   extern Eigen::VectorXd controllerInputU;
   extern Eigen::VectorXd estimatedStateX;
-  extern Eigen::MatrixXd qsGain;
 }
 
 class Stabilize : ControlMode {
