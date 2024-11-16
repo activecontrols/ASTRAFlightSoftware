@@ -17,9 +17,9 @@ class Stabilize : ControlMode {
   Eigen::MatrixXd stabilizationGain;
 public:
   Stabilize(CONTROL_MODE id) : stabilizationGain(U_ROW_LENGTH, X_VECTOR_LENGTH) { this->id = id; }
-  int init();
-  void switchTo() {}; /** sets conditions in data.h variables before switching to TRACK mode */ 
-  void update(); /** runs through control loop every iteration of FlightModule loop */
+  int init() override;
+  void switchTo() override {}; /** sets conditions in data.h variables before switching to TRACK mode */ 
+  void update() override; /** runs through control loop every iteration of FlightModule loop */
 private:
 
 };
