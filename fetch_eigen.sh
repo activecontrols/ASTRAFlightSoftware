@@ -3,6 +3,7 @@
 if [ -d lib/math/Eigen ]; then
     echo "It looks like Eigen is already installed."
     echo "If you want to reinstall, run rm -r lib/math/Eigen."
+    echo "If this is a fresh clone, you may just need to run `git submodule init; git submodule update`"
     exit 1
 fi
 
