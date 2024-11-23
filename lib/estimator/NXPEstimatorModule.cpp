@@ -1,12 +1,9 @@
 #include "NXPEstimatorModule.h"
-#include "Integrator.h"
 #include "Error.h"
 #include "IMU.h"
-#include "MathFunctions.h"
-#include "TOF.h"
 #include "settings.h"
 
-#include <ArduinoEigenDense.h>
+#include "VEigen.h"
 
 NXPEstimatorModule::NXPEstimatorModule() {
 }
