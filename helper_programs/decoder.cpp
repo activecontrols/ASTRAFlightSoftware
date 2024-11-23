@@ -119,7 +119,7 @@ void closeAllCSVFiles() {
 }
 
 int main() {
-    const char *sdFileName = "./SD_Files/FILE1.OUT";
+    const char *sdFileName = "./SD_Files/FILE1.OUT"; // can be set
 
     // Open the SD file in binary mode
     ifstream sdFile(sdFileName, ios::binary);
