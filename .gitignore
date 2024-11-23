@@ -6,4 +6,4 @@
 .DS_Store
 a.out
 **/*.gch
-lib/math/Eigen
+# lib/math/Eigen
