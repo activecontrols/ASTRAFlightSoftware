@@ -4,16 +4,16 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#include <vector>
 #include "FlightModule.h"
 
 class Scheduler : public FlightModule {
 public:
-    Scheduler(std::vector<FlightModule*> &schedule);
+    Scheduler(FlightModule**);
     int init() override;
     void update(unsigned long time) override;
 private:
-    std::vector<FlightModule*> schedule;
+    FlightModule** schedule;
+    unsigned int size;
 };
 
 #endif // SCHEDULER_H

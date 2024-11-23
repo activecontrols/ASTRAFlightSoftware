@@ -7,8 +7,8 @@
 #define NXP_ESTIMATOR_MODULE_H
 
 #include "FlightModule.h"
+#include "VEigen.h"
 
-#include <ArduinoEigenDense.h>
 #include <Adafruit_AHRS.h>
 
 #define FILTER_UPDATE_RATE_HZ (1200)

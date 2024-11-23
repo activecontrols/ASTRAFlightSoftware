@@ -4,11 +4,14 @@
 #include "FlightModule.h"
 #include "VoltageModule.h"
 #include "NXPEstimatorModule.h"
+//#include "MEKFEstimatorModule.h"
 #include "LEDModule.h"
 #include "Comms.h"
 #include "ControllerModule.h"
 #include "EncoderModule.h"
+#include "MotorModule.h"
 #include "settings.h"
+#include "VEigen.h"
 #include <Arduino.h>
 
 #define BATT_V_PIN 41 // SHOULD BE THE RIGHT PIN
@@ -32,16 +35,18 @@ NXPEstimatorModule estimatorModule;
 CommsManager commsManager;
 Controller controllerModule;
 Encoder encoderModule;
+MotorModule motorModule;
 
-std::vector<FlightModule*> basicSchedule = {
-  (FlightModule*) &ledModule,
-  (FlightModule*) &voltageModule,
-  (FlightModule*) &imuModule,
+FlightModule* basicSchedule[] = {
+ (FlightModule*) &ledModule,
+ (FlightModule*) &voltageModule,
+ (FlightModule*) &imuModule,
 #if USE_ENCODER
   (FlightModule*) &encoderModule,
 #endif
   (FlightModule*) &estimatorModule,
   (FlightModule*) &controllerModule,
+  (FlightModule*) &motorModule,
   (FlightModule*) &commsManager,
 };
 

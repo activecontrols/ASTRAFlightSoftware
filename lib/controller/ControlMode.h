@@ -1,6 +1,11 @@
 #ifndef CONTROL_MODE_H
 #define CONTROL_MODE_H
 
+/**
+ * Base class for each control mode (ie, track, stabilize, land, final approach)
+ * @author Vincent Palmerio <vpalmeri@purdue.edu>
+ */
+
 #define X_VECTOR_LENGTH (6) /* estimated state x length */
 #define ERROR_VECTOR_LENGTH (X_VECTOR_LENGTH) /* integrated X_VECTOR that tells us our error */
 #define U_ROW_LENGTH (4) /* controllerInputU length (vector for controlling servos and torque) */
