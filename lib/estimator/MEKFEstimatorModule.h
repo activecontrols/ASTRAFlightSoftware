@@ -17,8 +17,8 @@
  * or elsewhere.
  */
 namespace flightData {
-    extern Eigen::VectorXd measurementVectorY;
-    extern Eigen::VectorXd estimatedStateX;
+    extern Eigen::VectorXd measurementVectorY; // TODO: document format
+    extern Eigen::VectorXd estimatedStateX; // TODO: document format
 };
 
 class MEKFEstimatorModule: public FlightModule {
