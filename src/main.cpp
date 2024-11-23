@@ -9,6 +9,7 @@
 #include "Comms.h"
 #include "ControllerModule.h"
 #include "EncoderModule.h"
+#include "MotorModule.h"
 #include "settings.h"
 #include "VEigen.h"
 #include <Arduino.h>
@@ -34,6 +35,7 @@ NXPEstimatorModule estimatorModule;
 CommsManager commsManager;
 Controller controllerModule;
 Encoder encoderModule;
+MotorModule motorModule;
 
 FlightModule* basicSchedule[] = {
  (FlightModule*) &ledModule,
@@ -44,6 +46,7 @@ FlightModule* basicSchedule[] = {
 #endif
   (FlightModule*) &estimatorModule,
   (FlightModule*) &controllerModule,
+  (FlightModule*) &motorModule,
   (FlightModule*) &commsManager,
 };
 
