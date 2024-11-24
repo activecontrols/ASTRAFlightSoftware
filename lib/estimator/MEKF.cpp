@@ -3,33 +3,33 @@
 
 
 Eigen::Quaterniond estimate;
-Eigen::VectorXd gyro_bias(3);
-Eigen::VectorXd accel_bias(3);
-Eigen::VectorXd mag_bias(3);
+Eigen::Vector3d gyro_bias;
+Eigen::Vector3d accel_bias;
+Eigen::Vector3d mag_bias;
 
-Eigen::Matrix3d gyro_cov_mat(3, 3);
-Eigen::Matrix3d gyro_bias_cov_mat(3, 3);
-Eigen::Matrix3d accel_cov_mat(3,3);
-Eigen::Matrix3d accel_bias_cov_mat(3,3);
-Eigen::Matrix3d mag_cov_mat(3,3);
-Eigen::Matrix3d mag_bias_cov_mat(3,3);
+Eigen::Matrix3d gyro_cov_mat;
+Eigen::Matrix3d gyro_bias_cov_mat;
+Eigen::Matrix3d accel_cov_mat;
+Eigen::Matrix3d accel_bias_cov_mat;
+Eigen::Matrix3d mag_cov_mat;
+Eigen::Matrix3d mag_bias_cov_mat;
 
-Eigen::MatrixXd estimate_covariance(18,18);
-Eigen::MatrixXd observation_covariance(6,6);
-Eigen::MatrixXd G(18,18); // part of the state transition matrix x-dot = Gx
-Eigen::MatrixXd F_mat(18,18);
-Eigen::MatrixXd H(6, 18);
-Eigen::MatrixXd inverse_cov(6, 6);
-Eigen::MatrixXd K(18, 6);
-Eigen::MatrixXd aposteriori_state(18, 1);
+Eigen::Matrix<double, 18, 18> estimate_covariance;
+Eigen::Matrix<double, 6, 6> observation_covariance;
+Eigen::Matrix<double, 18, 18> G; // part of the state transition matrix x-dot = Gx
+Eigen::Matrix<double, 18, 18> F_mat;
+Eigen::Matrix<double, 6, 18> H;
+Eigen::Matrix<double, 6, 6> inverse_cov;
+Eigen::Matrix<double, 18, 6> K;
+Eigen::Matrix<double, 18, 1> aposteriori_state;
 
 void initKalman(Eigen::Quaterniond init_est, double estimate_covar, double gyro_cov, double gyro_bias_cov, double accel_proc_cov, 
                 double accel_bias_cov, double mag_proc_cov, double mag_bias_cov, double accel_obs_cov, double mag_obs_cov){
     estimate = init_est;
-    estimate_covariance = Eigen::MatrixXd::Identity(18,18) * estimate_covar; // huh
-    observation_covariance = Eigen::MatrixXd::Identity(6,6);
-    observation_covariance.topLeftCorner(3, 3) = Eigen::MatrixXd::Identity(3, 3) * accel_obs_cov;
-    observation_covariance.bottomRightCorner(3, 3) = Eigen::MatrixXd::Identity(3, 3) * mag_obs_cov;
+    estimate_covariance = Eigen::Matrix<double, 18, 18>::Identity(18,18) * estimate_covar; // huh
+    observation_covariance = Eigen::Matrix<double, 6, 6>::Identity(6,6);
+    observation_covariance.topLeftCorner(3, 3) = Eigen::Matrix<double, 3, 3>::Identity(3, 3) * accel_obs_cov;
+    observation_covariance.bottomRightCorner(3, 3) = Eigen::Matrix<double, 3, 3>::Identity(3, 3) * mag_obs_cov;
     gyro_bias.setZero();
     accel_bias.setZero();
     mag_bias.setZero();
@@ -53,8 +53,8 @@ void initKalman(Eigen::Quaterniond init_est, double estimate_covar, double gyro_
 
 // taylor series approximation of the process covariance matrix, linearized around omega = 0 = accelerometer reading, and rotation = Identity matrix
 // what does that mean: I'm only about 50% sure..
-Eigen::MatrixXd process_covariance(double time_delta){
-    Eigen::MatrixXd Q = Eigen::MatrixXd::Zero(18, 18);
+Eigen::Matrix<double, 18, 18> process_covariance(double time_delta){
+    Eigen::Matrix<double, 18, 18> Q = Eigen::MatrixXd::Zero(18, 18);
 
     Q.block<3, 3>(0, 0) = gyro_cov_mat * time_delta + gyro_bias_cov_mat * (pow(time_delta, 3)/3.0);
     Q.block<3, 3>(0, 9) = gyro_bias_cov_mat * (-pow(time_delta, 2)/2.0);
@@ -74,7 +74,7 @@ Eigen::MatrixXd process_covariance(double time_delta){
     return Q;
 }
 
-void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::VectorXd mag_meas, double time_delta){
+void updateKalman(Eigen::Vector3d gyro_meas, Eigen::Vector3d acc_meas, Eigen::Vector3d mag_meas, double time_delta){
     gyro_meas = gyro_meas - gyro_bias;
     acc_meas = acc_meas - accel_bias;
     mag_meas = mag_meas - mag_bias;
@@ -105,18 +105,18 @@ void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::Ve
     H.block<3, 3>(0, 12) = Eigen::MatrixXd::Identity(3, 3);
     H.block<3, 3>(3, 0) = skewSymmetric(rotateVector3ByQuat(mag_dir, estimate.inverse()));
     H.block<3, 3>(3, 15) = Eigen::MatrixXd::Identity(3, 3);
-    Eigen::MatrixXd PH_T = Eigen::MatrixXd::Zero(18, 6);
+    Eigen::Matrix<double, 18, 6> PH_T = Eigen::MatrixXd::Zero(18, 6);
     PH_T = estimate_covariance * H.transpose();
     inverse_cov = H * PH_T + observation_covariance;
     K = PH_T * inverse_cov.inverse();
     
     estimate_covariance = (Eigen::MatrixXd::Identity(18, 18) - (K * H)) * estimate_covariance;
 
-    Eigen::MatrixXd observation = Eigen::MatrixXd::Zero(1, 6);
+    Eigen::Matrix<double, 1, 6> observation = Eigen::MatrixXd::Zero(1, 6);
     observation.block<1, 3>(0, 0) = acc_meas;
     observation.block<1, 3>(0, 3) = mag_meas;
     
-    Eigen::MatrixXd predicted_observation = Eigen::MatrixXd::Zero(1, 6);
+    Eigen::Matrix<double, 1, 6> predicted_observation = Eigen::MatrixXd::Zero(1, 6);
     predicted_observation.block<1, 3>(0, 0) = rotateVector3ByQuat(acc_dir, estimate.inverse());
     predicted_observation.block<1, 3>(0, 3) = rotateVector3ByQuat(mag_dir, estimate.inverse());
     /*Eigen::Quaterniond inv = estimate.inverse();
@@ -149,8 +149,8 @@ void updateKalman(Eigen::VectorXd gyro_meas, Eigen::VectorXd acc_meas, Eigen::Ve
     mag_bias += aposteriori_state.block<3, 1>(15, 0);
 }
 
-Eigen::MatrixXd skewSymmetric(Eigen::VectorXd v){
-    Eigen::MatrixXd m(3, 3);
+Eigen::Matrix3d skewSymmetric(Eigen::VectorXd v){
+    Eigen::Matrix3d m(3, 3);
     m << 0.0, -v(2), v(1),
         v(2), 0.0, -v(0),
         -v(1), v(0), 0.0;
