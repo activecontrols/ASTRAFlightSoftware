@@ -12,12 +12,10 @@ Created: 2023-10-27
 #define FASTMAVLINK_IGNORE_WADDRESSOFPACKEDMEMBER
 void fmav_serial_write_char(char c);
 
-#include <cstring>
 #include "../message_lib/pscom/pscom.h"
 #include "FlightModule.h"
 #include "Router.h"
 #include "VEigen.h"
-#include <stdint.h>
 
 /* Define telemetry frequencies */
 #define TELEM_HZ 5

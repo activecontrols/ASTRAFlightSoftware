@@ -9,7 +9,7 @@
 #ifndef FASTMAVLINK_CRC_H
 #define FASTMAVLINK_CRC_H
 
-#include <stdint.h>
+#include <Arduino.h>
 #include "../fastmavlink_config.h"
 
 

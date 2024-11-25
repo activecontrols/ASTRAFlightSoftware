@@ -7,10 +7,6 @@
 #ifndef FASTMAVLINK_PSCOM_H
 #define FASTMAVLINK_PSCOM_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef FASTMAVLINK_BUILD_DATE
 #define FASTMAVLINK_BUILD_DATE  "Sat Oct 19 2024"
 #endif
@@ -199,9 +195,5 @@ typedef enum MAV_CMD {
 
 #include "../minimal/minimal.h"
 
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // FASTMAVLINK_PSCOM_H

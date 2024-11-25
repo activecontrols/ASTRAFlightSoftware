@@ -1,6 +1,5 @@
 #include "Comms.h"
 #include "Error.h"
-#include <cstring>
 
 /* ----- PRIVATE HELPERS ----- */
 
@@ -62,17 +61,15 @@ int CommsManager::init() {
     return NO_ERROR_CODE;
 }
 
-#include <iostream>
+
 /**
  * Spin function; this should be run every loop. Processes
  * new data from serial input and sends periodic messages
  */
 void CommsManager::update(unsigned long time) {
     uint16_t available = availableBytes();
-    // std::cout << "AVIAL:" << available << std::endl;
     for (uint16_t i = 0; i < available; i++) {
         char c = readChar();
-        std::cout << "c:" << c << std::endl;
         uint8_t res = fmav_parse_to_msg(&(this->message), &(this->status), c);
         if (res == FASTMAVLINK_PARSE_RESULT_OK) {
             this->processMessage(&(this->message));
@@ -110,7 +107,7 @@ void CommsManager::sendStatusText(MAV_SEVERITY severity, const char *text) {
         // TODO: We should limit this to read less than 50 at the tail
         // But for some reason that duplicates the text
         // So for now we do this and assume memory security isn't an issue
-        memcpy(data.text, text, 50);
+        strcpy(data.text, text);
         data.id = this->statusTextID;
         fmav_msg_statustext_encode_to_serial(this->sysid, this->compid,
                                              &data, &(this->status));
