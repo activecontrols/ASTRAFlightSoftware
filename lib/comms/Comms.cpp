@@ -29,6 +29,8 @@ char readChar() {
 #else
 // #error Comms not implemented for non-Arduino interfaces - maybe you can add it :)
 #include "udp.h"
+#include <cstring>
+#include <iostream>
 #include <unistd.h>
 #include <sys/ioctl.h>
 void fmav_serial_write_char(char c) {

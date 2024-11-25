@@ -17,6 +17,10 @@ void fmav_serial_write_char(char c);
 #include "Router.h"
 #include "VEigen.h"
 
+#if !IS_ARDUINO
+#include <cstring>
+#include <stdint.h>
+#endif
 /* Define telemetry frequencies */
 #define TELEM_HZ 5
 #define HEALTH_HZ 1

@@ -7,7 +7,11 @@
 #ifndef FASTMAVLINK_TYPES_H
 #define FASTMAVLINK_TYPES_H
 
+#if IS_ARDUINO
 #include <Arduino.h>
+#else
+#include <stdint.h>
+#endif
 #include "../fastmavlink_config.h"
 #include "fastmavlink_protocol.h"
 

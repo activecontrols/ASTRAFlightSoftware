@@ -9,8 +9,11 @@
 #ifndef FASTMAVLINK_CRC_H
 #define FASTMAVLINK_CRC_H
 
+#if IS_ARDUINO
 #include <Arduino.h>
-#include "../fastmavlink_config.h"
+#else
+#include <stdint.h>
+#endif
 
 
 #define X25_INIT_CRC 0xffff
