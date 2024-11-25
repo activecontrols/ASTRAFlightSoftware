@@ -8,7 +8,7 @@
 
 class Scheduler : public FlightModule {
 public:
-    Scheduler(FlightModule**);
+    Scheduler(FlightModule**, int scheduleSize);
     int init() override;
     void update(unsigned long time) override;
 private:

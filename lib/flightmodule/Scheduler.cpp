@@ -4,9 +4,9 @@
  * Construct a scheduler with a list of modules.
  * Must pass correct size.
  */
-Scheduler::Scheduler(FlightModule** schedule) {
+Scheduler::Scheduler(FlightModule** schedule, int scheduleSize) {
     this->schedule = schedule;
-    this->size = sizeof(schedule) / sizeof(schedule[0]);
+    this->size = scheduleSize;
 }
 
 /**

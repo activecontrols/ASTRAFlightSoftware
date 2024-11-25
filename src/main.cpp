@@ -3,8 +3,8 @@
 #include "IMU.h"
 #include "FlightModule.h"
 #include "VoltageModule.h"
-#include "NXPEstimatorModule.h"
-//#include "MEKFEstimatorModule.h"
+//#include "NXPEstimatorModule.h"
+#include "MEKFEstimatorModule.h"
 #include "LEDModule.h"
 #include "Comms.h"
 #include "ControllerModule.h"
@@ -13,8 +13,11 @@
 #include "settings.h"
 #include "VEigen.h"
 #include <Arduino.h>
+//#include "Logger.h"
 
 #define BATT_V_PIN 41 // SHOULD BE THE RIGHT PIN
+
+//#include <iostream>
 
 namespace flightData {
   int ledMode = 0;
@@ -31,11 +34,12 @@ namespace flightData {
 LEDModule ledModule;
 VoltageModule voltageModule(0, BATT_V_PIN);
 IMUModule imuModule;
-NXPEstimatorModule estimatorModule;
+MEKFEstimatorModule estimatorModule;
 CommsManager commsManager;
 Controller controllerModule;
 Encoder encoderModule;
 MotorModule motorModule;
+//Logger logger(LogLevel::INFO, LogLevel::INFO);
 
 FlightModule* basicSchedule[] = {
  (FlightModule*) &ledModule,
@@ -50,7 +54,9 @@ FlightModule* basicSchedule[] = {
   (FlightModule*) &commsManager,
 };
 
-Scheduler scheduler(basicSchedule);
+constexpr int scheduleSize = sizeof(basicSchedule) / sizeof(FlightModule*);
+
+Scheduler scheduler(basicSchedule, scheduleSize);
 Router centralRouter;
 void setup() {
   Serial.begin(9600);
