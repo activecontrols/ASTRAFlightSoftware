@@ -1,5 +1,3 @@
-#ifdef one
-
 /*
 Controller.h - Controller Header file
 Description: Header file to Controller.cpp
@@ -76,7 +74,6 @@ namespace controller {
     //int controlMode(Eigen::VectorXd* x, Eigen::VectorXd* xRef);
 }
 
-#endif
 #endif
 
 

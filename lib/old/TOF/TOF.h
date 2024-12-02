@@ -14,12 +14,12 @@ Last updated: 2/21/2024
 #include <Arduino.h>
 #include <Wire.h>
 #include <vl53l4cx_class.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <assert.h>
-#include <stdlib.h>
+// //#include <string.h>
+// #include <stdlib.h>
+// #include <stdio.h>
+// #include <stdint.h>
+// #include <assert.h>
+// #include <stdlib.h>
 #include <Buffer.h>
 
 #define DEV_I2C Wire

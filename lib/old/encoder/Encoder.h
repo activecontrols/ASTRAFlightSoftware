@@ -1,4 +1,3 @@
-#ifdef one
 /*
 Encoder.h
 Description: Arduino testing code for the buffer class
@@ -33,6 +32,5 @@ namespace encoder {
 
     extern float getSpeedEncoder2();
 }
-#endif
 #endif
 #endif

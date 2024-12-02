@@ -1,4 +1,3 @@
-#ifdef one
 #include <Encoder.h>
 #include <settings.h>
 
@@ -40,5 +39,4 @@ namespace encoder {
         return magEncoder1.getAngularSpeed();
     }
 }
-#endif
 #endif
