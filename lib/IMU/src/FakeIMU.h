@@ -3,7 +3,7 @@ FakeIMU.h - IMU module that fills measurement vector with random noise
 Author: Vincent Wang
 */
 
-#ifndef FAKEIMU_H
+#if !defined(FAKEIMU_H) && !defined(IS_ARDUINO)
 #define FAKEIMU_H
 
 #include "FlightModule.h"

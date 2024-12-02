@@ -1,3 +1,4 @@
+#ifndef IS_ARDUINO
 #include "FakeIMU.h"
 #include "Error.h"
 #include <cstdlib>
@@ -35,3 +36,4 @@ void FakeIMUModule::update(unsigned long time) {
 
     *(this->measurementVector) << ax, ay, az, gxDPS, gyDPS, gzDPS, mx, my, mz;
 }
+#endif
