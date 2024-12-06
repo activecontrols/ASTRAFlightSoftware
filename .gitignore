@@ -7,3 +7,4 @@
 a.out
 **/*.gch
 # lib/math/Eigen
+build/
