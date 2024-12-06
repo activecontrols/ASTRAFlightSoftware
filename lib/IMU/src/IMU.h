@@ -7,18 +7,15 @@ Author: Vincent Palmerio
 #ifndef IMU_H
 #define IMU_H
 
+#include "FlightModule.h"
 #include <Adafruit_LSM6DSOX.h>
 #include <Adafruit_LIS3MDL.h>
 #include <Adafruit_AHRS.h>
 #include <Adafruit_Sensor_Calibration.h>
-#include <Adafruit_AHRS.h>
 #include <ArduinoEigenDense.h>
 #include <Wire.h>
 
 //uncomment to print debugging data to console
-#define ASTRA_IMU_DEBUG 
-//#define AHRS_DEBUG_OUTPUT
-
 
 // Full orientation sensing using NXP/Madgwick/Mahony and a range of 9-DoF
 // sensor sets.
@@ -30,6 +27,8 @@ Author: Vincent Palmerio
 // to Adafruit Unified Sensor interface
 
 
+// TODO: All IMU definitions (incl. calibrations) should be done in an IMU-specific
+// header file
 #if defined(ADAFRUIT_SENSOR_CALIBRATION_USE_EEPROM)
   static Adafruit_Sensor_Calibration_EEPROM cal;
 #else
@@ -46,23 +45,26 @@ static Adafruit_NXPSensorFusion filter; // slowest
 //static Adafruit_Mahony filter; 
 //static Adafruit_Madgwick filter;
 
-namespace imu {
-  extern float orientationArray[3];
-  extern float roll, pitch, yaw;
-  extern Eigen::VectorXd linearAccelVector;
-  extern float linearAccelX, linearAccelY, linearAccelZ;
-
-  extern Eigen::VectorXd gyroscopeVector;
-  extern Eigen::VectorXd magnetometerVector;
-
-  extern float gx, gy, gz; //degrees per second on gyro
-  extern float qw, qx, qy, qz; //quaternarion
-
-  int initializeIMU();
-  int updateIMU();
-  int loadPresetCalibration();
-  float* updateOrientationArray();
+namespace flightData {
+  extern Eigen::VectorXd measurementVectorY;
 }
+
+class IMUModule : public FlightModule {
+public:
+    // Write directly to measurementVectorY
+    // NO CHECKS! May clobber other values!
+    IMUModule();
+
+    // Write to passed pointer to Eigen::Vector, useful for
+    // combining with other modules
+    IMUModule(Eigen::VectorXd* measurementVector);
+    int init() override;
+    void update(unsigned long time) override;
+private:
+    Eigen::VectorXd* measurementVector;
+
+    int loadPresetCalibration();
+};
 
 #endif
 

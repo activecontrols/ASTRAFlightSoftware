@@ -34,4 +34,3 @@ namespace encoder {
 }
 #endif
 #endif
-

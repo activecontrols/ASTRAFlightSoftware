@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "just build",
+            "type": "shell",
+            "command": "g++", // or "clang++" if using Clang
+            "args": [
+                "-std=c++17", // Use C++17 standard
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}", // Output executable
+                "${file}" // Current file
+            ],
+            "problemMatcher": ["$gcc"], // Use appropriate problem matcher
+            "detail": "just build"
+        },
+        {
+            "label": "just run",
+            "type": "shell",
+            "command": "${fileDirname}/${fileBasenameNoExtension}",
+            "problemMatcher": ["$gcc"], // Use appropriate problem matcher
+            "detail": "just run"
+        },
+        {
+            "label": "build",
+            "dependsOrder": "sequence",
+            "dependsOn": ["just build", "just run"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"], // Use appropriate problem matcher
+            "detail": "Build a C++ file using C++17 standard"
+        },
+    ]
+}

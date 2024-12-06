@@ -1,0 +1,3 @@
+#if IS_ARDUINO
+    #error "Including <iostream> is forbidden in this project. Please put the inclusion of iostream behind an #if IS_ARDUINO block."
+#endif

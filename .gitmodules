@@ -4,3 +4,6 @@
 [submodule "lib/message_definitions"]
 	path = lib/message_definitions
 	url = https://github.com/activecontrols/ASTRAMessageDefinitions
+[submodule "lib/math/Eigen"]
+	path = lib/math/Eigen
+	url = https://github.com/activecontrols/Eigen

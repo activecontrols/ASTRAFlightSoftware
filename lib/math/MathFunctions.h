@@ -7,7 +7,7 @@ Author: Ani Gokhale
 #ifndef MATHFUNCTIONS_H
 #define MATHFUNCTIONS_H
 
-#include <ArduinoEigen.h>
+#include "VEigen.h"
 
 namespace math {
     extern Eigen::MatrixXd CBI;
@@ -15,6 +15,7 @@ namespace math {
     void calculateCBI(Eigen::VectorXd q);
     Eigen::VectorXd quaternionProduct(Eigen::VectorXd q1, Eigen::VectorXd q2);
     Eigen::VectorXd quaternionConjugate(Eigen::VectorXd q);
+    Eigen::Vector3d quatToEuler(Eigen::Quaterniond q);
 }
 
 #endif

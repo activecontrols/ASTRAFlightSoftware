@@ -66,4 +66,12 @@ namespace math{
 
         return;
     }
+
+    Eigen::Vector3d quatToEuler(Eigen::Quaterniond q){
+        Eigen::Vector3d v(0.0, 0.0, 0.0);
+        v.x() = atan2(2*(q.w()*q.x() + q.y()*q.z()), 1 - 2*(q.x()*q.x() + q.y()*q.y()));
+        v.y() = asin(2*(q.w()*q.y() - q.z()*q.x()));
+        v.z() = atan2(2*(q.w()*q.z() + q.x()*q.y()), 1 - 2*(q.y()*q.y() + q.z()*q.z()));
+        return v;
+    }
 }
