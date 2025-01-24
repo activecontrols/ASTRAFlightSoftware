@@ -32,6 +32,14 @@
 
 #include <GLFW/glfw3.h>
 #include <mujoco/mujoco.h>
+#include "FlightModule.h"
+#include "Scheduler.h"
+#include "MujocoIMU.h"
+#include "MEKFEstimatorModule.h"
+// #include "Comms.h"
+#include "Router.h"
+#include "ControlMode.h"
+#include "ControllerModule.h"
 
 // MuJoCo data structures
 mjModel* m = NULL;                  // MuJoCo model
@@ -47,7 +55,6 @@ bool button_middle = false;
 bool button_right =  false;
 double lastx = 0;
 double lasty = 0;
-
 
 // keyboard callback
 void keyboard(GLFWwindow* window, int key, int scancode, int act, int mods) {
@@ -116,6 +123,52 @@ void scroll(GLFWwindow* window, double xoffset, double yoffset) {
 /* -- END MUJOCO UI CODE -- */
 
 
+/* ----- CONTROL LOOP ----- */
+// Define module setup
+namespace flightData {
+  int ledMode = 0;
+  CONTROL_MODE currentMode = CONTROL_MODE::STABILIZE_MODE;
+  float voltage[1] = {0.0f};
+  float encoderPos[4] = {0.0f};
+  float encoderSpeeds[4] = {0.0f};
+  Router *router;
+  Eigen::VectorXd measurementVectorY(9);
+  Eigen::VectorXd estimatedStateX(6);
+  Eigen::VectorXd controllerInputU(4);
+}
+
+// LEDModule ledModule;
+// VoltageModule voltageModule(0, BATT_V_PIN);
+MujocoIMUModule imuModule;
+MEKFEstimatorModule estimatorModule;
+// CommsManager commsManager;
+Controller controllerModule;
+
+FlightModule* basicSchedule[] = {
+ (FlightModule*) &imuModule,
+ (FlightModule*) &estimatorModule,
+ (FlightModule*) &controllerModule,
+ // (FlightModule*) &commsManager,
+};
+
+constexpr int scheduleSize = sizeof(basicSchedule) / sizeof(FlightModule*);
+
+Scheduler scheduler(basicSchedule, scheduleSize);
+Router centralRouter;
+void init(mjModel *m, mjData *d) {
+  imuModule.d = d; // Set mjData pointer
+  flightData::router = &centralRouter;
+  centralRouter.registerSchedule(ASTRA_MAINLOOP, &scheduler);
+  centralRouter.changeSchedule(ASTRA_MAINLOOP);
+
+  centralRouter.init();
+}
+
+void controller(const mjModel *m, mjData *d) {
+  // Control code here
+  scheduler.update(d->time);
+}
+
 // main loop
 int main(int argc, const char** argv) {
   if (argc != 2) {
@@ -136,6 +189,7 @@ int main(int argc, const char** argv) {
 
   // make data
   d = mj_makeData(m);
+  init(m, d);
 
   /* --------- UI stuff ---------- */
 
@@ -167,6 +221,9 @@ int main(int argc, const char** argv) {
 
   /* --------- end UI stuff ---------- */
 
+  /* Set control loop */
+  mjcb_control = controller;
+
   // run main loop, target real-time simulation and 60 fps rendering
   while (!glfwWindowShouldClose(window)) {
     // advance interactive simulation for 1/60 sec
@@ -174,7 +231,7 @@ int main(int argc, const char** argv) {
     //  this loop will finish on time for the next frame to be rendered at 60 fps.
     //  Otherwise add a cpu timer and exit this loop when it is time to render.
     mjtNum simstart = d->time;
-    /* ACTUAL MAINLOOP - run stuff per simulation step. Put scheduler/router code in here */
+    /* ACTUAL MAINLOOP - run stuff per simulation step. */
     while (d->time - simstart < 1.0/60.0) {
       mj_step(m, d);
     }

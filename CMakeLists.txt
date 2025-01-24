@@ -23,10 +23,10 @@ set(CMAKE_POLICY_DEFAULT_CMP0072 NEW)
 set(MSVC_INCREMENTAL_DEFAULT ON)
 
 project(
-  mujoco_samples
-  VERSION 3.2.7
-  DESCRIPTION "MuJoCo samples binaries"
-  HOMEPAGE_URL "https://mujoco.org"
+  astra-mjc-sim
+  VERSION 0.1.0
+  DESCRIPTION "Mujoco simulation of ASTRA rocket lander"
+  HOMEPAGE_URL "https://github.com/activecontrols/ASTRAFlightSoftware"
 )
 
 enable_language(C)
@@ -74,7 +74,28 @@ endif()
 # Build samples that require GLFW.
 # Tell the compiler this is a mujoco project
 add_compile_definitions(IS_MUJOCO)
-add_executable(main-mujoco src/main_mujoco.cpp)
+add_executable(main-mujoco
+    lib/flightmodule/Scheduler.cpp
+    lib/flightmodule/Router.cpp
+    lib/IMU/src/MujocoIMU.cpp
+    lib/estimator/MEKF.cpp
+    lib/estimator/MEKFEstimatorModule.cpp
+    lib/math/MathFunctions.cpp
+    # lib/comms/Comms.cpp
+    lib/controller/ControllerModule.cpp
+    src/main_mujoco.cpp
+)
+
+target_include_directories(main-mujoco PUBLIC include)
+target_include_directories(main-mujoco PUBLIC lib/error)
+target_include_directories(main-mujoco PUBLIC lib/math)
+target_include_directories(main-mujoco PUBLIC lib/IMU/include)
+target_include_directories(main-mujoco PUBLIC lib/IMU/src)
+target_include_directories(main-mujoco PUBLIC lib/estimator)
+target_include_directories(main-mujoco PUBLIC lib/comms)
+target_include_directories(main-mujoco PUBLIC lib/controller)
+target_include_directories(main-mujoco PUBLIC lib/flightmodule)
+
 target_compile_options(main-mujoco PUBLIC ${MUJOCO_SAMPLE_COMPILE_OPTIONS})
 target_link_libraries(
   main-mujoco
