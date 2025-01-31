@@ -70,4 +70,12 @@ void MEKFEstimatorModule::update(unsigned long time) {
     // flightData::estimatedStateX(3) = roll;
     // flightData::estimatedStateX(4) = pitch;
     // flightData::estimatedStateX(5) = yaw;
+    // Serial.print("Quaternion");
+    // Serial.print(",");
+    // Serial.print(qx);
+    // Serial.print(",");
+    // Serial.print(qy);
+    // Serial.print(",");
+    // Serial.print(qz);
+    // Serial.print("\n");
 }
