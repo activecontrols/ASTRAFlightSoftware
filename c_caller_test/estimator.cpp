@@ -4,8 +4,8 @@
 #include "MEKFEstimatorModule.h"
 
 namespace flightData {
-    Eigen::VectorXd measurementVectorY = Eigen::VectorXd(6);
-    Eigen::VectorXd estimatedStateX = Eigen::VectorXd(6);
+    Eigen::VectorXd measurementVectorY;
+    Eigen::VectorXd estimatedStateX;
 };
 
 Eigen::VectorXd toEigen(double*);
@@ -20,16 +20,18 @@ double* toArray(Eigen::VectorXd eigen) {
 }
 
 long t = 1e9;
-// auto estimator = MEKFEstimatorModule::MEKFEstimatorModule();
+MEKFEstimatorModule estimator;
 
 void init() {
-    // estimator.init();
+    estimator.init();
+    flightData::measurementVectorY = Eigen::VectorXd(9);
+    flightData::estimatedStateX = Eigen::VectorXd(6);
 }
 
-void run(double* input, double* output) {
-    flightData::measurementVectorY = toEigen(input, 6);
-    // estimator.update(t);
-    // t += 1e9;
-    memcpy(output, toArray(flightData::measurementVectorY), sizeof(double) * 6);
-    // memcpy(output, input, sizeof(double) * 6);
+void run(double* i, double* o) {
+    flightData::measurementVectorY = toEigen(i, 9);
+    estimator.update(t);
+    t += 1e9;
+    memcpy(o, toArray(flightData::estimatedStateX), sizeof(double) * 6);
+    // memcpy(o, i, sizeof(double) * 6);
 }

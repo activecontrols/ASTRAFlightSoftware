@@ -17,15 +17,15 @@ double changeValue(double x) {
 //    }
 //}
 
-void addVectors(double* a, double* b, double* c) {
-    Eigen::VectorXd eigenA = toEigen(a);
-    Eigen::VectorXd eigenB = toEigen(b);
-    Eigen::VectorXd eigenC = eigenA + eigenB;
-    cout << "SAMPLE\n" << eigenA << "\n\n" << eigenB << "\n\n" << eigenC << "\n\n";
-    memcpy(c, toArray(eigenC), sizeof(double) * 3);
-    for (int z = 0; z < 3; z++) {
-        cout << c[z] << "\n";
-    }
+void addVectors(double* i, double* o) {
+    Eigen::VectorXd eigenA = toEigen(i);
+    // Eigen::VectorXd eigenB = toEigen(b);
+    // Eigen::VectorXd eigenC = eigenA + eigenB;
+    // cout << "SAMPLE\n" << eigenA << "\n\n" << eigenB << "\n\n" << eigenC << "\n\n";
+    memcpy(o, toArray(eigenA), sizeof(double) * 3);
+    // for (int z = 0; z < 3; z++) {
+    //     cout << c[z] << "\n";
+    // }
 }
 
 Eigen::VectorXd toEigen(double* arr) {
