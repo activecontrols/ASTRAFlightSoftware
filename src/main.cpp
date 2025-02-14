@@ -43,14 +43,14 @@ MotorModule motorModule;
 
 FlightModule* basicSchedule[] = {
  (FlightModule*) &ledModule,
- (FlightModule*) &voltageModule,
- (FlightModule*) &imuModule,
+//  (FlightModule*) &voltageModule,
+//  (FlightModule*) &imuModule,
 #if USE_ENCODER
   (FlightModule*) &encoderModule,
 #endif
-  (FlightModule*) &estimatorModule,
-  (FlightModule*) &controllerModule,
-  (FlightModule*) &motorModule,
+  // (FlightModule*) &estimatorModule,
+  // (FlightModule*) &controllerModule,
+  // (FlightModule*) &motorModule,
   (FlightModule*) &commsManager,
 };
 
@@ -60,7 +60,7 @@ Scheduler scheduler(basicSchedule, scheduleSize);
 Router centralRouter;
 void setup() {
   Serial.begin(9600);
-  Serial1.begin(57600);
+  // Serial1.begin(57600);
 
   flightData::router = &centralRouter;
   centralRouter.registerSchedule(ASTRA_MAINLOOP, &scheduler);
@@ -70,5 +70,6 @@ void setup() {
 }
 
 void loop() {
+  delay(1000);
   centralRouter.update(micros());
 }

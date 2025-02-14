@@ -6,7 +6,7 @@
 #define FAST_THRESHOLD 400
 
 LEDModule::LEDModule() {
-    this->pin = LED_BUILTIN;
+    this->pin = 32;
 }
 
 LEDModule::LEDModule(int pin) {
@@ -33,6 +33,9 @@ void LEDModule::update(unsigned long time) {
             if (this->ledOn) {
                 digitalWrite(this->pin, LOW);
                 this->ledOn = false;
+            } else {
+                digitalWrite(this->pin, HIGH);
+                this->ledOn = true;
             }
             break;
     }

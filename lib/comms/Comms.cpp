@@ -1,6 +1,8 @@
 #include "Comms.h"
 #include "Error.h"
 
+#define IS_ARDUINO 1
+
 /* ----- PRIVATE HELPERS ----- */
 
 /* We want to define a serial helper for our fastmavlink
@@ -14,7 +16,7 @@
 #define MAVLinkSerial Serial1
 #define FASTMAVLINK_SERIAL_WRITE_CHAR 1
 void fmav_serial_write_char(char c) {
-    MAVLinkSerial.write(c);
+    Serial.write(c);
 }
 /* Helpers for data available and data read */
 void setupSerial() {
@@ -59,16 +61,18 @@ char readChar() {
  */
 CommsManager::CommsManager() { }
 int CommsManager::init() { 
-    setupSerial();
+    // setupSerial();
     return NO_ERROR_CODE;
 }
 
-
+bool On = true;
 /**
  * Spin function; this should be run every loop. Processes
  * new data from serial input and sends periodic messages
  */
 void CommsManager::update(unsigned long time) {
+    digitalWrite(LED_BUILTIN, HIGH);
+
     uint16_t available = availableBytes();
     for (uint16_t i = 0; i < available; i++) {
         char c = readChar();
@@ -77,6 +81,7 @@ void CommsManager::update(unsigned long time) {
             this->processMessage(&(this->message));
         }
     }
+
 
     if (time - this->lastHeartbeat > (1000000 / HEARTBEAT_HZ)) {
         this->sendHeartbeat();
@@ -92,6 +97,7 @@ void CommsManager::update(unsigned long time) {
         this->sendHealth();
         this->lastHealth = time;
     }
+
 }
 
 /**
@@ -161,41 +167,69 @@ void CommsManager::processCommand(uint8_t sysid, uint8_t compid, fmav_command_lo
     this->ackCommand(cmd->command, MAV_RESULT_ACCEPTED, sysid, compid);
 }
 
+void makeFakeTelem(fmav_control_system_state_t* state_addr, fmav_scaled_imu_t* raw_imu_addr, unsigned long time) {
+    // making constant fake telem data
+    state_addr->q[1] = 1;
+    state_addr->q[2] = 1;
+    state_addr->q[3] = 1;
+
+    state_addr->roll_rate = 1;
+    state_addr->pitch_rate = 1;
+    state_addr->yaw_rate = 1;
+
+    // now for imu!
+
+    raw_imu_addr->time_usec = time;
+    raw_imu_addr->xacc = (int16_t) 1000;;
+    raw_imu_addr->yacc = (int16_t) 1000;
+    raw_imu_addr->zacc = (int16_t) 1000;
+    raw_imu_addr->xgyro = (int16_t) 1000;
+    raw_imu_addr->ygyro = (int16_t) 1000;
+    raw_imu_addr->zgyro = (int16_t) 1000;
+    raw_imu_addr->xmag = (int16_t) 1000;
+    raw_imu_addr->ymag = (int16_t) 1000;
+    raw_imu_addr->zmag = (int16_t) 1000;
+}
+
 /**
  * Send telemetry
  */
 void CommsManager::sendTelem(unsigned long time) {
     // Send fused state
     fmav_control_system_state_t state;
-    state.q[1] = flightData::estimatedStateX(0);
-    state.q[2] = flightData::estimatedStateX(1);
-    state.q[3] = flightData::estimatedStateX(2);
+    fmav_scaled_imu_t rawImu;
+    makeFakeTelem(&state, &rawImu, time);
+
+    // state.q[1] = flightData::estimatedStateX(0);
+    // state.q[2] = flightData::estimatedStateX(1);
+    // state.q[3] = flightData::estimatedStateX(2);
     
     // TODO: Figure out which axis is which
-    state.roll_rate = flightData::estimatedStateX(3);
-    state.pitch_rate = flightData::estimatedStateX(4);
-    state.yaw_rate = flightData::estimatedStateX(5);
+    // state.roll_rate = flightData::estimatedStateX(3);
+    // state.pitch_rate = flightData::estimatedStateX(4);
+    // state.yaw_rate = flightData::estimatedStateX(5);
+
     fmav_msg_control_system_state_encode_to_serial(
         this->sysid, this->compid,
         &state, &(this->status)
     );
 
     // Send raw IMU data
-    fmav_scaled_imu_t rawImu;
-    rawImu.time_usec = time;
-    rawImu.xacc = (int16_t) 1000 * flightData::measurementVectorY(0);
-    rawImu.yacc = (int16_t) 1000 * flightData::measurementVectorY(1);
-    rawImu.zacc = (int16_t) 1000 * flightData::measurementVectorY(2);
-    rawImu.xgyro = (int16_t) 1000 * flightData::measurementVectorY(3);
-    rawImu.ygyro = (int16_t) 1000 * flightData::measurementVectorY(4);
-    rawImu.zgyro = (int16_t) 1000 * flightData::measurementVectorY(5);
-    rawImu.xmag = (int16_t) 1000 * flightData::measurementVectorY(6);
-    rawImu.ymag = (int16_t) 1000 * flightData::measurementVectorY(7);
-    rawImu.zmag = (int16_t) 1000 * flightData::measurementVectorY(8);
-    fmav_msg_scaled_imu_encode_to_serial(
-        this->sysid, this->compid,
-        &rawImu, &(this->status)
-    );
+    // rawImu.time_usec = time;
+    // rawImu.xacc = (int16_t) 1000 * flightData::measurementVectorY(0);
+    // rawImu.yacc = (int16_t) 1000 * flightData::measurementVectorY(1);
+    // rawImu.zacc = (int16_t) 1000 * flightData::measurementVectorY(2);
+    // rawImu.xgyro = (int16_t) 1000 * flightData::measurementVectorY(3);
+    // rawImu.ygyro = (int16_t) 1000 * flightData::measurementVectorY(4);
+    // rawImu.zgyro = (int16_t) 1000 * flightData::measurementVectorY(5);
+    // rawImu.xmag = (int16_t) 1000 * flightData::measurementVectorY(6);
+    // rawImu.ymag = (int16_t) 1000 * flightData::measurementVectorY(7);
+    // rawImu.zmag = (int16_t) 1000 * flightData::measurementVectorY(8);
+
+    // fmav_msg_scaled_imu_encode_to_serial(
+    //     this->sysid, this->compid,
+    //     &rawImu, &(this->status)
+    // );
 }
 
 /**

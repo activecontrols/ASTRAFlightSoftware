@@ -22,7 +22,7 @@ void fmav_serial_write_char(char c);
 #include <stdint.h>
 #endif
 /* Define telemetry frequencies */
-#define TELEM_HZ 5
+#define TELEM_HZ 10
 #define HEALTH_HZ 1
 #define HEARTBEAT_HZ 1
 
