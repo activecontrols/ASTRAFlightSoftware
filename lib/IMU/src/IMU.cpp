@@ -61,9 +61,10 @@ int IMUModule::init() {
 void IMUModule::update(unsigned long time) {
     /* Read the motion sensors */
     sensors_event_t accel, gyro, mag;
-    accelerometer->getEvent(&accel);
-    gyroscope->getEvent(&gyro);
-    magnetometer->getEvent(&mag);
+    // accelerometer->getEvent(&accel);
+    // gyroscope->getEvent(&gyro);
+    // magnetometer->getEvent(&mag);
+
     
     /* Apply calibration corrections to sensors */
     cal.calibrate(mag);

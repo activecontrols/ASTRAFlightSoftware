@@ -54,6 +54,8 @@ private:
 
     void ackCommand(uint16_t command, uint8_t code, uint8_t sysid, uint8_t compid);
     void rejectCommand(uint16_t command, const char *reason); // Send ack with command cancelled with an error
+
+    int testTelemCommand(float params[7]);
     
     // Timers for periodics
     int lastHeartbeat = 0;

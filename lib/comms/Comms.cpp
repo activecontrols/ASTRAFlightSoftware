@@ -1,5 +1,8 @@
+#include <functional>
+
 #include "Comms.h"
 #include "Error.h"
+#include "commandIDs.h"
 
 #define IS_ARDUINO 1
 
@@ -13,10 +16,10 @@
 /* Define serial interface to use at compile time */
 #if IS_ARDUINO
 #include <Arduino.h>
-#define MAVLinkSerial Serial1
+#define MAVLinkSerial Serial
 #define FASTMAVLINK_SERIAL_WRITE_CHAR 1
 void fmav_serial_write_char(char c) {
-    Serial.write(c);
+    MAVLinkSerial.write(c);
 }
 /* Helpers for data available and data read */
 void setupSerial() {
@@ -54,15 +57,33 @@ char readChar() {
 
 /* ----- PUBLIC INTERFACES ----- */
 
+void makeFakeTelem(fmav_control_system_state_t* state_addr, fmav_scaled_imu_t* raw_imu_addr, unsigned long time);
+
 /**
  * We leave the constructor and init empty for now; most initialization
  * functions should be handled in init() in the style of most Arduino
  * libraries.
  */
 CommsManager::CommsManager() { }
-int CommsManager::init() { 
+int CommsManager::init() {
     // setupSerial();
+    flightData::router->registerRoute(TEST_TELEM_COMMAND_ID, std::bind(&CommsManager::testTelemCommand, this, std::placeholders::_1));
     return NO_ERROR_CODE;
+}
+
+int CommsManager::testTelemCommand(float params[7]) {
+    unsigned long time = micros();
+
+    fmav_control_system_state_t state;
+    fmav_scaled_imu_t rawImu;
+    makeFakeTelem(&state, &rawImu, time);
+
+    fmav_msg_control_system_state_encode_to_serial(
+        this->sysid, this->compid,
+        &state, &(this->status)
+    );
+
+    return 1;
 }
 
 bool On = true;
@@ -82,7 +103,6 @@ void CommsManager::update(unsigned long time) {
         }
     }
 
-
     if (time - this->lastHeartbeat > (1000000 / HEARTBEAT_HZ)) {
         this->sendHeartbeat();
         this->lastHeartbeat = time;
@@ -97,7 +117,6 @@ void CommsManager::update(unsigned long time) {
         this->sendHealth();
         this->lastHealth = time;
     }
-
 }
 
 /**
@@ -140,6 +159,7 @@ void CommsManager::processMessage(fmav_message_t *msg) {
             fmav_msg_command_long_decode(&command, msg);
             this->processCommand(msg->sysid, msg->compid, &command);
             break;
+        
         default:
             break; // Handling currently not implemented
     }

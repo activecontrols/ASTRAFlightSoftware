@@ -3,6 +3,7 @@
 #include "Scheduler.h"
 #include <map>
 #include <unordered_map>
+#include <functional>
 
 enum State {
     ASTRA_PREBOOT,
@@ -15,12 +16,12 @@ public:
     int init() override;
     void update(unsigned long time) override;
 
-    int call(int commandID, float params[7]);
-    void registerRoute(int commandID, int (*callback)(float params[7]));
+    int call(int commandID, float params[7]); 
+    void registerRoute(int commandID, std::function<int(float[7])> callback); // changed to std::function for easier insertion of routes
     void registerSchedule(enum State state, Scheduler *modules);
     int changeSchedule(enum State state);
 private:
-    std::multimap<int, int (*)(float[7])> callbacks;
+    std::multimap<int, std::function<int(float[7])>> callbacks; // why use multimap?? are we threaded? we should be single
     std::unordered_map<int, Scheduler*> schedules;
     Scheduler *currentSchedule = nullptr;
     Scheduler *nextSchedule = nullptr;

@@ -23,6 +23,7 @@ int Router::call(int commandID, float params[7]) {
         return -1; // No command registered
     }
 
+    // what's the point of this? why cannot we can just call the function explicitly here
     auto range = this->callbacks.equal_range(commandID);
     int status = 0;
     for (auto i = range.first; i != range.second; ++i) {
@@ -32,7 +33,7 @@ int Router::call(int commandID, float params[7]) {
     return status;
 }
 
-void Router::registerRoute(int command_id, int (*callback)(float params[7])) {
+void Router::registerRoute(int command_id, std::function<int(float[7])> callback) {
     this->callbacks.insert({command_id, callback});
 }
 
