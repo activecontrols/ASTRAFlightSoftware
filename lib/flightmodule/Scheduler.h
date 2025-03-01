@@ -11,6 +11,8 @@ public:
     Scheduler(FlightModule**, int scheduleSize);
     int init() override;
     void update(unsigned long time) override;
+    static void taskFunction(void* pvParameters);
+    void createTasks();
 private:
     FlightModule** schedule;
     unsigned int size;
