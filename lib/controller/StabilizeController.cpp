@@ -1,5 +1,6 @@
 #include "StabilizeController.h"
 #include "Error.h"
+#define PI 3.14159
 
 int Stabilize::init() {
 

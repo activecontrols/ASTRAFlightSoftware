@@ -16,6 +16,8 @@ namespace math {
     Eigen::VectorXd quaternionProduct(Eigen::VectorXd q1, Eigen::VectorXd q2);
     Eigen::VectorXd quaternionConjugate(Eigen::VectorXd q);
     Eigen::Vector3d quatToEuler(Eigen::Quaterniond q);
+
+    float constrain(float input, float min, float max);
 }
 
 #endif

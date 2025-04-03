@@ -83,6 +83,7 @@ add_executable(main-mujoco
     lib/math/MathFunctions.cpp
     # lib/comms/Comms.cpp
     lib/controller/ControllerModule.cpp
+    lib/controller/StabilizeController.cpp
     src/main_mujoco.cpp
 )
 
@@ -91,6 +92,7 @@ target_include_directories(main-mujoco PUBLIC lib/error)
 target_include_directories(main-mujoco PUBLIC lib/math)
 target_include_directories(main-mujoco PUBLIC lib/IMU/include)
 target_include_directories(main-mujoco PUBLIC lib/IMU/src)
+target_include_directories(main-mujoco PUBLIC lib/math)
 target_include_directories(main-mujoco PUBLIC lib/estimator)
 target_include_directories(main-mujoco PUBLIC lib/comms)
 target_include_directories(main-mujoco PUBLIC lib/controller)

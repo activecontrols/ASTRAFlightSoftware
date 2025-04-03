@@ -74,4 +74,10 @@ namespace math{
         v.z() = atan2(2*(q.w()*q.z() + q.x()*q.y()), 1 - 2*(q.y()*q.y() + q.z()*q.z()));
         return v;
     }
+
+    float constrain(float input, float min, float max) {
+        if (input < min) return min;
+        if (input > max) return max;
+        return input;
+    }
 }
