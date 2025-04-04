@@ -50,16 +50,16 @@ void MEKFEstimatorModule::update(unsigned long time) {
     this->lastUpdateTime = time;
 
     // Get data out of filter
-    float qw = estimate.w();
+    // float qw = estimate.w();
     float qx = estimate.x();
     float qy = estimate.y();
     float qz = estimate.z();
 
-    Eigen::Vector3d v = math::quatToEuler(estimate);
-    float roll = v.x() * SENSORS_RADS_TO_DPS;
-    float pitch = v.y() * SENSORS_RADS_TO_DPS;
-    float yaw = v.z() * SENSORS_RADS_TO_DPS;
-    
+    // Eigen::Vector3d v = math::quatToEuler(estimate);
+    // float roll = v.x() * SENSORS_RADS_TO_DPS;
+    // float pitch = v.y() * SENSORS_RADS_TO_DPS;
+    // float yaw = v.z() * SENSORS_RADS_TO_DPS;
+
     flightData::estimatedStateX(0) = qx;
     flightData::estimatedStateX(1) = qy;
     flightData::estimatedStateX(2) = qz;

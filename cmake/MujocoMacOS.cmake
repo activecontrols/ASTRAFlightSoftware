@@ -26,7 +26,7 @@ if(APPLE)
                                    -Werror=partial-availability -Werror=unguarded-availability
   )
   set(MUJOCO_MACOS_LINK_OPTIONS -mmacosx-version-min=${MUJOCO_MACOSX_VERSION_MIN}
-                                -Wl,-no_weak_imports
+                                -Wl# -no_weak_imports
   )
 else()
   set(MUJOCO_MACOS_COMPILE_OPTIONS "")

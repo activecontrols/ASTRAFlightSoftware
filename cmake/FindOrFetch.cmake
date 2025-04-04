@@ -102,7 +102,7 @@ macro(FindOrFetch)
 
   # If targets are not found, use `find_package` or `FetchContent...` to get it.
   if(NOT targets_found)
-    if(${_ARGS_USE_SYSTEM_PACKAGE})
+    if(FALSE)
       message(CHECK_START
               "mujoco::FindOrFetch: finding `${_ARGS_PACKAGE_NAME}` in system packages..."
       )
