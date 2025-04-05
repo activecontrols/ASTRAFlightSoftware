@@ -26,7 +26,7 @@ public:
     void update(unsigned long time) override;
 private:
     void blink(unsigned long time, unsigned long threshold);
-    int pin = LED_BUILTIN;
+    int pin = 13;
     int ledOn = false;
     unsigned long lastUpdate = 0;
 };
