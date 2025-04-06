@@ -35,10 +35,11 @@
 #include "FlightModule.h"
 #include "Scheduler.h"
 #include "MujocoIMU.h"
+#include "MujocoGPS.h"
+#include "MujocoMotor.h"
 #include "MEKFEstimatorModule.h"
 // #include "Comms.h"
 #include "Router.h"
-#include "ControlMode.h"
 #include "ControllerModule.h"
 
 // MuJoCo data structures
@@ -127,27 +128,33 @@ void scroll(GLFWwindow* window, double xoffset, double yoffset) {
 // Define module setup
 namespace flightData {
   int ledMode = 0;
-  CONTROL_MODE currentMode = CONTROL_MODE::STABILIZE_MODE;
   float voltage[1] = {0.0f};
   float encoderPos[4] = {0.0f};
   float encoderSpeeds[4] = {0.0f};
   Router *router;
-  Eigen::VectorXd measurementVectorY(9);
-  Eigen::VectorXd estimatedStateX(6);
+  // accel*3, gyro*3, mag*3, gpspos*3, gpsvel*3
+  Eigen::VectorXd measurementVectorY(15);
+  // pos, vel, rot, angvel
+  Eigen::VectorXd estimatedStateX(12);
+  // gimbalx, gimbaly, roll, thrust
   Eigen::VectorXd controllerInputU(4);
 }
 
 // LEDModule ledModule;
 // VoltageModule voltageModule(0, BATT_V_PIN);
 MujocoIMUModule imuModule;
+MujocoGPSModule gpsModule;
+MujocoMotorModule motorModule;
 MEKFEstimatorModule estimatorModule;
 // CommsManager commsManager;
-Controller controllerModule;
+ControllerModule controllerModule;
 
 FlightModule* basicSchedule[] = {
  (FlightModule*) &imuModule,
+ (FlightModule*) &gpsModule,
  (FlightModule*) &estimatorModule,
  (FlightModule*) &controllerModule,
+ (FlightModule*) &motorModule,
  // (FlightModule*) &commsManager,
 };
 
@@ -157,6 +164,8 @@ Scheduler scheduler(basicSchedule, scheduleSize);
 Router centralRouter;
 void init(mjModel *m, mjData *d) {
   imuModule.d = d; // Set mjData pointer
+  gpsModule.d = d; // Set mjData pointer
+  motorModule.d = d; // Set mjData pointer
   flightData::router = &centralRouter;
   centralRouter.registerSchedule(ASTRA_MAINLOOP, &scheduler);
   centralRouter.changeSchedule(ASTRA_MAINLOOP);
@@ -166,7 +175,7 @@ void init(mjModel *m, mjData *d) {
 
 void controller(const mjModel *m, mjData *d) {
   // Control code here
-  scheduler.update(d->time);
+  scheduler.update((unsigned long) (d->time * 1000000));
 }
 
 // main loop

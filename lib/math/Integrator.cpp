@@ -7,7 +7,7 @@ Last updated: 01/10/2024 by Ishan Goel <goeli@purdue.edu>
 */
 
 #include "Integrator.h"
-#include "Error.h"
+#include "ASTRAError.h"
 
 // This function needs testing
 int Integrator::reset(Eigen::VectorXd* vector)

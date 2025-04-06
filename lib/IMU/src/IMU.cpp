@@ -1,5 +1,5 @@
 #include <debug.h>
-#include <Error.h>
+#include <ASTRAError.h>
 
 #include "IMU.h"
 #include "LSM6DS_LIS3MDL.h"

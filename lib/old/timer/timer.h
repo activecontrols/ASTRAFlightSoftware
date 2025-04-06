@@ -2,7 +2,7 @@
 #define TIMER_H
 
 #include <elapsedMillis.h>
-#include "Error.h"
+#include "ASTRAError.h"
 
 /*
 Timer.h

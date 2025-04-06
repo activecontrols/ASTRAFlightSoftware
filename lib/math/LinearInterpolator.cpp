@@ -1,5 +1,5 @@
 #include "LinearInterpolator.h"
-#include "Error.h"
+#include "ASTRAError.h"
 
 /*
 LinearInterpolator.cpp

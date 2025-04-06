@@ -1,5 +1,5 @@
 #include "EncoderModule.h"
-#include "Error.h"
+#include "ASTRAError.h"
 
 int Encoder::init()
 {

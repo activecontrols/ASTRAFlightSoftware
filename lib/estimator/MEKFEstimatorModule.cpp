@@ -1,7 +1,7 @@
 #include "MEKFEstimatorModule.h"
 #include "MEKF.h"
 #include "MathFunctions.h"
-#include "Error.h"
+#include "ASTRAError.h"
 
 #include "VEigen.h"
 
@@ -51,21 +51,28 @@ void MEKFEstimatorModule::update(unsigned long time) {
 
     // Get data out of filter
     // float qw = estimate.w();
-    float qx = estimate.x();
-    float qy = estimate.y();
-    float qz = estimate.z();
+    // float qx = estimate.x();
+    // float qy = estimate.y();
+    // float qz = estimate.z();
 
-    // Eigen::Vector3d v = math::quatToEuler(estimate);
-    // float roll = v.x() * SENSORS_RADS_TO_DPS;
-    // float pitch = v.y() * SENSORS_RADS_TO_DPS;
-    // float yaw = v.z() * SENSORS_RADS_TO_DPS;
+    Eigen::Vector3d v = math::quatToEuler(estimate);
+    float rx = v.x(); // * SENSORS_RADS_TO_DPS;
+    float ry = v.y(); // * SENSORS_RADS_TO_DPS;
+    float rz = v.z(); // * SENSORS_RADS_TO_DPS;
 
-    flightData::estimatedStateX(0) = qx;
-    flightData::estimatedStateX(1) = qy;
-    flightData::estimatedStateX(2) = qz;
-    flightData::estimatedStateX(3) = flightData::measurementVectorY(3);
-    flightData::estimatedStateX(4) = flightData::measurementVectorY(4);
-    flightData::estimatedStateX(5) = flightData::measurementVectorY(5);
+    flightData::estimatedStateX(0) = flightData::measurementVectorY(9);
+    flightData::estimatedStateX(1) = flightData::measurementVectorY(10);
+    flightData::estimatedStateX(2) = flightData::measurementVectorY(11);
+    flightData::estimatedStateX(3) = flightData::measurementVectorY(12);
+    flightData::estimatedStateX(4) = flightData::measurementVectorY(13);
+    flightData::estimatedStateX(5) = flightData::measurementVectorY(14);
+
+    flightData::estimatedStateX(6) = rx;
+    flightData::estimatedStateX(7) = ry;
+    flightData::estimatedStateX(8) = rz;
+    flightData::estimatedStateX(9) = flightData::measurementVectorY(3);
+    flightData::estimatedStateX(10) = flightData::measurementVectorY(4);
+    flightData::estimatedStateX(11) = flightData::measurementVectorY(5);
 
     // flightData::estimatedStateX(3) = roll;
     // flightData::estimatedStateX(4) = pitch;

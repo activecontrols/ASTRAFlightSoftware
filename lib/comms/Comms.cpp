@@ -1,5 +1,5 @@
 #include "Comms.h"
-#include "Error.h"
+#include "ASTRAError.h"
 
 /* ----- PRIVATE HELPERS ----- */
 

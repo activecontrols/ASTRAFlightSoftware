@@ -1,5 +1,5 @@
 #include "NXPEstimatorModule.h"
-#include "Error.h"
+#include "ASTRAError.h"
 #include "IMU.h"
 #include "settings.h"
 

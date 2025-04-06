@@ -21,6 +21,7 @@ set(CMAKE_POLICY_DEFAULT_CMP0072 NEW)
 
 # This line has to appear before 'PROJECT' in order to be able to disable incremental linking
 set(MSVC_INCREMENTAL_DEFAULT ON)
+include(FetchContent)
 
 project(
   astra-mjc-sim
@@ -34,6 +35,12 @@ enable_language(CXX)
 if(APPLE)
   enable_language(OBJC)
   enable_language(OBJCXX)
+endif()
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64")
+    message(STATUS "Apple Silicon detected: Configuring build for arm64")
+    set(ARM64 TRUE)
+else()
+    set(ARM64 FALSE)
 endif()
 
 # Check if we are building as standalone project.
@@ -70,35 +77,47 @@ if(MUJOCO_HARDEN)
   endif()
 endif()
 
+set(OSQP_EMBEDDED_MODE "1")
 
 # Build samples that require GLFW.
 # Tell the compiler this is a mujoco project
+file(GLOB MPC_SOURCE "lib/controller/mpc/src/*.c")
+file(GLOB SOLVER_SOURCE "lib/controller/mpc/solver_code/src/*.c" "lib/controller/mpc/solver_code/workspace.c")
 add_compile_definitions(IS_MUJOCO)
 add_executable(main-mujoco
+    ${MPC_SOURCE}
+    ${SOLVER_SOURCE}
     lib/flightmodule/Scheduler.cpp
     lib/flightmodule/Router.cpp
     lib/IMU/src/MujocoIMU.cpp
+    lib/gps/MujocoGPS.cpp
+    lib/motor/MujocoMotor.cpp
     lib/estimator/MEKF.cpp
     lib/estimator/MEKFEstimatorModule.cpp
     lib/math/MathFunctions.cpp
     # lib/comms/Comms.cpp
     lib/controller/ControllerModule.cpp
-    lib/controller/StabilizeController.cpp
     src/main_mujoco.cpp
 )
 
 target_include_directories(main-mujoco PUBLIC include)
 target_include_directories(main-mujoco PUBLIC lib/error)
 target_include_directories(main-mujoco PUBLIC lib/math)
+target_include_directories(main-mujoco PUBLIC lib/gps)
 target_include_directories(main-mujoco PUBLIC lib/IMU/include)
 target_include_directories(main-mujoco PUBLIC lib/IMU/src)
 target_include_directories(main-mujoco PUBLIC lib/math)
 target_include_directories(main-mujoco PUBLIC lib/estimator)
 target_include_directories(main-mujoco PUBLIC lib/comms)
+target_include_directories(main-mujoco PUBLIC lib/motor)
+target_include_directories(main-mujoco PUBLIC lib/controller/mpc/include)
+target_include_directories(main-mujoco PUBLIC lib/controller/mpc/solver_code/inc/public)
+target_include_directories(main-mujoco PUBLIC lib/controller/mpc/solver_code/inc/private)
+target_include_directories(main-mujoco PUBLIC lib/controller/mpc/solver_code/)
 target_include_directories(main-mujoco PUBLIC lib/controller)
 target_include_directories(main-mujoco PUBLIC lib/flightmodule)
 
-target_compile_options(main-mujoco PUBLIC ${MUJOCO_SAMPLE_COMPILE_OPTIONS})
+target_compile_options(main-mujoco PUBLIC ${MUJOCO_SAMPLE_COMPILE_OPTIONS} -Wno-logical-op-parentheses -Wno-unused-function -Wno-strict-prototypes)
 target_link_libraries(
   main-mujoco
   mujoco::mujoco

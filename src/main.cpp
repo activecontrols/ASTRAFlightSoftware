@@ -26,8 +26,11 @@ namespace flightData {
   float encoderPos[4] = {0.0f};
   float encoderSpeeds[4] = {0.0f};
   Router *router;
-  Eigen::VectorXd measurementVectorY(9);
-  Eigen::VectorXd estimatedStateX(6);
+  // accel*3, gyro*3, mag*3, gpspos*3, gpsvel*3
+  Eigen::VectorXd measurementVectorY(15);
+  // pos, vel, rot, angvel
+  Eigen::VectorXd estimatedStateX(12);
+  // gimbalx, gimbaly, roll, thrust
   Eigen::VectorXd controllerInputU(4);
 }
 

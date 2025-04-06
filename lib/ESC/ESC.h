@@ -2,7 +2,7 @@
 
 #define ESC_H
 
-#include <Error.h>
+#include <ASTRAError.h>
 #include <Servo.h>
 
 class ESC {
