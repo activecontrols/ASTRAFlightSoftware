@@ -17,7 +17,7 @@
 
         <!-- Define the rocket -->
         <!-- I assume you can also attach child bodies to it? not sure how that works -->
-        <body name="rocket" pos="0 0 20" euler="0 0 0">
+        <body name="rocket" pos="0 0 100" euler="0 0 0">
             <!-- Define a light that follows the rocket-->
             <light name="light" mode = "track" pos="0 0 1"/>
             <!-- Define a camera that follows the rocket-->

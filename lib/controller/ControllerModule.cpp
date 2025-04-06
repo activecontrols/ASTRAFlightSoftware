@@ -30,20 +30,20 @@ int ControllerModule::init() {
   // sqrt(2000) = 44.7
   // sqrt(5) = 2.236
   // pos
-  cpg_update_Qsqrt(0, 30);
-  cpg_update_Qsqrt(12*1 + 1, 30);
+  cpg_update_Qsqrt(0, 60);
+  cpg_update_Qsqrt(12*1 + 1, 60);
   cpg_update_Qsqrt(12*2 + 2, 100);
   // vel
-  cpg_update_Qsqrt(12*3 + 3, 15.0);
-  cpg_update_Qsqrt(12*4 + 4, 15.0);
-  cpg_update_Qsqrt(12*5 + 5, 44.7);
+  cpg_update_Qsqrt(12*3 + 3, 60.0);
+  cpg_update_Qsqrt(12*4 + 4, 60.0);
+  cpg_update_Qsqrt(12*5 + 5, 90.7);
   // ang
-  cpg_update_Qsqrt(12*6 + 6, 35.236);
-  cpg_update_Qsqrt(12*7 + 7, 35.2360);
+  cpg_update_Qsqrt(12*6 + 6, 100);
+  cpg_update_Qsqrt(12*7 + 7, 100);
   cpg_update_Qsqrt(12*8 + 8, 2.2360);
   // angvel
-  cpg_update_Qsqrt(12*9 + 9, 1.0);
-  cpg_update_Qsqrt(12*10 + 10, 1.0);
+  cpg_update_Qsqrt(12*9 + 9, 2);
+  cpg_update_Qsqrt(12*10 + 10, 2);
   cpg_update_Qsqrt(12*11 + 11, 2.2360);
 
   // Set control costs
@@ -96,9 +96,9 @@ void ControllerModule::update(unsigned long time) {
 }
 
 void ControllerModule::update_state() {
-  // Landing point: [0, 2, 5]
-  cpg_update_x_init(0,  flightData::estimatedStateX(0) - 2);
-  cpg_update_x_init(1,  flightData::estimatedStateX(1) - 1);
+  // Landing point: [2, 1, 0]
+  cpg_update_x_init(0,  flightData::estimatedStateX(0) - 10);
+  cpg_update_x_init(1,  flightData::estimatedStateX(1) - 20);
   cpg_update_x_init(2,  flightData::estimatedStateX(2));
   cpg_update_x_init(3,  flightData::estimatedStateX(3));
   cpg_update_x_init(4,  flightData::estimatedStateX(4));
