@@ -217,6 +217,8 @@ int main(int argc, const char** argv) {
   mjv_defaultOption(&opt);
   mjv_defaultScene(&scn);
   mjr_defaultContext(&con);
+  cam.trackbodyid = mj_name2id(m, mjOBJ_BODY, "rocket");
+  cam.type = mjCAMERA_TRACKING;
 
   // create scene and context
   mjv_makeScene(m, &scn, 2000);
