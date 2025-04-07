@@ -3,6 +3,7 @@
 // #include "EncoderModule.h"
 #include "VEigen.h"
 #include <cstdio>
+#include <ctime>
 extern "C" {
   #include "cpg_workspace.h"
   #include "cpg_solve.h"
@@ -74,6 +75,7 @@ int ControllerModule::init() {
 
 void ControllerModule::update(unsigned long time) {
   // printf("%lf\n", flightData::estimatedStateX(2));
+  std::clock_t start = std::clock();
   this->update_state();
   cpg_solve();
   // Control action
@@ -81,18 +83,23 @@ void ControllerModule::update(unsigned long time) {
   flightData::controllerInputU(1) = CPG_Result.prim->U[1];
   flightData::controllerInputU(2) = CPG_Result.prim->U[2];
   flightData::controllerInputU(3) = 98.1 + CPG_Result.prim->U[3];
-  printf("X: [%lf, %lf, %lf, %lf, %lf, %lf] U: [%lf, %lf, %lf, %lf]\n",
-    flightData::estimatedStateX(0),
-    flightData::estimatedStateX(1),
-    flightData::estimatedStateX(2),
-    flightData::estimatedStateX(3),
-    flightData::estimatedStateX(4),
-    flightData::estimatedStateX(5),
-    flightData::controllerInputU(0),
-    flightData::controllerInputU(1),
-    flightData::controllerInputU(2),
-    flightData::controllerInputU(3)
-  );
+  std::clock_t end = std::clock();
+  double elapsed_time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+  printf("Elapsed time: %lf seconds\n", elapsed_time);
+
+
+  // printf("X: [%lf, %lf, %lf, %lf, %lf, %lf] U: [%lf, %lf, %lf, %lf]\n",
+  //   flightData::estimatedStateX(0),
+  //   flightData::estimatedStateX(1),
+  //   flightData::estimatedStateX(2),
+  //   flightData::estimatedStateX(3),
+  //   flightData::estimatedStateX(4),
+  //   flightData::estimatedStateX(5),
+  //   flightData::controllerInputU(0),
+  //   flightData::controllerInputU(1),
+  //   flightData::controllerInputU(2),
+  //   flightData::controllerInputU(3)
+  // );
 }
 
 void ControllerModule::update_state() {
