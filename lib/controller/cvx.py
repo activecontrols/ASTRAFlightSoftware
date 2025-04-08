@@ -110,8 +110,8 @@ constraints = [X[:,1:] == A@X[:,:H]+B@U,
                U[0] >= -0.3,
                U[1] <= 0.3,
                U[1] >= -0.3,
-               U[3] <= 100,
-               U[3] >= -98.1,
+               U[3] <= 30,
+               U[3] >= -30.1,
                X[:,0] == x_init]
 
 # define problem
@@ -121,7 +121,7 @@ Qsqrt.value = npQ
 Rsqrt.value = npR
 Psqrt.value = np.zeros((n, n))
 
-Nsim = 1350
+Nsim = 150
 xs = np.zeros((Nsim, Qsqrt.shape[0])) # History of states for plotting
 us = np.zeros((Nsim, Rsqrt.shape[0])) # History of controls for plotting
 x0 = np.zeros(12)
