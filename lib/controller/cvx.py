@@ -106,10 +106,10 @@ objective = cp.Minimize(cp.sum_squares(Psqrt@X[:,H]) + cp.sum_squares(Qsqrt@X[:,
 
 # define constraints
 constraints = [X[:,1:] == A@X[:,:H]+B@U,
-               U[0] <= 0.3,
-               U[0] >= -0.3,
-               U[1] <= 0.3,
-               U[1] >= -0.3,
+               U[0] <= 0.1,
+               U[0] >= -0.1,
+               U[1] <= 0.1,
+               U[1] >= -0.1,
                U[3] <= 30,
                U[3] >= -30.1,
                X[:,0] == x_init]

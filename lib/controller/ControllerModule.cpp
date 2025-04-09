@@ -88,25 +88,25 @@ void ControllerModule::update(unsigned long time) {
   printf("Elapsed time: %lf seconds\n", elapsed_time);
 
 
-  // printf("X: [%lf, %lf, %lf, %lf, %lf, %lf] U: [%lf, %lf, %lf, %lf]\n",
-  //   flightData::estimatedStateX(0),
-  //   flightData::estimatedStateX(1),
-  //   flightData::estimatedStateX(2),
-  //   flightData::estimatedStateX(3),
-  //   flightData::estimatedStateX(4),
-  //   flightData::estimatedStateX(5),
-  //   flightData::controllerInputU(0),
-  //   flightData::controllerInputU(1),
-  //   flightData::controllerInputU(2),
-  //   flightData::controllerInputU(3)
-  // );
+  printf("X: [%lf, %lf, %lf, %lf, %lf, %lf] U: [%lf, %lf, %lf, %lf]\n",
+    flightData::estimatedStateX(0),
+    flightData::estimatedStateX(1),
+    flightData::estimatedStateX(2),
+    flightData::estimatedStateX(3),
+    flightData::estimatedStateX(4),
+    flightData::estimatedStateX(5),
+    flightData::controllerInputU(0),
+    flightData::controllerInputU(1),
+    flightData::controllerInputU(2),
+    flightData::controllerInputU(3)
+  );
 }
 
 void ControllerModule::update_state() {
   // Landing point: [2, 1, 0]
   cpg_update_x_init(0,  flightData::estimatedStateX(0) - 10);
   cpg_update_x_init(1,  flightData::estimatedStateX(1) - 20);
-  cpg_update_x_init(2,  flightData::estimatedStateX(2));
+  cpg_update_x_init(2,  flightData::estimatedStateX(2) - 1);
   cpg_update_x_init(3,  flightData::estimatedStateX(3));
   cpg_update_x_init(4,  flightData::estimatedStateX(4));
   cpg_update_x_init(5,  flightData::estimatedStateX(5));
