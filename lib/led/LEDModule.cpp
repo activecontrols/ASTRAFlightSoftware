@@ -1,5 +1,5 @@
 #include "LEDModule.h"
-#include "Error.h"
+#include "ASTRAError.h"
 #include <Arduino.h>
 
 #define SLOW_THRESHOLD 1000

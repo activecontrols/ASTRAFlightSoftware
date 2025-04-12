@@ -1,6 +1,6 @@
 #ifndef IS_ARDUINO
 #include "FakeIMU.h"
-#include "Error.h"
+#include "ASTRAError.h"
 #include <cstdlib>
 #include <iostream>
 

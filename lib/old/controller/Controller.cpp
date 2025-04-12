@@ -1,6 +1,6 @@
 #ifdef one
 #include "Controller.h"
-#include "Error.h"
+#include "ASTRAError.h"
 #include "settings.h"
 #include "Estimator.h"
 #include "Encoder.h"

@@ -13,8 +13,12 @@
 #include <iostream>
 
 namespace flightData {
-  Eigen::VectorXd measurementVectorY(9);
-  Eigen::VectorXd estimatedStateX(6);
+  // accel*3, gyro*3, mag*3, gpspos*3, gpsvel*3
+  Eigen::VectorXd measurementVectorY(15);
+  // pos, vel, rot, angvel
+  Eigen::VectorXd estimatedStateX(12);
+  // gimbalx, gimbaly, roll, thrust
+  Eigen::VectorXd controllerInputU(4);
   float voltage[1] = {12.6f};
   Router *router;
 }

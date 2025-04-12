@@ -5,7 +5,7 @@ Author: Vincent Palmerio
 */
 
 #include "Derivative.h"
-#include "Error.h"
+#include "ASTRAError.h"
 
 Eigen::VectorXd derivative(1);
 

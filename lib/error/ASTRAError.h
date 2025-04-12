@@ -1,11 +1,11 @@
 /*
-Error.h - Error Header/Constants File
+ASTRAError.h - Error Header/Constants File
 Description: Error Constants for General Errors that can occur throughout Astra
 Author: Vincent Palmerio
 */
 
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef ASTRAERROR_H
+#define ASTRAERROR_H
 
 #define NO_ERROR_CODE (0)
 #define GENERAL_ERROR_CODE (-1)

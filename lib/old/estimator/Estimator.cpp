@@ -1,6 +1,6 @@
 #include "Estimator.h"
 #include "Integrator.h"
-#include "Error.h"
+#include "ASTRAError.h"
 #include "IMU.h"
 #include "MathFunctions.h"
 #include "TOF.h"

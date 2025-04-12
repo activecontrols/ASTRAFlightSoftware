@@ -6,7 +6,7 @@
 #ifndef FLIGHTMODULE_H
 #define FLIGHTMODULE_H
 
-#include "Error.h"
+#include "ASTRAError.h"
 
 class FlightModule {
 public:

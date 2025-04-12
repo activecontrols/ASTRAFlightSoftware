@@ -2,7 +2,7 @@
 #include "ESC.h"
 
 //#include <Controller.h>
-#include <Error.h>
+#include <ASTRAError.h>
 #include <Arduino.h>
 #include <Servo.h>
 

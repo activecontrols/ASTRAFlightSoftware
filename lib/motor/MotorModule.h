@@ -5,7 +5,7 @@
 #include "ESC.h"
 #include "FlightModule.h"
 #include "VEigen.h"
-#include "Error.h"
+#include "ASTRAError.h"
 
 /** Pins for servos and ESC */
 #define INNER_GIMBAL_PIN (29)
